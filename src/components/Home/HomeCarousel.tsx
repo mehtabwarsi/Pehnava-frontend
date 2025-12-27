@@ -144,18 +144,11 @@ const HomeCarousel = () => {
                 <ChevronRight className="w-12 h-12" />
             </button>
 
-            {/* Progress Indicators */}
+            Progress Indicators
             <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-3 z-10">
                 {slides.map((_, index) => (
                     <button
                         key={index}
-                        onClick={() => {
-                            if (!isAnimating) {
-                                setIsAnimating(true);
-                                setCurrent(index);
-                                setTimeout(() => setIsAnimating(false), 700);
-                            }
-                        }}
                         className="group relative"
                         aria-label={`Go to slide ${index + 1}`}
                     >

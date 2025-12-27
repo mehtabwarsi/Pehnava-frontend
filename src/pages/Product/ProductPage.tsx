@@ -1,4 +1,3 @@
-import React from 'react'
 import { products } from '../../temp/productData'
 import ProductCard from '../../components/Home/ProductCard'
 
