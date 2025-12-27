@@ -1,5 +1,6 @@
 import { Link, NavLink } from "react-router-dom";
 import { useState } from "react";
+import { Search, UserRound, Handbag, Menu, X } from "lucide-react";
 
 const Navbar = () => {
     const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -118,19 +119,7 @@ const Navbar = () => {
                             className="hidden sm:flex relative p-2 sm:p-3 hover:bg-pehnava-lightGray rounded-xl transition-all duration-300 group"
                             aria-label="Search"
                         >
-                            <svg
-                                className="w-5 h-5 text-pehnava-slate group-hover:text-pehnava-primary transition-colors"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                            >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                                />
-                            </svg>
+                            <Search className="w-5 h-5 text-pehnava-slate group-hover:text-pehnava-primary transition-colors" />
                             <span className="absolute inset-0 rounded-xl bg-pehnava-primary/10 scale-0 group-hover:scale-100 transition-transform duration-300 -z-10"></span>
                         </button>
 
@@ -140,19 +129,7 @@ const Navbar = () => {
                             className="hidden sm:flex relative p-2 sm:p-3 hover:bg-pehnava-lightGray rounded-xl transition-all duration-300 group"
                             aria-label="Profile"
                         >
-                            <svg
-                                className="w-5 h-5 text-pehnava-slate group-hover:text-pehnava-primary transition-colors"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                            >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                                />
-                            </svg>
+                            <UserRound className="w-5 h-5 text-pehnava-slate group-hover:text-pehnava-primary transition-colors" />
                             <span className="absolute inset-0 rounded-xl bg-pehnava-primary/10 scale-0 group-hover:scale-100 transition-transform duration-300 -z-10"></span>
                         </Link>
 
@@ -164,19 +141,7 @@ const Navbar = () => {
                         >
                             <div className="relative px-3 py-2 sm:px-4 sm:py-3 bg-linear-to-br from-pehnava-accent to-pehnava-accentDark rounded-lg sm:rounded-xl shadow-medium hover:shadow-large transition-all duration-300 hover:scale-105">
                                 <div className="flex items-center gap-2">
-                                    <svg
-                                        className="w-5 h-5 text-white"
-                                        fill="none"
-                                        viewBox="0 0 24 24"
-                                        stroke="currentColor"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
-                                        />
-                                    </svg>
+                                    <Handbag className="w-5 h-5 text-white" />
                                     <span className="hidden sm:inline text-sm font-bold text-white">Cart</span>
                                 </div>
                                 {cartItemCount > 0 && (
@@ -193,11 +158,11 @@ const Navbar = () => {
                             className="lg:hidden relative p-2 hover:bg-pehnava-lightGray rounded-lg transition-all duration-300"
                             aria-label="Toggle menu"
                         >
-                            <div className="w-6 h-5 flex flex-col justify-between">
-                                <span className={`w-full h-0.5 bg-pehnava-charcoal rounded-full transition-all duration-300 ${isMobileMenuOpen ? 'rotate-45 translate-y-2' : ''}`}></span>
-                                <span className={`w-full h-0.5 bg-pehnava-charcoal rounded-full transition-all duration-300 ${isMobileMenuOpen ? 'opacity-0' : ''}`}></span>
-                                <span className={`w-full h-0.5 bg-pehnava-charcoal rounded-full transition-all duration-300 ${isMobileMenuOpen ? '-rotate-45 -translate-y-2' : ''}`}></span>
-                            </div>
+                            {isMobileMenuOpen ? (
+                                <X className="w-6 h-6 text-pehnava-charcoal" />
+                            ) : (
+                                <Menu className="w-6 h-6 text-pehnava-charcoal" />
+                            )}
                         </button>
                     </div>
                 </div>
@@ -214,19 +179,7 @@ const Navbar = () => {
                                     className="w-full bg-pehnava-lightGray text-pehnava-charcoal placeholder-pehnava-slate px-6 py-4 pl-14 pr-32 rounded-2xl border-2 border-pehnava-border focus:outline-none focus:border-pehnava-primary focus:ring-4 focus:ring-pehnava-primary/10 transition-all shadow-soft hover:shadow-medium font-medium"
                                     autoFocus
                                 />
-                                <svg
-                                    className="w-6 h-6 text-pehnava-primary absolute left-5 top-1/2 -translate-y-1/2"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    stroke="currentColor"
-                                >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2}
-                                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                                    />
-                                </svg>
+                                <Search className="w-6 h-6 text-pehnava-primary absolute left-5 top-1/2 -translate-y-1/2" />
                                 <button className="absolute right-3 top-1/2 -translate-y-1/2 px-5 py-2 bg-linear-to-r from-pehnava-primary to-pehnava-primaryDark text-white text-sm font-semibold rounded-xl hover:shadow-glow transition-all duration-300 hover:scale-105">
                                     Search
                                 </button>
@@ -248,19 +201,7 @@ const Navbar = () => {
                                     placeholder="Search..."
                                     className="w-full bg-pehnava-lightGray text-pehnava-charcoal placeholder-pehnava-slate px-4 py-3 pl-11 rounded-xl border-2 border-pehnava-border focus:outline-none focus:border-pehnava-primary transition-all"
                                 />
-                                <svg
-                                    className="w-5 h-5 text-pehnava-slate absolute left-3 top-1/2 -translate-y-1/2"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    stroke="currentColor"
-                                >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2}
-                                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                                    />
-                                </svg>
+                                <Search className="w-6 h-6 text-pehnava-primary absolute left-5 top-1/2 -translate-y-1/2" />
                             </div>
                         </div>
 
@@ -336,9 +277,7 @@ const Navbar = () => {
                             className="flex items-center justify-between px-4 py-3 rounded-xl font-semibold text-pehnava-darkSlate hover:bg-pehnava-lightGray transition-all"
                         >
                             <div className="flex items-center gap-3">
-                                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                </svg>
+                                <UserRound className="w-5 h-5" />
                                 <span>My Profile</span>
                             </div>
                             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

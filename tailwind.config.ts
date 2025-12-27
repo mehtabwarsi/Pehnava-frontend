@@ -54,6 +54,10 @@ export default {
                     '0%': { transform: 'scale(0.95)', opacity: '0' },
                     '100%': { transform: 'scale(1)', opacity: '1' },
                 },
+                slideProgress: {
+                    '0%': { transform: 'translateX(-100%)' },
+                    '100%': { transform: 'translateX(0)' },
+                },
             },
             animation: {
                 slideDown: 'slideDown 0.3s ease-out',
