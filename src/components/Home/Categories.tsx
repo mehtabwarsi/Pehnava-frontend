@@ -27,7 +27,7 @@ const Categories = () => {
                 {MALE_CATEGORIES.map((category, index) => (
                     <div
                         key={category.name}
-                        className="group relative h-[400px] rounded-3xl overflow-hidden shadow-medium hover:shadow-large transition-all duration-500 hover:-translate-y-2 animate-scaleIn"
+                        className="group relative h-[400px] rounded-lg overflow-hidden shadow-medium hover:shadow-large transition-all duration-500 hover:-translate-y-2 animate-scaleIn"
                         style={{ animationDelay: `${index * 100}ms` }}
                     >
                         {/* Image */}
