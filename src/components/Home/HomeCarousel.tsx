@@ -30,32 +30,23 @@ const slides = [
 
 const HomeCarousel = () => {
     const [current, setCurrent] = useState(0);
-    const [isAnimating, setIsAnimating] = useState(false);
 
     const nextSlide = () => {
-        if (!isAnimating) {
-            setIsAnimating(true);
-            setCurrent((prev) => (prev + 1) % slides.length);
-            setTimeout(() => setIsAnimating(false), 700);
-        }
+        setCurrent((prev) => (prev + 1) % slides.length);
     };
 
     const prevSlide = () => {
-        if (!isAnimating) {
-            setIsAnimating(true);
-            setCurrent((prev) => (prev - 1 + slides.length) % slides.length);
-            setTimeout(() => setIsAnimating(false), 700);
-        }
+        setCurrent((prev) => (prev - 1 + slides.length) % slides.length);
     };
 
     // Auto slide
     useEffect(() => {
         const interval = setInterval(() => {
-            nextSlide();
+            setCurrent((prev) => (prev + 1) % slides.length);
         }, 5000);
 
         return () => clearInterval(interval);
-    }, [current]);
+    }, []);
 
     return (
         <section className="relative h-[calc(100vh-80px)] overflow-hidden bg-pehnava-lightGray">
@@ -108,7 +99,7 @@ const HomeCarousel = () => {
                                         </span>
                                     </button>
 
-                                    <button className="px-8 py-4 bg-white/10 backdrop-blur-md text-white font-semibold rounded-xl border-2 border-white/30 hover:bg-white/20 hover:border-white/50 transition-all duration-300 hover:scale-105">
+                                    <button className="px-8 py-4 bg-white/10  text-white font-semibold rounded-xl border-2 border-white/30 hover:bg-white/20 hover:border-white/50 transition-all duration-300 hover:scale-105">
                                         Learn More
                                     </button>
                                 </div>
@@ -139,7 +130,7 @@ const HomeCarousel = () => {
             {/* Navigation Arrows */}
             <button
                 onClick={prevSlide}
-                className="absolute left-4 sm:left-8 top-1/2 -translate-y-1/2 p-3 text-white hover:scale-110"
+                className="hidden md:block absolute left-4 sm:left-8 top-1/2 -translate-y-1/2 p-3 text-white hover:scale-110"
                 aria-label="Previous slide"
             >
                 <ChevronLeft className="w-12 h-12" />
@@ -147,7 +138,7 @@ const HomeCarousel = () => {
 
             <button
                 onClick={nextSlide}
-                className="absolute right-4 sm:right-8 top-1/2 -translate-y-1/2 p-3 text-white hover:scale-110"
+                className="hidden md:block absolute right-4 sm:right-8 top-1/2 -translate-y-1/2 p-3 text-white hover:scale-110"
                 aria-label="Next slide"
             >
                 <ChevronRight className="w-12 h-12" />
