@@ -47,11 +47,18 @@ const ProductCard = ({ title, price, image, originalPrice, rating = 4.5, isNew =
                     <Heart className="w-3.5 h-3.5 md:w-4 h-4 transition-transform group-hover/wishlist:scale-110" />
                 </button>
 
-                {/* Quick Add Button - Appears on Hover */}
-                <div className="absolute inset-x-2 md:inset-x-4 bottom-2 md:bottom-4 translate-y-12 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500">
-                    <button className="w-full py-2 md:py-3 bg-pehnava-charcoal text-white text-[10px] md:text-sm font-bold rounded-xl md:rounded-2xl flex items-center justify-center gap-1 md:gap-2 hover:bg-pehnava-primary transition-colors shadow-large">
+                {/* Quick Add Button - Desktop Hover / Mobile Icon */}
+                <div className="absolute right-2 bottom-2 md:inset-x-4 md:bottom-4 z-10 transition-all duration-500 md:translate-y-12 md:opacity-0 md:group-hover:translate-y-0 md:group-hover:opacity-100">
+
+                    {/* Desktop Button */}
+                    <button className="hidden md:flex w-full py-2 md:py-3 bg-pehnava-charcoal text-white text-[10px] md:text-sm font-bold rounded-xl md:rounded-2xl items-center justify-center gap-1 md:gap-2 hover:bg-pehnava-primary transition-colors shadow-large">
                         <Handbag className="w-3 h-3 md:w-4 h-4" />
                         Add to Cart
+                    </button>
+
+                    {/* Mobile Button (Icon Only) */}
+                    <button className="md:hidden p-2 bg-pehnava-charcoal text-white rounded-full shadow-large hover:bg-pehnava-primary active:scale-95 transition-all flex items-center justify-center">
+                        <Handbag className="w-3.5 h-3.5" />
                     </button>
                 </div>
             </div>
