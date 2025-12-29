@@ -1,126 +1,88 @@
-import { User, Package, Heart, MapPin, Settings, LogOut } from "lucide-react";
+import { User, Package, Heart, MapPin, Settings, LogOut, Camera, ChevronRight, CreditCard, Bell, Shield } from "lucide-react";
 
 const ProfilePage = () => {
     return (
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-12 sm:py-20">
+        <div className="min-h-screen bg-pehnava-offWhite pt-6 pb-24 sm:pt-12 sm:pb-32 px-4 sm:px-6 lg:px-8">
+            <div className="max-w-4xl mx-auto space-y-6 sm:space-y-8">
 
-            {/* Header */}
-            <div className="mb-10 sm:mb-12">
-                <h1 className="text-xl sm:text-2xl md:text-3xl font-medium text-pehnava-charcoal">
-                    My Account
-                </h1>
-                <p className="mt-2 text-sm sm:text-base text-pehnava-slate">
-                    Manage your profile, orders and account settings
-                </p>
-            </div>
+                {/* 1. Profile Header - Minimal & Centered */}
+                <div className="flex flex-col items-center text-center space-y-4">
+                    <div className="relative group">
+                        <div className="h-28 w-28 sm:h-32 sm:w-32 rounded-full border-4 border-white shadow-2xl overflow-hidden bg-gray-100">
+                            <div className="h-full w-full flex items-center justify-center text-pehnava-slate/30">
+                                <User className="w-12 h-12" />
+                            </div>
+                        </div>
+                        <button className="absolute bottom-0 right-0 p-2 bg-pehnava-charcoal text-white rounded-full hover:scale-110 transition-transform shadow-lg cursor-pointer">
+                            <Camera className="w-4 h-4" />
+                        </button>
+                    </div>
 
-            {/* Profile Card */}
-            <div className="
-        bg-white rounded-2xl shadow-soft
-        p-5 sm:p-8 mb-10 sm:mb-12
-        flex flex-col sm:flex-row
-        items-center sm:items-start
-        gap-5 sm:gap-6
-        text-center sm:text-left
-      ">
-                <div className="h-20 w-20 rounded-full bg-pehnava-lightGray flex items-center justify-center text-pehnava-charcoal">
-                    <User className="w-8 h-8" />
+                    <div>
+                        <h1 className="text-2xl sm:text-3xl font-bold text-pehnava-charcoal">Mehtab Ansari</h1>
+                        <p className="text-pehnava-slate font-medium mt-1">mehtab@email.com</p>
+                    </div>
+
+                    <button className="px-6 py-2 rounded-full border border-pehnava-border hover:border-pehnava-charcoal hover:bg-pehnava-charcoal hover:text-white transition-all text-sm font-semibold cursor-pointer">
+                        Edit Profile
+                    </button>
                 </div>
 
-                <div className="flex-1">
-                    <h2 className="text-base sm:text-lg md:text-xl font-medium text-pehnava-charcoal">
-                        Mehtab Ansari
-                    </h2>
-                    <p className="text-sm text-pehnava-slate">
-                        mehtab@email.com
-                    </p>
+                {/* 2. Stats Row - Quick Glances */}
+                <div className="grid grid-cols-2 gap-4 bg-white rounded-2xl p-4 sm:p-6 shadow-soft border border-pehnava-border/40">
+                    <div className="text-center space-y-1 border-r border-pehnava-border/40">
+                        <p className="text-xl sm:text-2xl font-bold text-pehnava-charcoal">12</p>
+                        <p className="text-[10px] sm:text-sm text-pehnava-slate font-medium uppercase tracking-wide">Orders</p>
+                    </div>
+                    <div className="text-center space-y-1">
+                        <p className="text-xl sm:text-2xl font-bold text-pehnava-charcoal">5</p>
+                        <p className="text-[10px] sm:text-sm text-pehnava-slate font-medium uppercase tracking-wide">Wishlist</p>
+                    </div>
                 </div>
 
-                <button className="
-          px-5 py-2
-          text-sm font-medium
-          rounded-full
-          border border-pehnava-border
-          hover:bg-pehnava-lightGray
-          transition
-        ">
-                    Edit Profile
+                {/* 3. Menu List - Clean & Functional */}
+                <div className="bg-white rounded-2xl shadow-soft border border-pehnava-border/40 overflow-hidden divide-y divide-pehnava-border/40">
+                    <MenuItem icon={Package} title="My Orders" desc="Track active orders and returns" />
+                    <MenuItem icon={Heart} title="Wishlist" desc="Your curated collection" />
+                    <MenuItem icon={MapPin} title="Addresses" desc="Manage delivery locations" />
+                    <MenuItem icon={CreditCard} title="Payment Methods" desc="Manage cards and UPI" />
+                    <MenuItem icon={Bell} title="Notifications" desc="Order updates and promotions" />
+                    <MenuItem icon={Shield} title="Privacy & Security" desc="Password and account access" />
+                    <MenuItem icon={Settings} title="Settings" desc="App preferences" />
+                </div>
+
+                {/* 4. Logout Button */}
+                <button className="w-full py-4 rounded-2xl bg-white border border-red-100 text-red-500 font-bold hover:bg-red-50 transition-colors flex items-center justify-center gap-2 shadow-sm cursor-pointer active:scale-[0.98]">
+                    <LogOut className="w-5 h-5" />
+                    Sign Out
                 </button>
+
             </div>
-
-            {/* Account Actions */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mb-10 sm:mb-12">
-
-                <ActionCard
-                    icon={<Package className="w-5 h-5" />}
-                    title="My Orders"
-                    desc="Track and view your orders"
-                />
-
-                <ActionCard
-                    icon={<Heart className="w-5 h-5" />}
-                    title="Wishlist"
-                    desc="Products you have saved"
-                />
-
-                <ActionCard
-                    icon={<MapPin className="w-5 h-5" />}
-                    title="Addresses"
-                    desc="Manage delivery addresses"
-                />
-
-                <ActionCard
-                    icon={<Settings className="w-5 h-5" />}
-                    title="Account Settings"
-                    desc="Password and account preferences"
-                />
-            </div>
-
-            {/* Logout */}
-            <div className="text-center">
-                <button className="inline-flex items-center gap-2 text-sm font-medium text-red-500 hover:underline">
-                    <LogOut className="w-4 h-4" />
-                    Logout
-                </button>
-            </div>
-
         </div>
     );
 };
 
 export default ProfilePage;
 
-/* ---------------------------------- */
-/* Reusable Action Card Component     */
-/* ---------------------------------- */
+/* ------------------ */
+/* Reusable Menu Item */
+/* ------------------ */
 
-type ActionCardProps = {
-    icon: React.ReactNode;
+type MenuItemProps = {
+    icon: React.ElementType;
     title: string;
     desc: string;
 };
 
-const ActionCard = ({ icon, title, desc }: ActionCardProps) => {
-    return (
-        <div className="
-      bg-white rounded-xl shadow-soft
-      p-5 sm:p-6
-      flex items-start gap-4
-      hover:shadow-medium transition
-      cursor-pointer
-    ">
-            <div className="h-10 w-10 shrink-0 rounded-lg bg-pehnava-lightGray flex items-center justify-center text-pehnava-charcoal">
-                {icon}
-            </div>
-
-            <div>
-                <h3 className="text-sm sm:text-base font-medium text-pehnava-charcoal">
-                    {title}
-                </h3>
-                <p className="text-xs sm:text-sm text-pehnava-slate mt-1">
-                    {desc}
-                </p>
-            </div>
+const MenuItem = ({ icon: Icon, title, desc }: MenuItemProps) => (
+    <div className="group flex items-center gap-4 p-4 sm:p-5 hover:bg-pehnava-offWhite/50 transition-colors cursor-pointer">
+        <div className="h-10 w-10 rounded-full bg-pehnava-lightGray/50 flex items-center justify-center text-pehnava-charcoal group-hover:bg-pehnava-charcoal group-hover:text-white transition-colors shrink-0">
+            <Icon className="w-5 h-5" />
         </div>
-    );
-};
+        <div className="flex-1 min-w-0">
+            <h3 className="font-semibold text-pehnava-charcoal text-sm sm:text-base truncate">{title}</h3>
+            <p className="text-xs text-pehnava-slate hidden sm:block truncate">{desc}</p>
+        </div>
+        <ChevronRight className="w-5 h-5 text-pehnava-border group-hover:text-pehnava-charcoal transition-colors ml-2 shrink-0" />
+    </div>
+);
