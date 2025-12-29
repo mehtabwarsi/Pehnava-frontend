@@ -38,7 +38,7 @@ const ShopPage = () => {
                 </div>
 
                 {/* CONTROLS BAR (Sticky) */}
-                <div className="sticky top-0 z-30 py-2 sm:py-4 -mx-3 px-3 sm:mx-0 sm:px-0 bg-pehnava-offWhite/95 backdrop-blur-sm transition-all duration-300">
+                <div className="sticky top-16 sm:top-20 z-30 py-2 sm:py-4 -mx-3 px-3 sm:mx-0 sm:px-0 bg-pehnava-offWhite/95 backdrop-blur-sm transition-all duration-300">
                     <div className="bg-white p-3 sm:p-4 rounded-xl shadow-soft border border-pehnava-border/50">
                         <div className="flex flex-col gap-3">
 
@@ -79,8 +79,8 @@ const ShopPage = () => {
                                                 key={item}
                                                 onClick={() => setCategory(item)}
                                                 className={`px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-medium transition-all duration-300 capitalize whitespace-nowrap border ${category === item
-                                                        ? "bg-pehnava-charcoal text-white border-pehnava-charcoal shadow-lg transform scale-105"
-                                                        : "bg-white text-pehnava-slate border-pehnava-border hover:border-pehnava-charcoal"
+                                                    ? "bg-pehnava-charcoal text-white border-pehnava-charcoal shadow-lg transform scale-105"
+                                                    : "bg-white text-pehnava-slate border-pehnava-border hover:border-pehnava-charcoal"
                                                     }`}
                                             >
                                                 {item}
