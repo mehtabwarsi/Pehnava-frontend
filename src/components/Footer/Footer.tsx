@@ -13,6 +13,12 @@ import {
 import { Link } from "react-router-dom";
 
 const Footer = () => {
+    const socialIcons = [
+        { Icon: Instagram, bg: "hover:bg-pink-500" },
+        { Icon: Twitter, bg: "hover:bg-sky-500" },
+        { Icon: Facebook, bg: "hover:bg-blue-600" },
+        { Icon: Youtube, bg: "hover:bg-red-600" },
+    ];
     return (
         <footer className="bg-white pt-16 border-t border-pehnava-border/50">
             <div className="max-w-7xl mx-auto px-6">
@@ -28,7 +34,7 @@ const Footer = () => {
                                 <span className="text-2xl font-black text-pehnava-charcoal tracking-tighter leading-none">
                                     Pehnava
                                 </span>
-                                <span className="text-[10px] uppercase tracking-[0.2em] font-bold text-pehnava-primary">
+                                <span className="text-[10px] uppercase tracking-[0.2em] font-bold text-pehnava-primary mt-2">
                                     Traditional Wear
                                 </span>
                             </div>
@@ -38,22 +44,22 @@ const Footer = () => {
                             Premium fabrics, timeless designs, and the soul of tradition.
                         </p>
                         <div className="flex items-center gap-4">
-                            {[Instagram, Twitter, Facebook, Youtube].map((Icon, i) => (
+                            {socialIcons.map((Icon, i) => (
                                 <a
                                     key={i}
                                     href="#"
-                                    className="p-2.5 bg-pehnava-lightGray text-pehnava-charcoal rounded-full hover:bg-pehnava-primary hover:text-white transition-all duration-300 shadow-soft"
+                                    className={`p-2.5 bg-pehnava-lightGray text-pehnava-charcoal rounded-full hover:bg-pehnava-primary hover:text-white transition-all duration-300 shadow-soft ${Icon.bg}`}
                                 >
-                                    <Icon className="w-5 h-5" />
+                                    <Icon.Icon className="w-5 h-5" />
                                 </a>
                             ))}
                         </div>
                     </div>
 
                     {/* Quick Links */}
-                    <div className="lg:col-span-2 space-y-6">
+                    <div className="lg:col-span-2 space-y-6 ">
                         <h4 className="text-pehnava-charcoal font-bold text-base uppercase tracking-wider">Shop</h4>
-                        <ul className="space-y-4">
+                        <ul className="space-y-4 ml-3 justify-center">
                             {['Sherwanis', 'Kurtas', 'Jackets', 'Accessories'].map((item) => (
                                 <li key={item}>
                                     <Link to="#" className="text-pehnava-slate hover:text-pehnava-primary text-sm transition-colors flex items-center group">
@@ -68,7 +74,7 @@ const Footer = () => {
                     {/* Company */}
                     <div className="lg:col-span-2 space-y-6">
                         <h4 className="text-pehnava-charcoal font-bold text-base uppercase tracking-wider">Company</h4>
-                        <ul className="space-y-4">
+                        <ul className="space-y-4 ml-3 justify-center">
                             {['About Us', 'Collections', 'Sustainability', 'Blog'].map((item) => (
                                 <li key={item}>
                                     <Link to="#" className="text-pehnava-slate hover:text-pehnava-primary text-sm transition-colors flex items-center group">
@@ -102,11 +108,11 @@ const Footer = () => {
                         <div className="flex items-center gap-4 text-pehnava-slate">
                             <div className="flex items-center gap-2">
                                 <Shield className="w-4 h-4 text-pehnava-secondary" />
-                                <span className="text-[10px] font-medium uppercase tracking-tighter">Secure Payments</span>
+                                <span className="text-[10px] font-medium uppercase tracking-wider">Secure Payments</span>
                             </div>
                             <div className="flex items-center gap-2">
                                 <Globe className="w-4 h-4 text-pehnava-secondary" />
-                                <span className="text-[10px] font-medium uppercase tracking-tighter">Free Shipping</span>
+                                <span className="text-[10px] font-medium uppercase tracking-wider">Free Shipping</span>
                             </div>
                         </div>
                     </div>

@@ -13,7 +13,7 @@ const ProductCard = ({ title, price, image, originalPrice, rating = 4.5, isNew =
     const discount = originalPrice ? Math.round(((originalPrice - price) / originalPrice) * 100) : null;
 
     return (
-        <div className="group relative bg-white rounded-lg md:rounded-lg overflow-hidden shadow-soft hover:shadow-large transition-all duration-500 hover:-translate-y-2">
+        <div className="group relative bg-white rounded-lg md:rounded-lg overflow-hidden shadow-soft hover:shadow-large transition-all duration-500 hover:-translate-y-1">
             {/* Image Container */}
             <div className="relative aspect-4/5 overflow-hidden bg-pehnava-lightGray">
                 {image ? (
@@ -36,7 +36,7 @@ const ProductCard = ({ title, price, image, originalPrice, rating = 4.5, isNew =
                         </span>
                     )}
                     {discount && (
-                        <span className="px-2 md:px-3 py-0.5 md:py-1 bg-pehnava-accent text-white text-[8px] md:text-[10px] font-bold uppercase tracking-widest rounded-full shadow-medium">
+                        <span className="px-2 md:px-3 py-0.5 md:py-1 bg-pehnava-accent/90 text-white text-[8px] md:text-[10px] font-bold uppercase tracking-widest rounded-full shadow-medium">
                             {discount}% OFF
                         </span>
                     )}
@@ -68,16 +68,16 @@ const ProductCard = ({ title, price, image, originalPrice, rating = 4.5, isNew =
                     <span className="text-[9px] md:text-[11px] text-pehnava-slate font-medium ml-0.5 md:ml-1">({rating})</span>
                 </div>
 
-                <h3 className="text-pehnava-charcoal font-bold text-sm md:text-lg mb-0.5 md:mb-1 truncate group-hover:text-pehnava-primary transition-colors">
+                <h3 className="text-pehnava-slate font-medium text-sm md:text-lg mb-0.5 md:mb-1 truncate group-hover:text-pehnava-primary transition-colors">
                     {title}
                 </h3>
 
                 <div className="flex items-center gap-1.5 md:gap-2">
-                    <span className="text-pehnava-charcoal font-extrabold text-base md:text-xl">
+                    <span className="text-slate-600 font-semibold text-base md:text-xl">
                         ₹{price.toLocaleString('en-IN')}
                     </span>
                     {originalPrice && (
-                        <span className="text-pehnava-slate line-through text-[10px] md:text-sm">
+                        <span className="text-slate-600/70 line-through text-[10px] md:text-sm">
                             ₹{originalPrice.toLocaleString('en-IN')}
                         </span>
                     )}

@@ -9,7 +9,7 @@ const MALE_CATEGORIES = [
 
 const Categories = () => {
     return (
-        <section className="max-w-7xl mx-auto px-6 py-20 animate-fadeIn">
+        <section className="max-w-7xl mx-auto px-6 py-16 animate-fadeIn">
             <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
                 <div className="space-y-2">
                     <h2 className="text-4xl font-bold text-pehnava-charcoal tracking-tight">
@@ -53,9 +53,6 @@ const Categories = () => {
                                 <ArrowRight className="w-4 h-4 transition-transform group-hover/btn:translate-x-1" />
                             </button>
                         </div>
-
-                        {/* Subtle Glow on Hover */}
-                        <div className="absolute inset-0 ring-1 ring-inset ring-white/20 rounded-3xl group-hover:ring-pehnava-primary/50 transition-all duration-500" />
                     </div>
                 ))}
             </div>

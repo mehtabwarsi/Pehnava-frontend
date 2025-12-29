@@ -1,6 +1,6 @@
 import HomeCarousel from '../../components/Home/HomeCarousel'
 import Categories from '../../components/Home/Categories'
-import ProductPage from '../Product/ProductPage'
+import ProductPage from '../../components/Product/ProductPage'
 
 const HomePage = () => {
     return (
@@ -8,7 +8,6 @@ const HomePage = () => {
             <HomeCarousel />
 
             <Categories />
-
             <ProductPage />
         </main>
     )
