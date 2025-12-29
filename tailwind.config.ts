@@ -70,6 +70,9 @@ export default {
                 'large': '0 8px 32px rgba(0, 0, 0, 0.12)',
                 'glow': '0 0 20px rgba(99, 102, 241, 0.3)',
             },
+            fontFamily: {
+                sans: ['Inter', 'sans-serif', 'system-ui'],
+            },
         },
     },
     plugins: [],

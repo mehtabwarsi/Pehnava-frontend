@@ -9,7 +9,7 @@ const MALE_CATEGORIES = [
 
 const Categories = () => {
     return (
-        <section className="max-w-7xl mx-auto px-6 py-16 animate-fadeIn">
+        <section className="max-w-7xl mx-auto px-6 py-16 animate-fadeIn bg-pehnava-offWhite">
             <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
                 <div className="space-y-2">
                     <h2 className="text-4xl font-bold text-pehnava-charcoal tracking-tight">

@@ -1,2 +1,6 @@
 @import "tailwindcss";
 @config "../tailwind.config.ts";
+
+:root {
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}

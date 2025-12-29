@@ -10,7 +10,7 @@ const ShopPage = () => {
     let filteredProducts =
         category === "all"
             ? products
-            : products.filter(p => p.category === category);
+            : products.filter((p: any) => p.category === category);
 
     // SORT
     if (sort === "low-high") {
@@ -57,7 +57,7 @@ const ShopPage = () => {
                     <button
                         key={item}
                         onClick={() => setCategory(item)}
-                        className={`cursor-pointer px-5 py-2 rounded-full border ${category === item
+                        className={` cursor-pointer px-5 py-2 rounded-full border ${category === item
                             ? "bg-black text-white"
                             : "bg-white"
                             }`}

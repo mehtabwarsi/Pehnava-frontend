@@ -63,7 +63,7 @@ const HomeCarousel = () => {
                         <img
                             src={slide.image}
                             alt={slide.title}
-                            className={`w-full h-full object-cover transition-transform duration-1000 ${index === current ? "scale-100" : "scale-110"
+                            className={`w-full h-full object-cover object-[50%_20%] transition-transform duration-1000 ${index === current ? "scale-100" : "scale-110"
                                 }`}
                         />
                     </div>
@@ -112,7 +112,7 @@ const HomeCarousel = () => {
                                     </div>
                                     <div className="w-px h-12 bg-white/30"></div>
                                     <div className="space-y-1">
-                                        <div className="text-3xl font-bold text-white drop-shadow-lg">50K+</div>
+                                        <div className="text-3xl font-bold text-white drop-shadow-lg">10K+</div>
                                         <div className="text-sm text-white drop-shadow-md">Happy Customers</div>
                                     </div>
                                     <div className="w-px h-12 bg-white/30"></div>

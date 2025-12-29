@@ -4,9 +4,8 @@ import ProductPage from '../../components/Product/ProductPage'
 
 const HomePage = () => {
     return (
-        <main className="bg-pehnava-offWhite min-h-screen">
+        <main>
             <HomeCarousel />
-
             <Categories />
             <ProductPage />
         </main>
