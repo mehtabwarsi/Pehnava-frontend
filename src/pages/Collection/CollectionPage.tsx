@@ -1,4 +1,5 @@
 import CollectionCard from "../../components/Collection/CollectionCard";
+import { ArrowRight } from "lucide-react";
 
 const collections = [
     {
@@ -29,29 +30,38 @@ const collections = [
 
 const CollectionPage = () => {
     return (
-        <div className="max-w-7xl bg-pehnava-offWhite mx-auto px-4 sm:px-6 py-16 sm:py-20">
+        <div className="min-h-screen bg-pehnava-offWhite pt-6 pb-20 px-4 sm:px-6 lg:px-8">
+            <div className="max-w-7xl mx-auto">
 
-            {/* Heading */}
-            <div className="mb-10 sm:mb-12 text-center">
-                <h1 className="text-xl sm:text-2xl md:text-3xl font-medium text-pehnava-charcoal">
-                    Our Collections
-                </h1>
-                <p className="text-sm sm:text-base text-pehnava-slate mt-2">
-                    Curated styles for every mood & season
-                </p>
-            </div>
+                {/* HERO Header */}
+                <div className="text-center mb-10 sm:mb-16 space-y-3 pt-4">
+                    <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-pehnava-charcoal tracking-tight">
+                        Our <span className="text-transparent bg-clip-text bg-linear-to-r from-pehnava-primary to-pehnava-accent">Collections</span>
+                    </h1>
+                    <p className="text-pehnava-slate text-sm sm:text-lg max-w-2xl mx-auto px-4">
+                        Curated styles for every mood & season, crafted with elegance.
+                    </p>
+                </div>
 
-            {/* Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
-                {collections.map(item => (
-                    <CollectionCard
-                        key={item.id}
-                        title={item.title}
-                        subtitle={item.subtitle}
-                        image={item.image}
-                        onClick={() => console.log(item.title)}
-                    />
-                ))}
+                {/* Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
+                    {collections.map((item) => (
+                        <CollectionCard
+                            key={item.id}
+                            title={item.title}
+                            subtitle={item.subtitle}
+                            image={item.image}
+                            onClick={() => console.log(item.title)}
+                        />
+                    ))}
+                </div>
+
+                {/* View All / Bottom CTA */}
+                <div className="mt-12 text-center">
+                    <button className="group inline-flex items-center gap-2 text-pehnava-charcoal font-semibold hover:text-pehnava-primary transition-colors cursor-pointer">
+                        View All Categories <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                    </button>
+                </div>
             </div>
         </div>
     );
