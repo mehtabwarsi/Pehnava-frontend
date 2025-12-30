@@ -1,14 +1,42 @@
 import { useState } from "react";
 import { isApplePlatform } from "../../utils/platformDetect";
+import { loginWithGoogle } from "../../utils/auth/googleLogin";
+import { auth } from "../../utils/firebase";
+import { loginApi } from "../../ApiService/allApi";
+import { useNavigate } from "react-router-dom";
 
 const LoginPage = () => {
     const [mobileNumber, setMobileNumber] = useState("");
+    const navigate = useNavigate();
 
     const handleMobileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
         // Only allow digits & max length 10
         if (/^\d*$/.test(value) && value.length <= 10) {
             setMobileNumber(value);
+        }
+    };
+
+    const handleGoogleLogin = async () => {
+        try {
+            const firebaseUser = await loginWithGoogle();
+            if (!firebaseUser) return;
+
+            console.log("Firebase user:", JSON.stringify(firebaseUser, null, 2));
+            const token = await auth.currentUser?.getIdToken();
+            if (!token) {
+                throw new Error("Token not found");
+            }
+
+            const response = await loginApi(token);
+
+            console.log("Backend response:", JSON.stringify(response, null, 2));
+            if (response.success == true) {
+                navigate("/")
+            }
+
+        } catch (error) {
+            console.error("Google login failed:", error);
         }
     };
 
@@ -89,7 +117,9 @@ const LoginPage = () => {
                         </div>
 
                         <div className="flex justify-center gap-6 mt-6">
-                            <SocialIconWrapper icon={<GoogleIcon />} label="Google" />
+                            <button onClick={handleGoogleLogin}>
+                                <SocialIconWrapper icon={<GoogleIcon />} label="Google" />
+                            </button>
                             <SocialIconWrapper icon={<FacebookIcon />} label="Facebook" />
                             {isApplePlatform() && (
                                 <SocialIconWrapper icon={<AppleIcon />} label="Apple" />
