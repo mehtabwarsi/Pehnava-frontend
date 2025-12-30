@@ -7,19 +7,40 @@ import ProfilePage from "../pages/Profile/ProfilePage";
 import CartPage from "../pages/Cart/CartPage";
 import HomePage from "../pages/Home/HomePage";
 import LoginPage from "../pages/Auth/LoginPage";
+import ProtectedRoute from "../utils/ProtectedRoute";
 
 const AppRoutes = () => {
     return (
         <Routes>
+            {/* PUBLIC LAYOUT */}
             <Route path="/" element={<MainLayout />}>
                 <Route index element={<HomePage />} />
                 <Route path="shop" element={<ShopPage />} />
                 <Route path="collections" element={<CollectionPage />} />
                 <Route path="about" element={<AboutPage />} />
-                <Route path="profile" element={<ProfilePage />} />
-                <Route path="cart" element={<CartPage />} />
+
+                {/* 🔒 PROTECTED ROUTES */}
+                <Route
+                    path="profile"
+                    element={
+                        <ProtectedRoute>
+                            <ProfilePage />
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="cart"
+                    element={
+                        <ProtectedRoute>
+                            <CartPage />
+                        </ProtectedRoute>
+                    }
+                />
             </Route>
-            <Route path="login" element={<LoginPage />} />
+
+            {/* AUTH */}
+            <Route path="/login" element={<LoginPage />} />
         </Routes>
     );
 };

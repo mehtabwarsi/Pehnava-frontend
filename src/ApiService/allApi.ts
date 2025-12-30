@@ -8,3 +8,4 @@ export const loginApi = async (token: string) => {
     });
     return response.data
 }
+
