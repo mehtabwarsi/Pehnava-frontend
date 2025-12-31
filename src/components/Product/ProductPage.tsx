@@ -1,7 +1,9 @@
 import { products } from '../../temp/productData'
 import ProductCard from '../../components/Home/ProductCard'
+import { useNavigate } from 'react-router-dom'
 
 const ProductPage = () => {
+    const navigate = useNavigate();
     return (
         <section className="max-w-7xl bg-pehnava-offWhite mx-auto px-4 pb-20 md:px-6">
             <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">
@@ -13,7 +15,7 @@ const ProductPage = () => {
                         Discover our top-rated arrivals and latest trends in contemporary menswear.
                     </p>
                 </div>
-                <button className="text-pehnava-primary font-bold hover:underline transition-all text-sm md:text-base">
+                <button onClick={() => navigate("/shop")} className="text-pehnava-primary font-bold hover:underline transition-all text-sm md:text-base">
                     View All Products
                 </button>
             </div>

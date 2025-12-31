@@ -9,41 +9,45 @@ import HomePage from "../pages/Home/HomePage";
 import LoginPage from "../pages/Auth/LoginPage";
 import ProtectedRoute from "../utils/ProtectedRoute";
 import ProductDetailsPage from "../pages/Product/ProductDetailsPage";
+import ScrollToTop from "../utils/ScrollToTop";
 
 const AppRoutes = () => {
     return (
-        <Routes>
-            {/* PUBLIC LAYOUT */}
-            <Route path="/" element={<MainLayout />}>
-                <Route index element={<HomePage />} />
-                <Route path="shop" element={<ShopPage />} />
-                <Route path="collections" element={<CollectionPage />} />
-                <Route path="about" element={<AboutPage />} />
-                <Route path="product/:id" element={<ProductDetailsPage />} />
+        <>
+            <ScrollToTop />
+            <Routes>
+                {/* PUBLIC LAYOUT */}
+                <Route path="/" element={<MainLayout />}>
+                    <Route index element={<HomePage />} />
+                    <Route path="shop" element={<ShopPage />} />
+                    <Route path="collections" element={<CollectionPage />} />
+                    <Route path="about" element={<AboutPage />} />
+                    <Route path="product/:id" element={<ProductDetailsPage />} />
 
-                {/* 🔒 PROTECTED ROUTES */}
-                <Route
-                    path="profile"
-                    element={
-                        <ProtectedRoute>
-                            <ProfilePage />
-                        </ProtectedRoute>
-                    }
-                />
+                    {/* 🔒 PROTECTED ROUTES */}
+                    <Route
+                        path="profile"
+                        element={
+                            <ProtectedRoute>
+                                <ProfilePage />
+                            </ProtectedRoute>
+                        }
+                    />
 
-                <Route
-                    path="cart"
-                    element={
-                        <ProtectedRoute>
-                            <CartPage />
-                        </ProtectedRoute>
-                    }
-                />
-            </Route>
+                    <Route
+                        path="cart"
+                        element={
+                            <ProtectedRoute>
+                                <CartPage />
+                            </ProtectedRoute>
+                        }
+                    />
+                </Route>
 
-            {/* AUTH */}
-            <Route path="/login" element={<LoginPage />} />
-        </Routes>
+                {/* AUTH */}
+                <Route path="/login" element={<LoginPage />} />
+            </Routes>
+        </>
     );
 };
 
