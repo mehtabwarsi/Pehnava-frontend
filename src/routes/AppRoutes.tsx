@@ -10,6 +10,7 @@ import LoginPage from "../pages/Auth/LoginPage";
 import ProtectedRoute from "../utils/ProtectedRoute";
 import ProductDetailsPage from "../pages/Product/ProductDetailsPage";
 import ScrollToTop from "../utils/ScrollToTop";
+import OtpVerifyPage from "../pages/Auth/OtpVerifyPage";
 
 const AppRoutes = () => {
     return (
@@ -46,6 +47,7 @@ const AppRoutes = () => {
 
                 {/* AUTH */}
                 <Route path="/login" element={<LoginPage />} />
+                <Route path="/otp-verify" element={<OtpVerifyPage />} />
             </Routes>
         </>
     );

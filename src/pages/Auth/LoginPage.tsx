@@ -4,6 +4,7 @@ import { loginWithGoogle } from "../../utils/auth/googleLogin";
 import { auth } from "../../utils/firebase";
 import { loginApi } from "../../ApiService/allApi";
 import { useNavigate } from "react-router-dom";
+import { sendOtp } from "../../utils/auth/phtoneAuth";
 
 const LoginPage = () => {
     const [mobileNumber, setMobileNumber] = useState("");
@@ -40,9 +41,21 @@ const LoginPage = () => {
         }
     };
 
+
+    const handleSendOtp = async () => {
+        try {
+            const confirmation = await sendOtp(mobileNumber);
+            console.log("Confirmation result:", confirmation);
+            // window.confirmationResult = confirmation;
+            // navigate("/otp-verify");
+        } catch (err) {
+            console.error("OTP error:", err);
+        }
+    };
+
     return (
         <div className="min-h-screen relative flex items-center justify-center p-4">
-
+            <div id="recaptcha-container"></div>
             {/* Background Image with Overlay */}
             <div className="absolute inset-0 z-0">
                 <img
@@ -53,7 +66,7 @@ const LoginPage = () => {
                 <div className="absolute inset-0 bg-black/40 backdrop-blur-sm"></div>
             </div>
 
-            <div className="w-full max-w-[1000px] h-fit md:h-[600px] bg-white shadow-2xl overflow-hidden flex flex-col md:flex-row rounded-xl z-10">
+            <div className="w-full max-w-[95%] sm:max-w-[500px] md:max-w-[800px] lg:max-w-[1000px] h-fit md:h-[600px] bg-white shadow-2xl overflow-hidden flex flex-col md:flex-row rounded-lg md:rounded-xl z-10">
 
                 {/* LEFT SIDE - PROMO IMAGE (Hidden on Mobile) */}
                 <div className="hidden md:block w-2/5 relative bg-pehnava-primary/5">
@@ -71,20 +84,20 @@ const LoginPage = () => {
                 </div>
 
                 {/* RIGHT SIDE - FORM */}
-                <div className="w-full md:w-3/5 p-6 sm:p-12 lg:p-16 flex flex-col justify-center relative">
+                <div className="w-full md:w-3/5 p-6 sm:p-8 md:p-12 lg:p-16 flex flex-col justify-center relative">
 
                     {/* Header */}
-                    <div className="mb-6 sm:mb-10 mt-4 sm:mt-0">
-                        <h2 className="text-2xl sm:text-3xl font-bold text-pehnava-charcoal mb-2">Login <span className="text-pehnava-slate mx-1">or</span> Signup</h2>
-                        <p className="text-pehnava-slate text-sm">
+                    <div className="mb-6 sm:mb-8 md:mb-10 mt-2 sm:mt-0">
+                        <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-pehnava-charcoal mb-2">Login <span className="text-pehnava-slate mx-1">or</span> Signup</h2>
+                        <p className="text-pehnava-slate text-xs sm:text-sm">
                             Get access to your Orders, Wishlist and Recommendations
                         </p>
                     </div>
 
                     {/* Mobile Input */}
-                    <div className="mt-2 text-sm sm:mt-4 mb-6">
+                    <div className="mb-6">
                         <div className="flex border border-pehnava-slate/30 rounded-md overflow-hidden focus-within:border-pehnava-primary focus-within:ring-1 focus-within:ring-pehnava-primary transition-all">
-                            <div className="bg-pehnava-offWhite px-3 py-3 border-r border-pehnava-slate/30 flex items-center text-pehnava-charcoal font-medium">
+                            <div className="bg-pehnava-offWhite px-2.5 sm:px-3 py-2.5 sm:py-3 border-r border-pehnava-slate/30 flex items-center text-pehnava-charcoal font-medium text-sm sm:text-base">
                                 +91
                             </div>
                             <input
@@ -92,7 +105,7 @@ const LoginPage = () => {
                                 value={mobileNumber}
                                 onChange={handleMobileChange}
                                 placeholder="Mobile Number"
-                                className="flex-1 px-4 py-3 bg-white outline-none text-pehnava-charcoal font-medium placeholder:text-pehnava-slate/50 w-full"
+                                className="flex-1 px-3 sm:px-4 py-2.5 sm:py-3 bg-white outline-none text-pehnava-charcoal font-medium placeholder:text-pehnava-slate/50 w-full text-sm sm:text-base"
                             />
                         </div>
                         <p className="text-[10px] sm:text-xs text-pehnava-slate mt-3 sm:mt-4 leading-relaxed">
@@ -101,12 +114,12 @@ const LoginPage = () => {
                     </div>
 
                     {/* Continue Button */}
-                    <button className="w-full bg-pehnava-accent hover:bg-pehnava-accentDark text-white font-bold py-3.5 rounded-sm shadow-md hover:shadow-lg transition-all uppercase tracking-wide cursor-pointer text-sm active:scale-[0.98]">
+                    <button onClick={handleSendOtp} className="w-full bg-pehnava-accent hover:bg-pehnava-accentDark text-white font-bold py-3 sm:py-3.5 rounded-sm shadow-md hover:shadow-lg transition-all uppercase tracking-wide cursor-pointer text-xs sm:text-sm active:scale-[0.98]">
                         Continue
                     </button>
 
                     {/* Social Login Section */}
-                    <div className="mt-8 sm:mt-10 mb-4 sm:mb-0">
+                    <div className="mt-6 sm:mt-8 md:mt-10 mb-4 sm:mb-0">
                         <div className="relative">
                             <div className="absolute inset-0 flex items-center">
                                 <span className="w-full border-t border-pehnava-border/60" />
@@ -116,7 +129,7 @@ const LoginPage = () => {
                             </div>
                         </div>
 
-                        <div className="flex justify-center gap-6 mt-6">
+                        <div className="flex justify-center gap-4 sm:gap-6 mt-4 sm:mt-6">
                             <button onClick={handleGoogleLogin}>
                                 <SocialIconWrapper icon={<GoogleIcon />} label="Google" />
                             </button>
