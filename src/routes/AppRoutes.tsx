@@ -8,6 +8,7 @@ import CartPage from "../pages/Cart/CartPage";
 import HomePage from "../pages/Home/HomePage";
 import LoginPage from "../pages/Auth/LoginPage";
 import ProtectedRoute from "../utils/ProtectedRoute";
+import ProductDetailsPage from "../pages/Product/ProductDetailsPage";
 
 const AppRoutes = () => {
     return (
@@ -18,6 +19,7 @@ const AppRoutes = () => {
                 <Route path="shop" element={<ShopPage />} />
                 <Route path="collections" element={<CollectionPage />} />
                 <Route path="about" element={<AboutPage />} />
+                <Route path="product/:id" element={<ProductDetailsPage />} />
 
                 {/* 🔒 PROTECTED ROUTES */}
                 <Route

@@ -1,6 +1,6 @@
 import { Link, NavLink } from "react-router-dom";
 import { useState } from "react";
-import { Search, UserRound, Handbag, Menu, X } from "lucide-react";
+import { Search, UserRound, Handbag, Menu, X, ShoppingCart } from "lucide-react";
 
 const Navbar = () => {
     const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -111,7 +111,7 @@ const Navbar = () => {
                         <Link to="/cart" className="relative group">
                             <div className="relative px-3 py-2 sm:px-4 sm:py-3 bg-linear-to-br from-pehnava-accent to-pehnava-accentDark rounded-lg sm:rounded-xl shadow-medium hover:shadow-large transition-all duration-300 hover:scale-105">
                                 <div className="flex items-center gap-2">
-                                    <Handbag className="w-5 h-5 text-white" />
+                                    <ShoppingCart className="w-5 h-5 text-white" />
                                     <span className="hidden sm:inline text-sm font-bold text-white">Cart</span>
                                 </div>
                                 {cartItemCount > 0 && (
