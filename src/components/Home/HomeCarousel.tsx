@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const slides = [
     {
@@ -30,7 +31,7 @@ const slides = [
 
 const HomeCarousel = () => {
     const [current, setCurrent] = useState(0);
-
+    const navigate = useNavigate();
     const nextSlide = () => {
         setCurrent((prev) => (prev + 1) % slides.length);
     };
@@ -91,7 +92,7 @@ const HomeCarousel = () => {
 
                                 {/* CTA Buttons */}
                                 <div className="flex flex-wrap items-center gap-4 pt-4">
-                                    <button className="group relative px-8 py-4 bg-white text-pehnava-primary font-bold rounded-xl shadow-large hover:shadow-glow transition-all duration-300 hover:scale-105 overflow-hidden">
+                                    <button onClick={() => navigate("/shop")} className="group relative px-8 py-4 bg-white text-pehnava-primary font-bold rounded-xl shadow-large hover:shadow-glow transition-all duration-300 hover:scale-105 overflow-hidden">
                                         <span className="relative z-10">Shop Collection</span>
                                         <div className="absolute inset-0 bg-linear-to-r from-pehnava-primary to-pehnava-accent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                                         <span className="absolute inset-0 z-10 flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 font-bold">

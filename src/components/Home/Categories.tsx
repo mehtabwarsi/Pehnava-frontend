@@ -1,4 +1,5 @@
 import { ArrowRight } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const MALE_CATEGORIES = [
     { name: 'Shirts', image: 'https://images.unsplash.com/photo-1740711152088-88a009e877bb?q=80&w=880&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', count: '45+' },
@@ -8,6 +9,7 @@ const MALE_CATEGORIES = [
 ];
 
 const Categories = () => {
+    const navigate = useNavigate();
     return (
         <section className="max-w-7xl mx-auto px-6 py-16 animate-fadeIn bg-pehnava-offWhite">
             <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
@@ -48,7 +50,7 @@ const Categories = () => {
                                 {category.name}
                             </h3>
 
-                            <button className="flex items-center gap-2 text-white font-semibold group/btn bg-white/10 backdrop-blur-md px-4 py-2 rounded-xl border border-white/20 hover:bg-white hover:text-pehnava-primary transition-all duration-300">
+                            <button onClick={() => navigate("/shop")} className="flex items-center gap-2 text-white font-semibold group/btn bg-white/10 backdrop-blur-md px-4 py-2 rounded-xl border border-white/20 hover:bg-white hover:text-pehnava-primary transition-all duration-300">
                                 View More
                                 <ArrowRight className="w-4 h-4 transition-transform group-hover/btn:translate-x-1" />
                             </button>

@@ -1,6 +1,39 @@
-import { User, Package, Heart, MapPin, Settings, LogOut, Camera, ChevronRight, CreditCard, Bell, Shield } from "lucide-react";
+import {
+    User,
+    Package,
+    Heart,
+    MapPin,
+    Settings,
+    LogOut,
+    Camera,
+    ChevronRight,
+    CreditCard,
+    Bell,
+    Shield
+} from "lucide-react";
+import { useSelector } from "react-redux";
+import { signOut } from "firebase/auth";
+import { auth } from "../../utils/firebase";
+import { useDispatch } from "react-redux";
+import { logout } from "../../redux/slices/authSlice";
+import { useNavigate } from "react-router-dom";
 
 const ProfilePage = () => {
+    const { user } = useSelector((state: any) => state.auth);
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+
+    const handleLogout = async () => {
+        try {
+            await signOut(auth);
+            dispatch(logout());
+            navigate("/", { replace: true });
+        } catch (error) {
+            console.error("Logout failed:", error);
+        }
+    };
+
+
     return (
         <div className="min-h-screen bg-pehnava-offWhite pt-6 pb-24 sm:pt-12 sm:pb-32 px-4 sm:px-6 lg:px-8">
             <div className="max-w-4xl mx-auto space-y-6 sm:space-y-8">
@@ -19,8 +52,8 @@ const ProfilePage = () => {
                     </div>
 
                     <div>
-                        <h1 className="text-2xl sm:text-3xl font-bold text-pehnava-charcoal">Mehtab Ansari</h1>
-                        <p className="text-pehnava-slate font-medium mt-1">mehtab@email.com</p>
+                        <h1 className="text-2xl sm:text-3xl font-bold text-pehnava-charcoal">{user?.name}</h1>
+                        <p className="text-pehnava-slate font-medium mt-1">{user?.email}</p>
                     </div>
 
                     <button className="px-6 py-2 rounded-full border border-pehnava-border hover:border-pehnava-charcoal hover:bg-pehnava-charcoal hover:text-white transition-all text-sm font-semibold cursor-pointer">
@@ -52,7 +85,7 @@ const ProfilePage = () => {
                 </div>
 
                 {/* 4. Logout Button */}
-                <button className="w-full py-4 rounded-2xl bg-white border border-red-100 text-red-500 font-bold hover:bg-red-50 transition-colors flex items-center justify-center gap-2 shadow-sm cursor-pointer active:scale-[0.98]">
+                <button onClick={handleLogout} className="w-full py-4 rounded-2xl bg-white border border-red-100 text-red-500 font-bold hover:bg-red-50 transition-colors flex items-center justify-center gap-2 shadow-sm cursor-pointer active:scale-[0.98]">
                     <LogOut className="w-5 h-5" />
                     Sign Out
                 </button>

@@ -1,6 +1,8 @@
 import { Handbag, Heart, Star } from "lucide-react";
+import { Link } from "react-router-dom";
 
 type ProductCardProps = {
+    id: string | number;
     title: string;
     price: number;
     image?: string;
@@ -9,11 +11,11 @@ type ProductCardProps = {
     isNew?: boolean;
 };
 
-const ProductCard = ({ title, price, image, originalPrice, rating = 4.5, isNew = false }: ProductCardProps) => {
+const ProductCard = ({ id, title, price, image, originalPrice, rating = 4.5, isNew = false }: ProductCardProps) => {
     const discount = originalPrice ? Math.round(((originalPrice - price) / originalPrice) * 100) : null;
 
     return (
-        <div className="group relative bg-white rounded-lg md:rounded-lg overflow-hidden shadow-soft hover:shadow-large transition-all duration-500 hover:-translate-y-1">
+        <Link to={`/product/${id}`} className="block group relative bg-white rounded-lg md:rounded-lg overflow-hidden shadow-soft hover:shadow-large transition-all duration-500 hover:-translate-y-1">
             {/* Image Container */}
             <div className="relative aspect-4/5 overflow-hidden bg-pehnava-lightGray">
                 {image ? (
@@ -93,7 +95,7 @@ const ProductCard = ({ title, price, image, originalPrice, rating = 4.5, isNew =
 
             {/* Subtle Border Glow on Hover */}
             <div className="absolute inset-0 pointer-events-none ring-1 ring-inset ring-transparent group-hover:ring-pehnava-primary/10 transition-all duration-500 rounded-2xl md:rounded-3xl" />
-        </div>
+        </Link>
     );
 };
 

@@ -1,6 +1,6 @@
 import { Link, NavLink } from "react-router-dom";
 import { useState } from "react";
-import { Search, UserRound, Handbag, Menu, X } from "lucide-react";
+import { Search, UserRound, Menu, X, ShoppingCart } from "lucide-react";
 
 const Navbar = () => {
     const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -79,22 +79,49 @@ const Navbar = () => {
                         </div>
                     </Link>
 
-                    {/* Desktop Navigation (SHORTENED, UI SAME) */}
-                    <div className="hidden lg:flex items-center gap-1">
-                        {NAV_ITEMS.map(item => (
-                            <DesktopNavItem
-                                key={item.path}
-                                to={item.path}
-                                label={item.label}
-                            />
-                        ))}
+                    {/* Desktop Navigation OR Search Input */}
+                    <div className="hidden lg:flex items-center flex-1 justify-center px-8">
+                        {isSearchOpen ? (
+                            // Search Input (Inline)
+                            <div className="relative w-full max-w-2xl">
+                                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                    <Search className="w-5 h-5 text-pehnava-slate" />
+                                </div>
+                                <input
+                                    type="text"
+                                    placeholder="Search for kurtas, sherwanis, accessories..."
+                                    className="w-full pl-12 pr-12 py-2.5 bg-pehnava-offWhite border-2 border-pehnava-border rounded-xl 
+                                             text-pehnava-charcoal placeholder-pehnava-slate
+                                             focus:outline-none focus:border-pehnava-primary focus:ring-2 focus:ring-pehnava-primary/20
+                                             transition-all duration-300 text-sm"
+                                    autoFocus
+                                />
+                                <button
+                                    onClick={() => setIsSearchOpen(false)}
+                                    className="absolute inset-y-0 right-0 pr-4 flex items-center group"
+                                >
+                                    <X className="w-5 h-5 text-pehnava-slate group-hover:text-pehnava-accent transition-colors" />
+                                </button>
+                            </div>
+                        ) : (
+                            // Navigation Items
+                            <div className="flex items-center gap-1">
+                                {NAV_ITEMS.map(item => (
+                                    <DesktopNavItem
+                                        key={item.path}
+                                        to={item.path}
+                                        label={item.label}
+                                    />
+                                ))}
+                            </div>
+                        )}
                     </div>
 
                     {/* Right Actions (UNCHANGED) */}
                     <div className="flex items-center gap-2 sm:gap-3">
                         <button
                             onClick={() => setIsSearchOpen(!isSearchOpen)}
-                            className="hidden sm:flex relative p-2 sm:p-3 hover:bg-pehnava-lightGray rounded-xl transition-all duration-300 group"
+                            className="flex relative p-2 sm:p-3 hover:bg-pehnava-lightGray rounded-xl transition-all duration-300 group"
                         >
                             <Search className="w-5 h-5 text-pehnava-slate group-hover:text-pehnava-primary" />
                             <span className="absolute inset-0 rounded-xl bg-pehnava-primary/10 scale-0 group-hover:scale-100 transition-transform duration-300 -z-10"></span>
@@ -111,7 +138,7 @@ const Navbar = () => {
                         <Link to="/cart" className="relative group">
                             <div className="relative px-3 py-2 sm:px-4 sm:py-3 bg-linear-to-br from-pehnava-accent to-pehnava-accentDark rounded-lg sm:rounded-xl shadow-medium hover:shadow-large transition-all duration-300 hover:scale-105">
                                 <div className="flex items-center gap-2">
-                                    <Handbag className="w-5 h-5 text-white" />
+                                    <ShoppingCart className="w-5 h-5 text-white" />
                                     <span className="hidden sm:inline text-sm font-bold text-white">Cart</span>
                                 </div>
                                 {cartItemCount > 0 && (
@@ -155,6 +182,59 @@ const Navbar = () => {
                                 <span>My Profile</span>
                             </div>
                         </Link>
+                    </div>
+                </div>
+            )}
+
+            {/* Mobile Search Overlay */}
+            {isSearchOpen && (
+                <div className="lg:hidden fixed inset-0 z-50 bg-pehnava-charcoal/95 backdrop-blur-sm animate-fadeIn">
+                    <div className="h-full flex flex-col">
+                        {/* Search Header */}
+                        <div className="bg-pehnava-white border-b border-pehnava-border px-4 py-4">
+                            <div className="flex items-center gap-3">
+                                <button
+                                    onClick={() => setIsSearchOpen(false)}
+                                    className="p-2 hover:bg-pehnava-lightGray rounded-lg transition-all"
+                                >
+                                    <X className="w-5 h-5 text-pehnava-charcoal" />
+                                </button>
+                                <div className="relative flex-1">
+                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <Search className="w-5 h-5 text-pehnava-slate" />
+                                    </div>
+                                    <input
+                                        type="text"
+                                        placeholder="Search products..."
+                                        className="w-full pl-10 pr-4 py-3 bg-pehnava-offWhite border-2 border-pehnava-border rounded-xl 
+                                                 text-pehnava-charcoal placeholder-pehnava-slate
+                                                 focus:outline-none focus:border-pehnava-primary focus:ring-2 focus:ring-pehnava-primary/20
+                                                 transition-all duration-300 text-sm"
+                                        autoFocus
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Popular Searches */}
+                        <div className="flex-1 bg-pehnava-white p-4 overflow-y-auto">
+                            <h3 className="text-sm font-bold text-pehnava-charcoal uppercase tracking-wider mb-3">
+                                Popular Searches
+                            </h3>
+                            <div className="flex flex-wrap gap-2">
+                                {['Kurta Sets', 'Sherwani', 'Ethnic Jackets', 'Accessories', 'Traditional Wear', 'Wedding Collection'].map((tag) => (
+                                    <button
+                                        key={tag}
+                                        onClick={() => setIsSearchOpen(false)}
+                                        className="px-4 py-2 bg-pehnava-lightGray hover:bg-pehnava-primary hover:text-white 
+                                                 text-pehnava-charcoal text-sm rounded-lg font-medium
+                                                 transition-all duration-300"
+                                    >
+                                        {tag}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
                     </div>
                 </div>
             )}
