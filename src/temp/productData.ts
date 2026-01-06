@@ -181,41 +181,41 @@ export const products = [
     }
 ];
 
-const product = {
-    id: '1',
-    title: 'Premium Cotton Kurta',
-    price: 2499,
-    originalPrice: 3999,
-    rating: 4.5,
-    reviews: 128,
-    description: 'Elevate your traditional wardrobe with this premium cotton kurta. Crafted from the finest quality fabric, this piece combines comfort with style. Perfect for festive occasions, weddings, or casual gatherings.',
-    images: [
-        'https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=600',
-        'https://images.unsplash.com/photo-1622470953794-aa9c70b0fb9d?w=600',
-        'https://images.unsplash.com/photo-1626497764684-1a0ba921528c?w=600',
-        'https://images.unsplash.com/photo-1577900232427-18219b9166a0?w=600',
-    ],
-    sizes: ['S', 'M', 'L', 'XL', 'XXL'],
-    colors: [
-        { name: 'Navy Blue', code: '#1e3a8a' },
-        { name: 'Maroon', code: '#7f1d1d' },
-        { name: 'Emerald', code: '#065f46' },
-        { name: 'White', code: '#ffffff' },
-    ],
-    features: [
-        'Premium 100% Cotton Fabric',
-        'Traditional Embroidery Work',
-        'Comfortable Regular Fit',
-        'Easy Machine Wash',
-    ],
-    specifications: {
-        'Material': '100% Cotton',
-        'Fit': 'Regular',
-        'Pattern': 'Solid',
-        'Sleeve': 'Full Sleeve',
-        'Occasion': 'Festive & Casual',
-        'Care': 'Machine Wash',
-    }
-};
+// const product = {
+//     id: '1',
+//     title: 'Premium Cotton Kurta',
+//     price: 2499,
+//     originalPrice: 3999,
+//     rating: 4.5,
+//     reviews: 128,
+//     description: 'Elevate your traditional wardrobe with this premium cotton kurta. Crafted from the finest quality fabric, this piece combines comfort with style. Perfect for festive occasions, weddings, or casual gatherings.',
+//     images: [
+//         'https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=600',
+//         'https://images.unsplash.com/photo-1622470953794-aa9c70b0fb9d?w=600',
+//         'https://images.unsplash.com/photo-1626497764684-1a0ba921528c?w=600',
+//         'https://images.unsplash.com/photo-1577900232427-18219b9166a0?w=600',
+//     ],
+//     sizes: ['S', 'M', 'L', 'XL', 'XXL'],
+//     colors: [
+//         { name: 'Navy Blue', code: '#1e3a8a' },
+//         { name: 'Maroon', code: '#7f1d1d' },
+//         { name: 'Emerald', code: '#065f46' },
+//         { name: 'White', code: '#ffffff' },
+//     ],
+//     features: [
+//         'Premium 100% Cotton Fabric',
+//         'Traditional Embroidery Work',
+//         'Comfortable Regular Fit',
+//         'Easy Machine Wash',
+//     ],
+//     specifications: {
+//         'Material': '100% Cotton',
+//         'Fit': 'Regular',
+//         'Pattern': 'Solid',
+//         'Sleeve': 'Full Sleeve',
+//         'Occasion': 'Festive & Casual',
+//         'Care': 'Machine Wash',
+//     }
+// };
 
 

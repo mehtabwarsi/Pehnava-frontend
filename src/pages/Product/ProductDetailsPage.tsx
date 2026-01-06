@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { Heart, ShoppingCart, ChevronRight, Minus, Plus, Check, Truck, Shield, RefreshCw } from 'lucide-react';
+import { Heart, ShoppingCart, ChevronRight, Check, Truck, Shield, RefreshCw } from 'lucide-react';
 import ProductCard from '../../components/Home/ProductCard';
 import { products } from '../../temp/productData';
 import ColorSelector from '../../components/ProductDetail/ColorSelector';
