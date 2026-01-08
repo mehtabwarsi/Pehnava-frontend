@@ -1,13 +1,16 @@
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { useState } from "react";
-import { Search, UserRound, Menu, X, ShoppingCart } from "lucide-react";
+import { Search, UserRound, Menu, X, ShoppingCart, ShoppingBag } from "lucide-react";
+import { useSelector } from "react-redux";
+import type { RootState } from "../../redux/store";
 
 const Navbar = () => {
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-    const cartItemCount = 3;
 
-
+    // Dynamic counts from Redux
+    const cartItems = useSelector((state: RootState) => state.cart.items);
+    const cartItemCount = cartItems.reduce((total: number, item: any) => total + item.quantity, 0);
 
     const NAV_ITEMS = [
         { label: "Home", path: "/" },
@@ -131,6 +134,7 @@ const Navbar = () => {
                             <span className="absolute inset-0 rounded-xl bg-pehnava-primary/10 scale-0 group-hover:scale-100 transition-transform duration-300 -z-10"></span>
                         </button>
 
+
                         <Link
                             to="/profile"
                             className="hidden sm:flex relative p-2 sm:p-3 hover:bg-pehnava-lightGray rounded-xl transition-all duration-300 group"
@@ -142,8 +146,8 @@ const Navbar = () => {
                         <Link to="/cart" className="relative group">
                             <div className="relative px-3 py-2 sm:px-4 sm:py-3 bg-linear-to-br from-pehnava-accent to-pehnava-accentDark rounded-lg sm:rounded-xl shadow-medium hover:shadow-large transition-all duration-300 hover:scale-105">
                                 <div className="flex items-center gap-2">
-                                    <ShoppingCart className="w-5 h-5 text-white" />
-                                    <span className="hidden sm:inline text-sm font-bold text-white">Cart</span>
+                                    <ShoppingBag className="w-5 h-5 text-white" />
+                                    <span className="hidden sm:inline text-sm font-bold text-white">Bag</span>
                                 </div>
                                 {cartItemCount > 0 && (
                                     <span className="absolute -top-2 -right-2 bg-pehnava-primary text-white text-xs font-bold rounded-full w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center shadow-soft ring-2 ring-white animate-scaleIn">

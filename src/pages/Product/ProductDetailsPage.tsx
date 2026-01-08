@@ -7,17 +7,23 @@ import CustomerReviews from '../../components/ProductDetail/CustomerReviews';
 import RatingStars from '../../components/ProductDetail/RatingStars';
 import { useGetAllProducts, useGetProductById } from '../../services/useApiHook';
 import ProductDetailsSkeleton from '../../components/ProductDetail/ProductDetailsSkeleton';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import type { RootState } from '../../redux/store';
+import { toggleWishlist } from '../../redux/slices/wishlistSlice';
+import { addToCart } from '../../redux/slices/cartSlice';
 
 const ProductDetailsPage = () => {
     const { id } = useParams();
-    const [selectedImage, setSelectedImage] = useState(0); // selectedImage is write-only for now (or for lightbox later)
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+
+    const [selectedImage, setSelectedImage] = useState(0);
     const [selectedSize, setSelectedSize] = useState('');
     const [quantity, setQuantity] = useState(1);
-    const [isFavorited, setIsFavorited] = useState(false);
 
-    const navigate = useNavigate();
+    const { user } = useSelector((state: RootState) => state.auth);
+    const wishlistItems = useSelector((state: RootState) => state.wishlist.items);
+    const isFavorited = wishlistItems.some((item: any) => item.id === id);
 
     const { data: productData, isLoading: isProductLoading } = useGetProductById(id || '');
     const { data: suggestedProductsData, isLoading: isSuggestedLoading } = useGetAllProducts();
@@ -25,11 +31,7 @@ const ProductDetailsPage = () => {
     const productApiData = productData?.data;
     const suggestedProducts = suggestedProductsData?.data;
 
-
     const location = useLocation();
-    const pathnames = location.pathname.split("/").filter(Boolean);
-
-    const { user } = useSelector((state: RootState) => state.auth);
 
     const product = {
         id: id || '1',
@@ -55,6 +57,41 @@ const ProductDetailsPage = () => {
         }
     };
 
+    const handleWishlist = (e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (!user) {
+            navigate("/login");
+            return;
+        }
+
+        dispatch(toggleWishlist({
+            id: product.id,
+            title: product.title,
+            price: product.price,
+            image: product.images?.[0] || ""
+        }));
+    };
+
+    const handleAddToCart = (e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (!user) {
+            navigate("/login");
+            return;
+        }
+
+        dispatch(addToCart({
+            id: product.id,
+            title: product.title,
+            price: product.price,
+            image: product.images?.[0] || "",
+            quantity,
+            size: selectedSize
+        }));
+    };
 
     if (isProductLoading || isSuggestedLoading) {
         return <ProductDetailsSkeleton />;
@@ -70,27 +107,7 @@ const ProductDetailsPage = () => {
     }
 
 
-    const handleWishlist = (e: React.MouseEvent) => {
-        e.preventDefault();
-        e.stopPropagation();
 
-        if (!user) {
-            navigate("/login");
-            return;
-        }
-
-    };
-
-    const handleAddToCart = (e: React.MouseEvent) => {
-        e.preventDefault();
-        e.stopPropagation();
-
-        if (!user) {
-            navigate("/login");
-            return;
-        }
-
-    };
 
     return (
         <div className="min-h-screen bg-pehnava-offWhite">

@@ -11,6 +11,7 @@ import ProtectedRoute from "../utils/ProtectedRoute";
 import ProductDetailsPage from "../pages/Product/ProductDetailsPage";
 import ScrollToTop from "../utils/ScrollToTop";
 import OtpVerifyPage from "../pages/Auth/OtpVerifyPage";
+import WishListPage from "../pages/Profile/WishList/WishListPage";
 
 const AppRoutes = () => {
     return (
@@ -31,6 +32,15 @@ const AppRoutes = () => {
                         element={
                             <ProtectedRoute>
                                 <ProfilePage />
+                            </ProtectedRoute>
+                        }
+                    />
+
+                    <Route
+                        path="wishlist"
+                        element={
+                            <ProtectedRoute>
+                                <WishListPage />
                             </ProtectedRoute>
                         }
                     />

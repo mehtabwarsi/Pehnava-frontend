@@ -76,7 +76,7 @@ const ProfilePage = () => {
                 {/* 3. Menu List - Clean & Functional */}
                 <div className="bg-white rounded-2xl shadow-soft border border-pehnava-border/40 overflow-hidden divide-y divide-pehnava-border/40">
                     <MenuItem icon={Package} title="My Orders" desc="Track active orders and returns" />
-                    <MenuItem icon={Heart} title="Wishlist" desc="Your curated collection" />
+                    <MenuItem icon={Heart} title="Wishlist" desc="Your curated collection" onClick={() => navigate("/wishlist")} />
                     <MenuItem icon={MapPin} title="Addresses" desc="Manage delivery locations" />
                     <MenuItem icon={CreditCard} title="Payment Methods" desc="Manage cards and UPI" />
                     <MenuItem icon={Bell} title="Notifications" desc="Order updates and promotions" />
@@ -105,10 +105,14 @@ type MenuItemProps = {
     icon: React.ElementType;
     title: string;
     desc: string;
+    onClick?: () => void;
 };
 
-const MenuItem = ({ icon: Icon, title, desc }: MenuItemProps) => (
-    <div className="group flex items-center gap-4 p-4 sm:p-5 hover:bg-pehnava-offWhite/50 transition-colors cursor-pointer">
+const MenuItem = ({ icon: Icon, title, desc, onClick }: MenuItemProps) => (
+    <div
+        onClick={onClick}
+        className="group flex items-center gap-4 p-4 sm:p-5 hover:bg-pehnava-offWhite/50 transition-colors cursor-pointer"
+    >
         <div className="h-10 w-10 rounded-full bg-pehnava-lightGray/50 flex items-center justify-center text-pehnava-charcoal group-hover:bg-pehnava-charcoal group-hover:text-white transition-colors shrink-0">
             <Icon className="w-5 h-5" />
         </div>
