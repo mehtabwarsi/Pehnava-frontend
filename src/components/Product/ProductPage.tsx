@@ -6,7 +6,7 @@ import ProductSkeleton from './ProductSkeleton'
 const ProductPage = () => {
     const navigate = useNavigate();
     const { data, isLoading } = useGetAllProducts();
-    const apiData = data?.data;
+    const apiData = data?.data?.filter((product: any) => product.status === "active");
     return (
         <section className="max-w-7xl bg-pehnava-offWhite mx-auto px-4 pb-20 md:px-6">
             <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">

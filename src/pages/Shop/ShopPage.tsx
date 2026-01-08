@@ -39,8 +39,10 @@ const ShopPage = () => {
 
     const { data, isLoading, isError } = useFilterProduct(filter);
 
-    // ApiResponse usually has data.data as the products array
-    const apiProducts = data?.data || [];
+    // Only show active products
+    const apiProducts = useMemo(() => {
+        return (data?.data || []).filter((product: any) => product.status === "active");
+    }, [data]);
 
     const categories = useMemo(() => {
         const fetched = categoryData?.data?.map((item: any) => item.name) || [];
