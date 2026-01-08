@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useParams, Link, useLocation } from 'react-router-dom';
+import { useParams, Link, useLocation, useNavigate } from 'react-router-dom';
 import { Heart, ShoppingCart, ChevronRight, Check, Truck, Shield, RefreshCw } from 'lucide-react';
 import ProductCard from '../../components/Home/ProductCard';
 import QuantitySelector from '../../components/ProductDetail/QuantitySelector';
@@ -7,6 +7,8 @@ import CustomerReviews from '../../components/ProductDetail/CustomerReviews';
 import RatingStars from '../../components/ProductDetail/RatingStars';
 import { useGetAllProducts, useGetProductById } from '../../services/useApiHook';
 import ProductDetailsSkeleton from '../../components/ProductDetail/ProductDetailsSkeleton';
+import { useSelector } from 'react-redux';
+import type { RootState } from '../../redux/store';
 
 const ProductDetailsPage = () => {
     const { id } = useParams();
@@ -14,6 +16,8 @@ const ProductDetailsPage = () => {
     const [selectedSize, setSelectedSize] = useState('');
     const [quantity, setQuantity] = useState(1);
     const [isFavorited, setIsFavorited] = useState(false);
+
+    const navigate = useNavigate();
 
     const { data: productData, isLoading: isProductLoading } = useGetProductById(id || '');
     const { data: suggestedProductsData, isLoading: isSuggestedLoading } = useGetAllProducts();
@@ -24,6 +28,8 @@ const ProductDetailsPage = () => {
 
     const location = useLocation();
     const pathnames = location.pathname.split("/").filter(Boolean);
+
+    const { user } = useSelector((state: RootState) => state.auth);
 
     const product = {
         id: id || '1',
@@ -62,6 +68,29 @@ const ProductDetailsPage = () => {
             </div>
         );
     }
+
+
+    const handleWishlist = (e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (!user) {
+            navigate("/login");
+            return;
+        }
+
+    };
+
+    const handleAddToCart = (e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (!user) {
+            navigate("/login");
+            return;
+        }
+
+    };
 
     return (
         <div className="min-h-screen bg-pehnava-offWhite">
@@ -138,7 +167,7 @@ const ProductDetailsPage = () => {
                                 Select Size
                             </h3>
                             <div className="flex flex-wrap gap-2 md:gap-3">
-                                {product?.sizes?.map((size) => (
+                                {product?.sizes?.map((size: any) => (
                                     <button
                                         key={size}
                                         onClick={() => setSelectedSize(size)}
@@ -161,16 +190,14 @@ const ProductDetailsPage = () => {
 
                         {/* Action Buttons - Myntra Style */}
                         <div className="flex gap-2 md:gap-4 pt-4 border-t border-pehnava-border">
-                            <button className="flex-[1.5] flex items-center justify-center gap-2 md:gap-3 px-4 py-3 md:px-6 md:py-4 bg-[#ff3f6c] text-white font-bold text-xs md:text-sm tracking-widest uppercase rounded-md shadow-sm hover:shadow-lg hover:scale-[1.02] transition-all duration-300">
+                            <button onClick={handleAddToCart} className="flex-[1.5] flex items-center justify-center gap-2 md:gap-3 px-4 py-3 md:px-6 md:py-4 bg-[#ff3f6c] text-white font-bold text-xs md:text-sm tracking-widest uppercase rounded-md shadow-sm hover:shadow-lg hover:scale-[1.02] transition-all duration-300">
                                 <ShoppingCart className="w-4 h-4 md:w-5 md:h-5" />
                                 Add to Bag
                             </button>
-                            <button
-                                onClick={() => setIsFavorited(!isFavorited)}
-                                className={`flex-1 flex items-center justify-center gap-2 md:gap-3 px-4 py-3 md:px-6 md:py-4 border font-bold text-xs md:text-sm tracking-widest uppercase rounded-md transition-all duration-300 ${isFavorited
-                                    ? 'border-[#ff3f6c] text-[#ff3f6c] bg-[#ff3f6c]/5'
-                                    : 'border-pehnava-border text-pehnava-charcoal hover:border-pehnava-charcoal'
-                                    }`}
+                            <button onClick={handleWishlist} className={`flex-1 flex items-center justify-center gap-2 md:gap-3 px-4 py-3 md:px-6 md:py-4 border font-bold text-xs md:text-sm tracking-widest uppercase rounded-md transition-all duration-300 ${isFavorited
+                                ? 'border-[#ff3f6c] text-[#ff3f6c] bg-[#ff3f6c]/5'
+                                : 'border-pehnava-border text-pehnava-charcoal hover:border-pehnava-charcoal'
+                                }`}
                             >
                                 <Heart className="w-4 h-4 md:w-5 md:h-5" fill={isFavorited ? "currentColor" : "none"} />
                                 <span>Wishlist</span>
@@ -231,7 +258,7 @@ const ProductDetailsPage = () => {
                     <div className="bg-white rounded-2xl p-5 md:p-8 shadow-medium">
                         <h2 className="text-2xl font-bold text-pehnava-charcoal mb-6">Specifications</h2>
                         <dl className="space-y-3">
-                            {Object.entries(product.specifications || {}).map(([key, value]) => (
+                            {Object.entries(product.specifications || {}).map(([key, value]: any) => (
                                 <div key={key} className="flex justify-between py-3 border-b border-pehnava-border last:border-0">
                                     <dt className="text-pehnava-slate font-medium capitalize text-sm md:text-base">{key}</dt>
                                     <dd className="text-pehnava-charcoal font-bold capitalize text-sm md:text-base">{value}</dd>

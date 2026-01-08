@@ -1,5 +1,7 @@
 import { Handbag, Heart, Star } from "lucide-react";
-import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import type { RootState } from "../../redux/store";
 
 type ProductCardProps = {
     id: string | number;
@@ -13,10 +15,29 @@ type ProductCardProps = {
 
 const ProductCard = ({ id, title, price, image, originalPrice, rating = 4.5, isNew = false }: ProductCardProps) => {
     const discount = originalPrice ? Math.round(((originalPrice - price) / originalPrice) * 100) : null;
+    const { user } = useSelector((state: RootState) => state.auth);
+    const navigate = useNavigate();
 
-    const handleAction = (e: React.MouseEvent) => {
+    const handleWishlist = (e: React.MouseEvent) => {
         e.preventDefault();
         e.stopPropagation();
+
+        if (!user) {
+            navigate("/login");
+            return;
+        }
+
+    };
+
+    const handleAddToCart = (e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (!user) {
+            navigate("/login");
+            return;
+        }
+
     };
 
     return (
@@ -51,7 +72,7 @@ const ProductCard = ({ id, title, price, image, originalPrice, rating = 4.5, isN
 
                 {/* Wishlist Button */}
                 <button
-                    onClick={handleAction}
+                    onClick={handleWishlist}
                     className="absolute top-2 md:top-4 right-2 md:right-4 p-1.5 md:p-2.5 bg-white/80 backdrop-blur-md rounded-full text-pehnava-charcoal hover:bg-pehnava-accent hover:text-white transition-all duration-300 shadow-soft group/wishlist"
                 >
                     <Heart className="w-3.5 h-3.5 md:w-4 h-4 transition-transform group-hover/wishlist:scale-110" />
@@ -62,7 +83,7 @@ const ProductCard = ({ id, title, price, image, originalPrice, rating = 4.5, isN
 
                     {/* Desktop Button */}
                     <button
-                        onClick={handleAction}
+                        onClick={handleAddToCart}
                         className="hidden md:flex w-full py-2 md:py-3 bg-pehnava-charcoal text-white text-[10px] md:text-sm font-bold rounded-xl md:rounded-2xl items-center justify-center gap-1 md:gap-2 hover:bg-pehnava-primary transition-colors shadow-large"
                     >
                         <Handbag className="w-3 h-3 md:w-4 h-4" />
@@ -71,7 +92,7 @@ const ProductCard = ({ id, title, price, image, originalPrice, rating = 4.5, isN
 
                     {/* Mobile Button (Icon Only) */}
                     <button
-                        onClick={handleAction}
+                        onClick={handleAddToCart}
                         className="md:hidden p-2 bg-pehnava-charcoal text-white rounded-full shadow-large hover:bg-pehnava-primary active:scale-95 transition-all flex items-center justify-center"
                     >
                         <Handbag className="w-3.5 h-3.5" />
