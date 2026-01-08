@@ -19,5 +19,12 @@ export const getProductByIdApi = async (id: string) => {
     return response.data
 }
 
+export const filterProductApi = async (filter: any) => {
+    const response = await api.get("product/filter", {
+        params: filter
+    });
+    return response.data
+}
+
 
 
