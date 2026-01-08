@@ -1,9 +1,12 @@
-import { products } from '../../temp/productData'
 import ProductCard from '../../components/Home/ProductCard'
 import { useNavigate } from 'react-router-dom'
+import { useGetAllProducts } from '../../services/useApiHook'
+import ProductSkeleton from './ProductSkeleton'
 
 const ProductPage = () => {
     const navigate = useNavigate();
+    const { data, isLoading } = useGetAllProducts();
+    const apiData = data?.data;
     return (
         <section className="max-w-7xl bg-pehnava-offWhite mx-auto px-4 pb-20 md:px-6">
             <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">
@@ -21,18 +24,23 @@ const ProductPage = () => {
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-8 md:gap-10">
-                {products.map(product => (
-                    <ProductCard
-                        key={product.id}
-                        id={product.id}
-                        title={product.title}
-                        price={product.price}
-                        image={product.image}
-                        originalPrice={product.originalPrice}
-                        rating={product.rating}
-                        isNew={product.isNew}
-                    />
-                ))}
+                {isLoading ? (
+                    // Show skeletons while loading
+                    [...Array(6)].map((_, index) => (
+                        <ProductSkeleton key={index} />
+                    ))
+                ) : (
+                    apiData?.map((product: any) => (
+                        <ProductCard
+                            key={product._id}
+                            id={product._id}
+                            title={product.name}
+                            price={product.discountPrice}
+                            image={product.images[0]}
+                            originalPrice={product.price}
+                        />
+                    ))
+                )}
             </div>
         </section>
     )

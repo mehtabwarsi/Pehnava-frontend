@@ -1,58 +1,43 @@
 import { useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useLocation } from 'react-router-dom';
 import { Heart, ShoppingCart, ChevronRight, Check, Truck, Shield, RefreshCw } from 'lucide-react';
 import ProductCard from '../../components/Home/ProductCard';
-import { products } from '../../temp/productData';
-import ColorSelector from '../../components/ProductDetail/ColorSelector';
 import QuantitySelector from '../../components/ProductDetail/QuantitySelector';
 import CustomerReviews from '../../components/ProductDetail/CustomerReviews';
 import RatingStars from '../../components/ProductDetail/RatingStars';
+import { useGetAllProducts, useGetProductById } from '../../services/useApiHook';
+import ProductDetailsSkeleton from '../../components/ProductDetail/ProductDetailsSkeleton';
 
 const ProductDetailsPage = () => {
     const { id } = useParams();
-    const [, setSelectedImage] = useState(0); // selectedImage is write-only for now (or for lightbox later)
+    const [selectedImage, setSelectedImage] = useState(0); // selectedImage is write-only for now (or for lightbox later)
     const [selectedSize, setSelectedSize] = useState('');
-    const [selectedColor, setSelectedColor] = useState('');
     const [quantity, setQuantity] = useState(1);
     const [isFavorited, setIsFavorited] = useState(false);
 
-    // Mock product data - in real app, fetch based on id
+    const { data: productData, isLoading: isProductLoading } = useGetProductById(id || '');
+    const { data: suggestedProductsData, isLoading: isSuggestedLoading } = useGetAllProducts();
+
+    const productApiData = productData?.data;
+    const suggestedProducts = suggestedProductsData?.data;
+
+
+    const location = useLocation();
+    const pathnames = location.pathname.split("/").filter(Boolean);
+
     const product = {
         id: id || '1',
-        title: 'Premium Cotton Kurta',
-        price: 2499,
-        originalPrice: 3999,
+        title: productApiData?.name,
+        price: productApiData?.discountPrice,
+        originalPrice: productApiData?.price,
         rating: 4.5,
         reviews: 128,
-        description: 'Elevate your traditional wardrobe with this premium cotton kurta. Crafted from the finest quality fabric, this piece combines comfort with style. Perfect for festive occasions, weddings, or casual gatherings.',
-        images: [
-            'https://assets-jiocdn.ajio.com/medias/sys_master/root1/20251222/BQCJ/69493302239b37265a93f53b/-473Wx593H-442767969-black-MODEL3.jpg',
-            'https://assets-jiocdn.ajio.com/medias/sys_master/root1/20251222/TIS8/69494149239b37265a95d77c/-473Wx593H-442767969-black-MODEL4.jpg',
-            'https://assets-jiocdn.ajio.com/medias/sys_master/root1/20251222/2Cxh/69493f73720fb821d3a34993/-473Wx593H-442767969-black-MODEL5.jpg',
-            'https://assets-jiocdn.ajio.com/medias/sys_master/root1/20251222/ypWB/6949431c720fb821d3a3b063/-473Wx593H-442767969-black-MODEL6.jpg',
-            'https://assets-jiocdn.ajio.com/medias/sys_master/root1/20251222/NuE6/694930fc720fb821d3a17b6e/-473Wx593H-442767969-black-MODEL7.jpg'
-        ],
-        sizes: ['S', 'M', 'L', 'XL', 'XXL'],
-        colors: [
-            { name: 'Navy Blue', code: '#1e3a8a' },
-            { name: 'Maroon', code: '#7f1d1d' },
-            { name: 'Emerald', code: '#065f46' },
-            { name: 'White', code: '#ffffff' },
-        ],
-        features: [
-            'Premium 100% Cotton Fabric',
-            'Traditional Embroidery Work',
-            'Comfortable Regular Fit',
-            'Easy Machine Wash',
-        ],
-        specifications: {
-            'Material': '100% Cotton',
-            'Fit': 'Regular',
-            'Pattern': 'Solid',
-            'Sleeve': 'Full Sleeve',
-            'Occasion': 'Festive & Casual',
-            'Care': 'Machine Wash',
-        }
+        description: productApiData?.description,
+        images: productApiData?.images,
+        sizes: productApiData?.variants?.map((variant: any) => variant.size),
+        colors: productApiData?.variants?.map((variant: any) => variant.color),
+        features: productApiData?.features,
+        specifications: productApiData?.specifications,
     };
 
     const discount = Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100);
@@ -65,6 +50,18 @@ const ProductDetailsPage = () => {
     };
 
 
+    if (isProductLoading || isSuggestedLoading) {
+        return <ProductDetailsSkeleton />;
+    }
+
+    if (!productApiData) {
+        return (
+            <div className="min-h-screen bg-pehnava-offWhite flex flex-col items-center justify-center gap-4">
+                <h1 className="text-2xl font-bold text-pehnava-charcoal">Product not found</h1>
+                <Link to="/shop" className="text-pehnava-primary hover:underline">Back to Shop</Link>
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-pehnava-offWhite">
@@ -85,7 +82,7 @@ const ProductDetailsPage = () => {
                     {/* Image Gallery - Grid Layout */}
                     <div className="w-full lg:w-[55%] space-y-4">
                         <div className="flex overflow-x-auto snap-x snap-mandatory md:grid md:grid-cols-2 gap-4 no-scrollbar pb-4 md:pb-0">
-                            {product.images.map((image, index) => (
+                            {product.images?.map((image: string, index: number) => (
                                 <div
                                     key={index}
                                     className="relative flex-shrink-0 w-[85vw] md:w-auto md:aspect-[3/4] bg-white rounded-md overflow-hidden  group cursor-pointer snap-center"
@@ -96,24 +93,6 @@ const ProductDetailsPage = () => {
                                         alt={`${product.title} ${index + 1}`}
                                         className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                                     />
-
-                                    {/* Overlays: Currently on first image. Can be adapted for all images in carousel if requested. */}
-                                    {index === 0 && (
-                                        <>
-                                            <button
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    setIsFavorited(!isFavorited);
-                                                }}
-                                                className={`absolute top-4 right-4 p-3 rounded-full backdrop-blur-md shadow-medium transition-all duration-300 ${isFavorited
-                                                    ? 'bg-pehnava-accent text-white scale-110'
-                                                    : 'bg-white/80 text-pehnava-charcoal hover:bg-pehnava-accent hover:text-white'
-                                                    }`}
-                                            >
-                                                <Heart className={`w-5 h-5 ${isFavorited ? 'fill-current' : ''}`} />
-                                            </button>
-                                        </>
-                                    )}
                                 </div>
                             ))}
                         </div>
@@ -131,10 +110,10 @@ const ProductDetailsPage = () => {
                             {/* Price */}
                             <div className="flex items-baseline gap-3">
                                 <span className="text-3xl md:text-4xl font-bold text-slate-600">
-                                    ₹{product.price.toLocaleString('en-IN')}
+                                    ₹{product.price?.toLocaleString('en-IN')}
                                 </span>
                                 <span className="text-xl text-slate-600 line-through">
-                                    ₹{product.originalPrice.toLocaleString('en-IN')}
+                                    ₹{product.originalPrice?.toLocaleString('en-IN')}
                                 </span>
                                 <span className="px-3 py-1 bg-pehnava-accent/10 text-pehnava-accent text-sm font-bold rounded-full">
                                     Save {discount}%
@@ -147,11 +126,11 @@ const ProductDetailsPage = () => {
                             {product.description}
                         </p>
 
-                        <ColorSelector
+                        {/* <ColorSelector
                             colors={product.colors}
                             selectedColor={selectedColor}
                             setSelectedColor={setSelectedColor}
-                        />
+                        /> */}
 
                         {/* Size Selection */}
                         <div>
@@ -159,7 +138,7 @@ const ProductDetailsPage = () => {
                                 Select Size
                             </h3>
                             <div className="flex flex-wrap gap-2 md:gap-3">
-                                {product.sizes.map((size) => (
+                                {product?.sizes?.map((size) => (
                                     <button
                                         key={size}
                                         onClick={() => setSelectedSize(size)}
@@ -168,7 +147,7 @@ const ProductDetailsPage = () => {
                                             : 'bg-white text-pehnava-charcoal ring-1 ring-pehnava-border hover:ring-pehnava-primary shadow-soft'
                                             }`}
                                     >
-                                        {size}
+                                        {size.toUpperCase()}
                                     </button>
                                 ))}
                             </div>
@@ -237,7 +216,7 @@ const ProductDetailsPage = () => {
                     <div className="bg-white rounded-2xl p-5 md:p-8 shadow-medium">
                         <h2 className="text-2xl font-bold text-pehnava-charcoal mb-6">Product Features</h2>
                         <ul className="space-y-3">
-                            {product.features.map((feature, index) => (
+                            {product?.features?.map((feature: any, index: number) => (
                                 <li key={index} className="flex items-start gap-3">
                                     <div className="p-1 bg-pehnava-primary/10 rounded-full mt-0.5">
                                         <Check className="w-4 h-4 text-pehnava-primary" />
@@ -252,10 +231,10 @@ const ProductDetailsPage = () => {
                     <div className="bg-white rounded-2xl p-5 md:p-8 shadow-medium">
                         <h2 className="text-2xl font-bold text-pehnava-charcoal mb-6">Specifications</h2>
                         <dl className="space-y-3">
-                            {Object.entries(product.specifications).map(([key, value]) => (
+                            {Object.entries(product.specifications || {}).map(([key, value]) => (
                                 <div key={key} className="flex justify-between py-3 border-b border-pehnava-border last:border-0">
-                                    <dt className="text-pehnava-slate font-medium text-sm md:text-base">{key}</dt>
-                                    <dd className="text-pehnava-charcoal font-bold text-sm md:text-base">{value}</dd>
+                                    <dt className="text-pehnava-slate font-medium capitalize text-sm md:text-base">{key}</dt>
+                                    <dd className="text-pehnava-charcoal font-bold capitalize text-sm md:text-base">{value}</dd>
                                 </div>
                             ))}
                         </dl>
@@ -267,16 +246,14 @@ const ProductDetailsPage = () => {
                 <div className="mt-16 md:mt-24">
                     <h2 className="text-2xl md:text-3xl font-bold text-pehnava-charcoal mb-8">You May Also Like</h2>
                     <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
-                        {products.slice(0, 8).map((item) => (
+                        {(suggestedProducts || []).slice(0, 8).map((item: any) => (
                             <ProductCard
                                 key={item.id}
                                 id={item.id}
-                                title={item.title}
-                                price={item.price}
-                                image={item.image}
-                                originalPrice={item.originalPrice}
-                                rating={item.rating}
-                                isNew={item.isNew}
+                                title={item.name}
+                                price={item.discountPrice}
+                                image={item.images[0]}
+                                originalPrice={item.price}
                             />
                         ))}
                     </div>
