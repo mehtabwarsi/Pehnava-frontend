@@ -15,7 +15,7 @@ const ProductPage = () => {
                         Featured <span className="text-pehnava-primary">Products</span>
                     </h2>
                     <p className="text-pehnava-slate max-w-md text-sm md:text-base">
-                        Discover our top-rated arrivals and latest trends in contemporary menswear.
+                        Discover our top-rated arrivals and latest trends in contemporary traditional wear.
                     </p>
                 </div>
                 <button onClick={() => navigate("/shop")} className="text-pehnava-primary font-bold hover:underline transition-all text-sm md:text-base">

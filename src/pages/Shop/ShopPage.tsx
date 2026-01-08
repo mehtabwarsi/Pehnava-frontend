@@ -1,15 +1,26 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import ProductCard from "../../components/Home/ProductCard";
 import { products } from "../../temp/productData";
 import { SlidersHorizontal, ChevronDown, Filter } from "lucide-react";
 
 const ShopPage = () => {
+    const [searchParams] = useSearchParams();
     const [sort, setSort] = useState("default");
     const [category, setCategory] = useState("all");
+    const [gender, setGender] = useState(searchParams.get("gender") || "all");
+
+    // Sync state with URL params
+    useEffect(() => {
+        const genderParam = searchParams.get("gender") || "all";
+        setGender(genderParam);
+    }, [searchParams]);
 
     // FILTER
     let filteredProducts = products.filter((p: any) => {
-        return category === "all" ? true : p.category === category;
+        const categoryMatch = category === "all" ? true : p.category === category;
+        const genderMatch = gender === "all" ? true : p.gender === gender;
+        return categoryMatch && genderMatch;
     });
 
     // SORT
@@ -79,7 +90,7 @@ const ShopPage = () => {
                                                 key={item}
                                                 onClick={() => setCategory(item)}
                                                 className={`px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-medium transition-all duration-300 capitalize whitespace-nowrap border ${category === item
-                                                    ? "bg-pehnava-charcoal text-white border-pehnava-charcoal shadow-lg transform scale-105"
+                                                    ? "bg-pehnava-primary text-white border-pehnava-primary shadow-lg transform scale-105"
                                                     : "bg-white text-pehnava-slate border-pehnava-border hover:border-pehnava-charcoal"
                                                     }`}
                                             >

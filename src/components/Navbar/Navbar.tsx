@@ -1,4 +1,4 @@
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useLocation } from "react-router-dom";
 import { useState } from "react";
 import { Search, UserRound, Menu, X, ShoppingCart } from "lucide-react";
 
@@ -11,50 +11,54 @@ const Navbar = () => {
 
     const NAV_ITEMS = [
         { label: "Home", path: "/" },
-        { label: "Shop", path: "/shop" },
+        { label: "Men", path: "/shop?gender=men" },
+        { label: "Women", path: "/shop?gender=women" },
         { label: "Collections", path: "/collections" },
-        { label: "About", path: "/about" },
     ];
 
-    const DesktopNavItem = ({ to, label }: any) => (
-        <NavLink
-            to={to}
-            className={({ isActive }) =>
-                `relative px-4 py-2 text-sm font-semibold uppercase tracking-wider transition-all duration-300 rounded-lg ${isActive
+    const DesktopNavItem = ({ to, label }: any) => {
+        const location = useLocation();
+        const isActive = location.pathname + location.search === to;
+
+        return (
+            <NavLink
+                to={to}
+                className={`relative px-4 py-2 text-sm font-semibold uppercase tracking-wider transition-all duration-300 rounded-lg ${isActive
                     ? "text-pehnava-primary bg-pehnava-primary/10"
                     : "text-pehnava-darkSlate hover:text-pehnava-primary hover:bg-pehnava-lightGray"
-                }`
-            }
-        >
-            {({ isActive }) => (
+                    }`}
+            >
                 <>
                     {label}
                     {isActive && (
                         <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1 h-1 bg-pehnava-primary rounded-full animate-fadeIn"></span>
                     )}
                 </>
-            )}
-        </NavLink>
-    );
+            </NavLink>
+        );
+    };
 
 
-    const MobileNavItem = ({ to, label, close }: any) => (
-        <NavLink
-            to={to}
-            onClick={close}
-            className={({ isActive }) =>
-                `flex items-center justify-between px-4 py-3 rounded-xl font-semibold transition-all ${isActive
+    const MobileNavItem = ({ to, label, close }: any) => {
+        const location = useLocation();
+        const isActive = location.pathname + location.search === to;
+
+        return (
+            <NavLink
+                to={to}
+                onClick={close}
+                className={`flex items-center justify-between px-4 py-3 rounded-xl font-semibold transition-all ${isActive
                     ? "bg-pehnava-primary text-white"
                     : "text-pehnava-darkSlate hover:bg-pehnava-lightGray"
-                }`
-            }
-        >
-            <span>{label}</span>
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-        </NavLink>
-    );
+                    }`}
+            >
+                <span>{label}</span>
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+            </NavLink>
+        );
+    };
 
     return (
         <nav className="sticky top-0 z-50 bg-pehnava-white/80 backdrop-blur-xl shadow-medium border-b border-pehnava-border">
