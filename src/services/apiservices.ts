@@ -26,5 +26,19 @@ export const filterProductApi = async (filter: any) => {
     return response.data
 }
 
+export const getGenderApi = async () => {
+    const response = await api.get("category");
+    return response.data
+}
+
+export const getCategoryApi = async (genderId: string) => {
+    const response = await api.get("category/subcategory", {
+        params: {
+            genderId
+        }
+    });
+    return response.data
+}
+
 
 

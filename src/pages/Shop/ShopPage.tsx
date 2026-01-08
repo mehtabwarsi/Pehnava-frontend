@@ -1,8 +1,8 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import ProductCard from "../../components/Home/ProductCard";
-import { SlidersHorizontal, ChevronDown, Filter, ShoppingBag, X, Sparkles } from "lucide-react";
-import { useFilterProduct } from "../../services/useApiHook";
+import { SlidersHorizontal, ChevronDown, ShoppingBag, X, Sparkles } from "lucide-react";
+import { useFilterProduct, useGetCategory, useGetGender } from "../../services/useApiHook";
 
 const ShopPage = () => {
     const [searchParams, setSearchParams] = useSearchParams();
@@ -13,6 +13,22 @@ const ShopPage = () => {
     // Use URL params directly for gender (which matches 'category' in backend)
     const gender = searchParams.get("gender") || "all";
 
+    // Reset subCategory when gender changes
+    useEffect(() => {
+        setSubCategory("all");
+    }, [gender]);
+
+    const { data: genderData } = useGetGender();
+
+    // Derive genderId from name (case-insensitive)
+    const genderId = useMemo(() => {
+        if (!genderData?.data) return undefined;
+        return genderData.data.find(
+            (item: any) => item.name.toLowerCase() === gender.toLowerCase()
+        )?._id;
+    }, [genderData, gender]);
+
+    const { data: categoryData } = useGetCategory(genderId);
     // Stable filter object for the API hook
     const filter = useMemo(() => ({
         category: gender === "all" ? undefined : gender,
@@ -26,7 +42,12 @@ const ShopPage = () => {
     // ApiResponse usually has data.data as the products array
     const apiProducts = data?.data || [];
 
-    const categories = ["all", "shirt", "tshirt", "pant", "jacket"];
+    const categories = useMemo(() => {
+        const fetched = categoryData?.data?.map((item: any) => item.name) || [];
+        return ["all", ...fetched];
+    }, [categoryData]);
+
+
 
     const handleGenderChange = (newGender: string) => {
         if (newGender === "all") {
@@ -78,18 +99,26 @@ const ShopPage = () => {
                                 <div className="w-full md:w-auto overflow-x-auto no-scrollbar">
                                     <div className="flex flex-row items-center gap-2 min-w-max">
                                         <span className="text-xs font-bold text-pehnava-charcoal uppercase tracking-widest min-w-[60px]">Type:</span>
-                                        {categories.map((item) => (
-                                            <button
-                                                key={item}
-                                                onClick={() => setSubCategory(item)}
-                                                className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all duration-300 capitalize whitespace-nowrap border ${subCategory === item
-                                                    ? "bg-pehnava-primary text-white border-pehnava-primary shadow-lg"
-                                                    : "bg-white text-pehnava-slate border-pehnava-border hover:border-pehnava-charcoal"
-                                                    }`}
-                                            >
-                                                {item}
-                                            </button>
-                                        ))}
+                                        {(gender === "all") ? (
+                                            <span className="text-[10px] text-pehnava-slate italic">Select a gender to see types</span>
+                                        ) : (categoryData === undefined) ? (
+                                            <div className="flex gap-2 animate-pulse">
+                                                {[1, 2, 3].map(i => <div key={i} className="h-7 w-16 bg-pehnava-lightGray rounded-full" />)}
+                                            </div>
+                                        ) : (
+                                            categories.map((item) => (
+                                                <button
+                                                    key={`${gender}-${item}`}
+                                                    onClick={() => setSubCategory(item)}
+                                                    className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all duration-300 capitalize whitespace-nowrap border ${subCategory === item
+                                                        ? "bg-pehnava-primary text-white border-pehnava-primary shadow-lg"
+                                                        : "bg-white text-pehnava-slate border-pehnava-border hover:border-pehnava-charcoal"
+                                                        }`}
+                                                >
+                                                    {item}
+                                                </button>
+                                            ))
+                                        )}
 
                                         <div className="h-6 w-px bg-pehnava-border/50 mx-2" />
 
