@@ -1,11 +1,13 @@
 import { ChevronLeft, MapPin, User, Home, Briefcase, Info, Loader2 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import { useState } from "react";
-import { useAddAddress } from "../../../services/useApiHook";
+import { useNavigate, useParams } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useGetAddresses, useUpdateAddress } from "../../../services/useApiHook";
 
-const AddAddressPage = () => {
+const EditAddressPage = () => {
     const navigate = useNavigate();
-    const { mutate: addAddress, isPending } = useAddAddress();
+    const { id } = useParams();
+    const { data: addressResponse, isLoading } = useGetAddresses();
+    const { mutate: updateAddress, isPending } = useUpdateAddress();
 
     const [formData, setFormData] = useState({
         fullName: "",
@@ -18,6 +20,27 @@ const AddAddressPage = () => {
         addressType: "Home",
         isDefault: false
     });
+
+    useEffect(() => {
+        if (addressResponse?.data) {
+            const address = addressResponse.data.find((addr: any) => addr._id === id);
+            if (address) {
+                // Split street into houseNo and area if possible, or just put it in houseNo
+                const streetParts = address.street.split(", ");
+                setFormData({
+                    fullName: address.fullName || "",
+                    phone: address.phone || "",
+                    pincode: address.pincode || "",
+                    houseNo: streetParts[0] || "",
+                    area: streetParts.slice(1).join(", ") || "",
+                    city: address.city || "",
+                    state: address.state || "",
+                    addressType: address.addressType === "Office" ? "Work" : address.addressType,
+                    isDefault: address.isDefault || false
+                });
+            }
+        }
+    }, [addressResponse, id]);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value, type, checked } = e.target;
@@ -46,11 +69,11 @@ const AddAddressPage = () => {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
-        // Map frontend "Work" to backend "Office" as per schema enum ["Home", "Office", "Other"]
+        // Map frontend "Work" back to "Office" for the backend
         const finalAddressType = formData.addressType === "Work" ? "Office" : formData.addressType;
 
-        // Construct data according to Mongoose schema
         const addressData = {
+            _id: id,
             fullName: formData.fullName,
             phone: formData.phone,
             street: `${formData.houseNo}, ${formData.area}`,
@@ -59,19 +82,26 @@ const AddAddressPage = () => {
             pincode: formData.pincode,
             addressType: finalAddressType,
             isDefault: formData.isDefault,
-            country: "India" // Default as per schema
+            country: "India"
         };
 
-        addAddress(addressData, {
+        updateAddress(addressData, {
             onSuccess: () => {
                 navigate(-1);
             },
             onError: (error) => {
-                console.error("Failed to add address:", error);
-                // You could add a toast notification here
+                console.error("Failed to update address:", error);
             }
         });
     };
+
+    if (isLoading) {
+        return (
+            <div className="min-h-screen bg-pehnava-offWhite flex items-center justify-center">
+                <Loader2 className="w-10 h-10 animate-spin text-pehnava-primary" />
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-pehnava-offWhite pt-6 pb-24 sm:pt-12 sm:pb-32 px-4 sm:px-6 lg:px-8 font-sans">
@@ -85,8 +115,8 @@ const AddAddressPage = () => {
                         <ChevronLeft className="w-6 h-6 text-pehnava-charcoal" />
                     </button>
                     <div>
-                        <h1 className="text-2xl sm:text-3xl font-bold text-pehnava-charcoal">Add New Address</h1>
-                        <p className="text-pehnava-slate text-sm font-medium">Be sure to check your delivery details</p>
+                        <h1 className="text-2xl sm:text-3xl font-bold text-pehnava-charcoal">Edit Address</h1>
+                        <p className="text-pehnava-slate text-sm font-medium">Update your delivery information</p>
                     </div>
                 </div>
 
@@ -265,7 +295,7 @@ const AddAddressPage = () => {
                                 disabled={isPending}
                                 className={`w-full py-4 rounded-2xl bg-pehnava-primary text-white font-bold text-lg hover:bg-pehnava-charcoal transition-all shadow-lg active:scale-[0.98] ${isPending ? "opacity-70 cursor-not-allowed" : ""}`}
                             >
-                                {isPending ? "Saving..." : "Save Address"}
+                                {isPending ? "Saving Changes..." : "Save Changes"}
                             </button>
                         </div>
                     </form>
@@ -275,4 +305,4 @@ const AddAddressPage = () => {
     );
 };
 
-export default AddAddressPage;
+export default EditAddressPage;

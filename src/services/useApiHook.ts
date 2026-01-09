@@ -1,6 +1,20 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { filterProductApi, getAllProductsApi, getCategoryApi, getGenderApi, getProductByIdApi } from "./publicapiservice"
-import { addToWishListApi, getWishListApi } from "./privateapiservices"
+import {
+    filterProductApi,
+    getAllProductsApi,
+    getCategoryApi,
+    getGenderApi,
+    getProductByIdApi
+} from "./publicapiservice"
+import {
+    addAddressApi,
+    addToWishListApi,
+    deleteAddressByIdApi,
+    getAddressesApi,
+    getWishListApi,
+    setDefaultAddressApi,
+    updateAddressApi
+} from "./privateapiservices"
 
 export const useGetAllProducts = () => {
     return useQuery({
@@ -60,4 +74,51 @@ export const useAddToWishList = () => {
     })
 }
 
+// address api
 
+export const useGetAddresses = () => {
+    return useQuery({
+        queryKey: ["addresses"],
+        queryFn: () => getAddressesApi(),
+    })
+}
+
+export const useAddAddress = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (addressData: any) => addAddressApi(addressData),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["addresses"] });
+        },
+    })
+}
+
+export const useUpdateAddress = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (addressData: any) => updateAddressApi(addressData),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["addresses"] });
+        },
+    })
+}
+
+export const useDeleteAddress = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (addressId: string | number) => deleteAddressByIdApi(addressId),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["addresses"] });
+        },
+    })
+}
+
+export const useSetDefaultAddress = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (addressId: string | number) => setDefaultAddressApi(addressId),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["addresses"] });
+        },
+    })
+}

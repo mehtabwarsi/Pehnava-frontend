@@ -13,6 +13,7 @@ import ScrollToTop from "../utils/ScrollToTop";
 import OtpVerifyPage from "../pages/Auth/OtpVerifyPage";
 import AddressPage from "../pages/Profile/address/AddressPage";
 import AddAddressPage from "../pages/Profile/address/AddAddressPage";
+import EditAddressPage from "../pages/Profile/address/EditAddressPage";
 import WishListPage from "../pages/Profile/WishList/WishListPage";
 
 const AppRoutes = () => {
@@ -69,6 +70,14 @@ const AppRoutes = () => {
                         element={
                             <ProtectedRoute>
                                 <AddAddressPage />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="profile/address/edit/:id"
+                        element={
+                            <ProtectedRoute>
+                                <EditAddressPage />
                             </ProtectedRoute>
                         }
                     />
