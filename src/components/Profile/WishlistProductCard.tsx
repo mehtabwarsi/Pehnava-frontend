@@ -1,6 +1,6 @@
-import { X, ShoppingCart } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
-import { useAddToWishList, useAddToCart, useGetCart } from "../../services/useApiHook";
+import { X } from "lucide-react";
+import { Link } from "react-router-dom";
+import { useAddToWishList } from "../../services/useApiHook";
 
 type WishlistProductCardProps = {
     id: string | number;
@@ -13,9 +13,6 @@ type WishlistProductCardProps = {
 const WishlistProductCard = ({ id, title, price, image, originalPrice }: WishlistProductCardProps) => {
     // const dispatch = useDispatch();
     const { mutate: toggleWishlist } = useAddToWishList();
-    const { mutate: addToCart } = useAddToCart();
-    const { data: cartData } = useGetCart();
-    const navigate = useNavigate();
     const discount = originalPrice ? Math.round(((originalPrice - price) / originalPrice) * 100) : null;
 
     const handleRemove = (e: React.MouseEvent) => {
@@ -24,21 +21,6 @@ const WishlistProductCard = ({ id, title, price, image, originalPrice }: Wishlis
         toggleWishlist(id);
     };
 
-    const handleMoveToCart = (e: React.MouseEvent) => {
-        e.preventDefault();
-        e.stopPropagation();
-
-        const isInCart = cartData?.data?.items?.some((item: any) => item.product._id === id);
-
-        if (isInCart) {
-            navigate("/cart");
-        } else {
-            addToCart({
-                productId: id,
-                quantity: 1
-            });
-        }
-    };
 
     return (
         <div className="group relative bg-white rounded-2xl overflow-hidden shadow-soft hover:shadow-large transition-all duration-500 border border-pehnava-border/30 hover:border-pehnava-primary/20 flex flex-col h-full">
@@ -59,24 +41,6 @@ const WishlistProductCard = ({ id, title, price, image, originalPrice }: Wishlis
                     <X className="w-4 h-4" />
                 </button>
 
-                {/* Move to Bag Quick Action */}
-                <div className="absolute inset-x-0 bottom-0 p-3 translate-y-full group-hover:translate-y-0 transition-transform duration-300 flex justify-center">
-                    <button
-                        onClick={handleMoveToCart}
-                        className={`p-2 sm:p-2.5 rounded-full shadow-soft hover:shadow-glow transition-all active:scale-95 cursor-pointer flex items-center gap-1.5 px-3 sm:px-4 ${cartData?.data?.items?.some((item: any) => item.product._id === id)
-                            ? "bg-pehnava-primary text-white"
-                            : "bg-pehnava-charcoal text-white hover:bg-pehnava-primary"
-                            }`}
-                    >
-                        <ShoppingCart className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                        <span className="hidden sm:inline-block text-[10px] sm:text-xs font-bold whitespace-nowrap">
-                            {cartData?.data?.items?.some((item: any) => item.product._id === id)
-                                ? "Go to Bag"
-                                : "Move to Bag"
-                            }
-                        </span>
-                    </button>
-                </div>
             </Link>
 
             {/* Content Section */}

@@ -1,8 +1,8 @@
-import { Heart, Star, ShoppingCart, ShoppingBag } from "lucide-react";
+import { Heart, Star } from "lucide-react";
 import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import type { RootState } from "../../redux/store";
-import { useAddToCart, useAddToWishList, useGetCart, useGetWishList } from "../../services/useApiHook";
+import { useAddToWishList, useGetWishList } from '../../services/useApiHook';
 
 type ProductCardProps = {
     id: string | number;
@@ -19,8 +19,6 @@ const ProductCard = ({ id, title, price, image, originalPrice, rating = 4.5, isN
     const navigate = useNavigate();
 
     const { user } = useSelector((state: RootState) => state.auth);
-    const { mutate: addToCart } = useAddToCart();
-    const { data: cartData } = useGetCart();
     const { data: wishlistData } = useGetWishList({
         enabled: !!user,
     });
@@ -37,27 +35,6 @@ const ProductCard = ({ id, title, price, image, originalPrice, rating = 4.5, isN
         }
 
         addToWishList(id);
-    };
-
-    const handleAddToCart = (e: React.MouseEvent) => {
-        e.preventDefault();
-        e.stopPropagation();
-
-        if (!user) {
-            navigate("/login");
-            return;
-        }
-
-        const isInCart = cartData?.data?.items?.some((item: any) => item.product._id === id);
-
-        if (isInCart) {
-            navigate("/cart");
-        } else {
-            addToCart({
-                productId: id,
-                quantity: 1
-            });
-        }
     };
 
     return (
@@ -99,23 +76,6 @@ const ProductCard = ({ id, title, price, image, originalPrice, rating = 4.5, isN
                 </button>
 
                 {/* Quick Add Button - Desktop Hover / Mobile Icon */}
-                <div className="absolute right-2 bottom-2 md:inset-x-4 md:bottom-4 z-10 transition-all duration-500 md:translate-y-12 md:opacity-0 md:group-hover:translate-y-0 md:group-hover:opacity-100">
-                    <button
-                        onClick={handleAddToCart}
-                        className={`p-2 sm:p-2.5 rounded-full shadow-soft hover:shadow-glow transition-all active:scale-95 cursor-pointer flex items-center gap-1.5 px-3 sm:px-4 ${cartData?.data?.items?.some((item: any) => item.product._id === id)
-                            ? "bg-pehnava-primary text-white"
-                            : "bg-pehnava-charcoal text-white hover:bg-pehnava-primary"
-                            }`}
-                    >
-                        <ShoppingBag className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                        <span className="hidden sm:inline-block text-[10px] sm:text-xs font-bold whitespace-nowrap">
-                            {cartData?.data?.items?.some((item: any) => item.product._id === id)
-                                ? "Go to Bag"
-                                : "Move to Bag"
-                            }
-                        </span>
-                    </button>
-                </div>
             </div>
 
             {/* Content */}

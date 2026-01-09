@@ -7,6 +7,8 @@ const CartPage = () => {
     const { mutate: updateQuantity } = useUpdateCartQuantity();
     const { mutate: removeProduct } = useRemoveFromCart();
 
+    console.log(cartData);
+
     const items = cartData?.data?.items || [];
     const subtotal = items.reduce((acc: number, item: any) => acc + (item.product.discountPrice * item.quantity), 0);
     const taxEstimate = Math.round(subtotal * 0.05); // 5% tax example
@@ -89,21 +91,43 @@ const CartPage = () => {
                                                     </h3>
                                                 </Link>
                                                 <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1">
-                                                    {(item.size || item.color) && (
-                                                        <div className="flex items-center gap-2">
-                                                            {item.size && (
-                                                                <span className="text-[10px] sm:text-xs font-bold text-pehnava-charcoal bg-pehnava-offWhite px-2 py-0.5 rounded border border-pehnava-border/30">
-                                                                    Size: {item.size.toUpperCase()}
-                                                                </span>
-                                                            )}
-                                                            {item.color && (
-                                                                <span className="text-[10px] sm:text-xs font-medium text-pehnava-slate flex items-center gap-1.5 uppercase tracking-wider">
-                                                                    <span className="w-2 h-2 rounded-full border border-black/10" style={{ backgroundColor: item.color }}></span>
-                                                                    {item.color}
-                                                                </span>
-                                                            )}
-                                                        </div>
-                                                    )}
+                                                    {(() => {
+                                                        // Fallback logic order: item.variant object -> item top-level props -> product variant fallback
+                                                        const variantObj = item.variant;
+                                                        const productVariants = item.product.variants;
+
+                                                        const displaySize = variantObj?.size || item.size;
+                                                        // Try to find color in this order:
+                                                        // 1. Direct variant object from cart item
+                                                        // 2. Direct color prop on cart item
+                                                        // 3. Find matching variant in product variants list by size
+                                                        // 4. Fallback to first variant's color
+                                                        const displayColor = variantObj?.color ||
+                                                            item.color ||
+                                                            productVariants?.find((v: any) => v.size === displaySize)?.color ||
+                                                            productVariants?.[0]?.color;
+
+                                                        if (!displaySize && !displayColor) return null;
+
+                                                        return (
+                                                            <div className="flex items-center gap-2">
+                                                                {displaySize && (
+                                                                    <span className="text-[10px] sm:text-xs font-bold text-pehnava-charcoal bg-pehnava-offWhite px-2 py-0.5 rounded border border-pehnava-border/30">
+                                                                        Size: {displaySize.toUpperCase()}
+                                                                    </span>
+                                                                )}
+                                                                {displayColor && (
+                                                                    <span className="text-[10px] sm:text-xs font-medium text-pehnava-slate flex items-center gap-1.5 uppercase tracking-wider">
+                                                                        <span
+                                                                            className="w-2 h-2 rounded-full border border-black/10"
+                                                                            style={{ backgroundColor: displayColor }}
+                                                                        ></span>
+                                                                        {displayColor}
+                                                                    </span>
+                                                                )}
+                                                            </div>
+                                                        );
+                                                    })()}
                                                     {item.product.price > item.product.discountPrice && (
                                                         <span className="text-[10px] sm:text-xs font-bold text-green-600 bg-green-50 px-2 py-0.5 rounded border border-green-100">
                                                             {Math.round(((item.product.price - item.product.discountPrice) / item.product.price) * 100)}% OFF

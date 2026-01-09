@@ -1,8 +1,8 @@
 import { useState } from 'react';
+import { toast } from 'react-hot-toast';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Heart, ChevronRight, Check, Truck, Shield, RefreshCw, ShoppingBag } from 'lucide-react';
 import ProductCard from '../../components/Home/ProductCard';
-import QuantitySelector from '../../components/ProductDetail/QuantitySelector';
 import CustomerReviews from '../../components/ProductDetail/CustomerReviews';
 import RatingStars from '../../components/ProductDetail/RatingStars';
 import { useGetAllProducts, useGetProductById, useAddToWishList, useGetWishList, useAddToCart, useGetCart } from '../../services/useApiHook';
@@ -15,7 +15,9 @@ const ProductDetailsPage = () => {
     const navigate = useNavigate();
 
     const [selectedSize, setSelectedSize] = useState('');
-    const [quantity, setQuantity] = useState(1);
+    const [showError, setShowError] = useState(false);
+
+
 
     const { user } = useSelector((state: RootState) => state.auth);
     const { data: wishlistData } = useGetWishList({
@@ -50,13 +52,6 @@ const ProductDetailsPage = () => {
 
     const discount = Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100);
 
-    const handleQuantityChange = (delta: number) => {
-        const newQuantity = quantity + delta;
-        if (newQuantity >= 1 && newQuantity <= 10) {
-            setQuantity(newQuantity);
-        }
-    };
-
     const handleWishlist = (e: React.MouseEvent) => {
         e.preventDefault();
         e.stopPropagation();
@@ -80,16 +75,32 @@ const ProductDetailsPage = () => {
             return;
         }
 
-        const isInCart = cartData?.data?.items?.some((item: any) => item.product._id === product.id);
+        // Check if the specific size variant is already in the cart
+        const isVariantInCart = cartData?.data?.items?.some((item: any) =>
+            item.product._id === product.id &&
+            (item.size === selectedSize || item.variant?.size === selectedSize)
+        );
 
-        if (isInCart) {
+        if (isVariantInCart) {
             navigate("/cart");
         } else {
+            // Find variant for selected size to get color
+            const selectedVariant = productApiData?.variants?.find((v: any) => v.size === selectedSize);
+            const selectedColor = selectedVariant?.color || product.colors?.[0]; // Fallback to first color if no match
+
+            if (!selectedSize || !selectedColor) {
+                setShowError(true);
+                return;
+            }
+            setShowError(false);
+
             addToCart({
                 productId: product.id,
-                quantity,
-                size: selectedSize
-            });
+                quantity: 1,
+                size: selectedSize,
+                color: selectedColor,
+                price: product.price
+            } as any); // Type assertion until hook types are updated
         }
     };
 
@@ -186,11 +197,14 @@ const ProductDetailsPage = () => {
                                 {product?.sizes?.map((size: any) => (
                                     <button
                                         key={size}
-                                        onClick={() => setSelectedSize(size)}
-                                        className={`px - 4 py - 2 text - sm md: px - 6 md: py - 3 md: text - base rounded - xl font - bold transition - all duration - 300 ${selectedSize === size
-                                            ? 'bg-pehnava-primary text-white shadow-large scale-105'
-                                            : 'bg-white text-pehnava-charcoal ring-1 ring-pehnava-border hover:ring-pehnava-primary shadow-soft'
-                                            } `}
+                                        onClick={() => {
+                                            setSelectedSize(size);
+                                            setShowError(false);
+                                        }}
+                                        className={`w-12 h-12 flex items-center justify-center rounded-full font-bold transition-all duration-300 ${selectedSize === size
+                                            ? 'bg-pehnava-primary text-white shadow-glow scale-110'
+                                            : 'bg-white text-pehnava-charcoal border border-pehnava-border hover:border-pehnava-primary hover:text-pehnava-primary shadow-soft'
+                                            }`}
                                     >
                                         {size.toUpperCase()}
                                     </button>
@@ -198,37 +212,49 @@ const ProductDetailsPage = () => {
                             </div>
                         </div>
 
-                        {/* Quantity */}
-                        <QuantitySelector
-                            quantity={quantity}
-                            onChange={handleQuantityChange}
-                        />
 
-                        {/* Action Buttons - Myntra Style */}
-                        <div className="flex gap-2 md:gap-4 pt-4 border-t border-pehnava-border">
-                            <button
-                                onClick={handleAddToCart}
-                                className={`flex-[1.5] flex items-center justify-center gap-2 md:gap-3 px-4 py-3 md:px-6 md:py-4 font-bold text-xs md:text-sm tracking-widest rounded-md shadow-sm hover:shadow-lg hover:scale-[1.02] transition-all duration-300 ${cartData?.data?.items?.some((item: any) => item.product._id === product.id)
-                                    ? "bg-pehnava-primary text-white"
-                                    : "bg-[#ff3f6c] text-white"
-                                    }`}
-                            >
-                                <ShoppingBag className="w-4 h-4 md:w-5 md:h-5" />
-                                <span className="hidden sm:inline">
-                                    {cartData?.data?.items?.some((item: any) => item.product._id === product.id)
-                                        ? "GO TO BAG"
-                                        : "MOVE TO BAG"
-                                    }
-                                </span>
-                            </button>
-                            <button onClick={handleWishlist} className={`flex - 1 flex items - center justify - center gap - 2 md: gap - 3 px - 4 py - 3 md: px - 6 md: py - 4 border font - bold text - xs md: text - sm tracking - widest uppercase rounded - md transition - all duration - 300 ${isFavorited
-                                ? 'border-[#ff3f6c] text-[#ff3f6c] bg-[#ff3f6c]/5'
-                                : 'border-pehnava-border text-pehnava-charcoal hover:border-pehnava-charcoal'
-                                } `}
-                            >
-                                <Heart className="w-4 h-4 md:w-5 md:h-5" fill={isFavorited ? "currentColor" : "none"} />
-                                <span>{isFavorited ? 'Wishlisted' : 'Wishlist'}</span>
-                            </button>
+                        {/* Action Buttons */}
+                        <div className="flex flex-col mt-6">
+                            {showError && (
+                                <p className="text-red-500 text-sm font-semibold mb-2">
+                                    Please select a size to proceed
+                                </p>
+                            )}
+                            <div className="flex gap-3 md:gap-4">
+                                {(() => {
+                                    const isVariantInCart = selectedSize && cartData?.data?.items?.some((item: any) =>
+                                        item.product._id === product.id &&
+                                        (item.size === selectedSize || item.variant?.size === selectedSize)
+                                    );
+
+                                    return (
+                                        <button
+                                            onClick={handleAddToCart}
+                                            className={`flex-1 h-12 md:h-14 flex items-center justify-center gap-2 rounded-lg font-bold text-sm md:text-base transition-all duration-300 shadow-soft hover:shadow-large ${isVariantInCart
+                                                ? "bg-gradient-to-br from-pehnava-accent to-pehnava-accentDark text-white"
+                                                : "bg-pehnava-charcoal text-white hover:bg-pehnava-primary"
+                                                }`}
+                                        >
+                                            <ShoppingBag className="w-5 h-5" />
+                                            <span>
+                                                {isVariantInCart
+                                                    ? "Go to Bag"
+                                                    : "Move to Bag"
+                                                }
+                                            </span>
+                                        </button>
+                                    );
+                                })()}
+                                <button
+                                    onClick={handleWishlist}
+                                    className={`w-12 h-12 md:w-14 md:h-14 flex items-center justify-center rounded-lg transition-all duration-300 ${isFavorited
+                                        ? 'bg-pehnava-accent/10 text-pehnava-accent hover:bg-pehnava-accent/20 shadow-soft'
+                                        : 'bg-white border-2 border-pehnava-border text-pehnava-slate hover:border-pehnava-primary hover:text-pehnava-primary shadow-soft'
+                                        }`}
+                                >
+                                    <Heart className={`w-5 h-5 md:w-6 md:h-6 transition-transform hover:scale-110 ${isFavorited ? 'fill-pehnava-accent' : ''}`} />
+                                </button>
+                            </div>
                         </div>
 
                         {/* Features */}

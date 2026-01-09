@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { Toaster } from "react-hot-toast";
 import AppRoutes from "./routes/AppRoutes";
 import { auth } from "./utils/firebase";
 import { onAuthStateChanged } from "firebase/auth";
@@ -37,7 +38,12 @@ const App = () => {
     return () => unsubscribe();
   }, []);
 
-  return <AppRoutes />;
+  return (
+    <>
+      <Toaster position="top-center" reverseOrder={false} />
+      <AppRoutes />
+    </>
+  );
 };
 
 export default App;
