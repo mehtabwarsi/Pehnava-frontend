@@ -45,8 +45,8 @@ const ShopPage = () => {
     }, [data]);
 
     const categories = useMemo(() => {
-        const fetched = categoryData?.data?.map((item: any) => item.name) || [];
-        return ["all", ...fetched];
+        const fetched: string[] = categoryData?.data?.map((item: any) => item.name as string) || [];
+        return ["all", ...Array.from(new Set(fetched))];
     }, [categoryData]);
 
 

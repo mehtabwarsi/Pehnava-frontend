@@ -2,7 +2,7 @@ import { useState } from "react";
 import { isApplePlatform } from "../../utils/platformDetect";
 import { loginWithGoogle } from "../../utils/auth/googleLogin";
 import { auth } from "../../utils/firebase";
-import { loginApi } from "../../services/apiservices";
+import { loginApi } from "../../services/publicapiservice";
 import { useNavigate } from "react-router-dom";
 import { sendOtp } from "../../utils/auth/phtoneAuth";
 

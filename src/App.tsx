@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import AppRoutes from "./routes/AppRoutes";
 import { auth } from "./utils/firebase";
 import { onAuthStateChanged } from "firebase/auth";
-import { loginApi } from "./services/apiservices";
+import { loginApi } from "./services/publicapiservice";
 import { setUser, logout } from "./redux/slices/authSlice";
 import { useDispatch } from "react-redux";
 

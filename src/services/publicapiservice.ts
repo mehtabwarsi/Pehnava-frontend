@@ -1,8 +1,8 @@
-import { api } from "./api";
+import { publicApi } from "./publicapi";
 
 export const loginApi = async (token: string) => {
     try {
-        const response = await api.get("user/login", {
+        const response = await publicApi.get("user/login", {
             headers: {
                 Authorization: `Bearer ${token}`
             }
@@ -15,7 +15,7 @@ export const loginApi = async (token: string) => {
 
 export const getAllProductsApi = async () => {
     try {
-        const response = await api.get("product/get-all-products");
+        const response = await publicApi.get("product/get-all-products");
         return response.data
     } catch (error) {
         throw error
@@ -24,7 +24,7 @@ export const getAllProductsApi = async () => {
 
 export const getProductByIdApi = async (id: string) => {
     try {
-        const response = await api.get(`product/${id}`);
+        const response = await publicApi.get(`product/${id}`);
         return response.data
     } catch (error) {
         throw error
@@ -33,7 +33,7 @@ export const getProductByIdApi = async (id: string) => {
 
 export const filterProductApi = async (filter: any) => {
     try {
-        const response = await api.get("product/filter", {
+        const response = await publicApi.get("product/filter", {
             params: filter
         });
         return response.data
@@ -44,7 +44,7 @@ export const filterProductApi = async (filter: any) => {
 
 export const getGenderApi = async () => {
     try {
-        const response = await api.get("category");
+        const response = await publicApi.get("category");
         return response.data
     } catch (error) {
         throw error
@@ -53,7 +53,7 @@ export const getGenderApi = async () => {
 
 export const getCategoryApi = async (genderId: string) => {
     try {
-        const response = await api.get("category/subcategory", {
+        const response = await publicApi.get("category/subcategory", {
             params: {
                 genderId
             }
