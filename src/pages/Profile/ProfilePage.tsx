@@ -82,7 +82,7 @@ const ProfilePage = () => {
                 <div className="bg-white rounded-2xl shadow-soft border border-pehnava-border/40 overflow-hidden divide-y divide-pehnava-border/40">
                     <MenuItem icon={Package} title="My Orders" desc="Track active orders and returns" />
                     <MenuItem icon={Heart} title="Wishlist" desc="Your curated collection" onClick={() => navigate("/wishlist")} />
-                    <MenuItem icon={MapPin} title="Addresses" desc="Manage delivery locations" />
+                    <MenuItem icon={MapPin} title="Addresses" desc="Manage delivery locations" onClick={() => navigate("/profile/address")} />
                     <MenuItem icon={CreditCard} title="Payment Methods" desc="Manage cards and UPI" />
                     <MenuItem icon={Bell} title="Notifications" desc="Order updates and promotions" />
                     <MenuItem icon={Shield} title="Privacy & Security" desc="Password and account access" />

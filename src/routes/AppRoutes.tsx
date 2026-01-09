@@ -11,6 +11,8 @@ import ProtectedRoute from "../utils/ProtectedRoute";
 import ProductDetailsPage from "../pages/Product/ProductDetailsPage";
 import ScrollToTop from "../utils/ScrollToTop";
 import OtpVerifyPage from "../pages/Auth/OtpVerifyPage";
+import AddressPage from "../pages/Profile/address/AddressPage";
+import AddAddressPage from "../pages/Profile/address/AddAddressPage";
 import WishListPage from "../pages/Profile/WishList/WishListPage";
 
 const AppRoutes = () => {
@@ -50,6 +52,23 @@ const AppRoutes = () => {
                         element={
                             <ProtectedRoute>
                                 <CartPage />
+                            </ProtectedRoute>
+                        }
+                    />
+
+                    <Route
+                        path="profile/address"
+                        element={
+                            <ProtectedRoute>
+                                <AddressPage />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="profile/address/add"
+                        element={
+                            <ProtectedRoute>
+                                <AddAddressPage />
                             </ProtectedRoute>
                         }
                     />
