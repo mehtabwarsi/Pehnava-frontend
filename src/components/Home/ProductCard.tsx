@@ -1,9 +1,9 @@
-import { Handbag, Heart, ShoppingBag, Star } from "lucide-react";
+import { Heart, ShoppingBag, Star } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
-import { toggleWishlist } from "../../redux/slices/wishlistSlice";
 import { addToCart } from "../../redux/slices/cartSlice";
 import type { RootState } from "../../redux/store";
+import { useAddToWishList, useGetWishList } from "../../services/useApiHook";
 
 type ProductCardProps = {
     id: string | number;
@@ -21,9 +21,12 @@ const ProductCard = ({ id, title, price, image, originalPrice, rating = 4.5, isN
     const navigate = useNavigate();
 
     const { user } = useSelector((state: RootState) => state.auth);
-    const wishlistItems = useSelector((state: RootState) => state.wishlist.items);
+    const { data: wishlistData } = useGetWishList({
+        enabled: !!user,
+    });
+    const { mutate: addToWishList } = useAddToWishList();
 
-    const isFavorited = wishlistItems.some((item: any) => item.id === id);
+    const isFavorited = wishlistData?.data?.items?.some((item: any) => item._id === id);
 
     const handleWishlist = (e: React.MouseEvent) => {
         e.preventDefault();
@@ -34,7 +37,7 @@ const ProductCard = ({ id, title, price, image, originalPrice, rating = 4.5, isN
             return;
         }
 
-        dispatch(toggleWishlist({ id, title, price, image: image || "" }));
+        addToWishList(id);
     };
 
     const handleAddToCart = (e: React.MouseEvent) => {

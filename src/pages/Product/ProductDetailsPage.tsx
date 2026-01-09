@@ -1,15 +1,14 @@
 import { useState } from 'react';
 import { useParams, Link, useLocation, useNavigate } from 'react-router-dom';
-import { Heart, ShoppingCart, ChevronRight, Check, Truck, Shield, RefreshCw } from 'lucide-react';
+import { Heart, ShoppingCart, ChevronRight, Check, Truck, Shield, RefreshCw, BaggageClaim, ShoppingBag } from 'lucide-react';
 import ProductCard from '../../components/Home/ProductCard';
 import QuantitySelector from '../../components/ProductDetail/QuantitySelector';
 import CustomerReviews from '../../components/ProductDetail/CustomerReviews';
 import RatingStars from '../../components/ProductDetail/RatingStars';
-import { useGetAllProducts, useGetProductById } from '../../services/useApiHook';
+import { useGetAllProducts, useGetProductById, useAddToWishList, useGetWishList } from '../../services/useApiHook';
 import ProductDetailsSkeleton from '../../components/ProductDetail/ProductDetailsSkeleton';
 import { useDispatch, useSelector } from 'react-redux';
 import type { RootState } from '../../redux/store';
-import { toggleWishlist } from '../../redux/slices/wishlistSlice';
 import { addToCart } from '../../redux/slices/cartSlice';
 
 const ProductDetailsPage = () => {
@@ -22,16 +21,18 @@ const ProductDetailsPage = () => {
     const [quantity, setQuantity] = useState(1);
 
     const { user } = useSelector((state: RootState) => state.auth);
-    const wishlistItems = useSelector((state: RootState) => state.wishlist.items);
-    const isFavorited = wishlistItems.some((item: any) => item.id === id);
+    const { data: wishlistData } = useGetWishList({
+        enabled: !!user,
+    });
+    const { mutate: addToWishList } = useAddToWishList();
+
+    const isFavorited = wishlistData?.data?.items?.some((item: any) => item._id === id);
 
     const { data: productData, isLoading: isProductLoading } = useGetProductById(id || '');
     const { data: suggestedProductsData, isLoading: isSuggestedLoading } = useGetAllProducts();
 
     const productApiData = productData?.data;
     const suggestedProducts = suggestedProductsData?.data;
-
-    const location = useLocation();
 
     const product = {
         id: id || '1',
@@ -66,12 +67,9 @@ const ProductDetailsPage = () => {
             return;
         }
 
-        dispatch(toggleWishlist({
-            id: product.id,
-            title: product.title,
-            price: product.price,
-            image: product.images?.[0] || ""
-        }));
+        if (id) {
+            addToWishList(id);
+        }
     };
 
     const handleAddToCart = (e: React.MouseEvent) => {
@@ -207,9 +205,9 @@ const ProductDetailsPage = () => {
 
                         {/* Action Buttons - Myntra Style */}
                         <div className="flex gap-2 md:gap-4 pt-4 border-t border-pehnava-border">
-                            <button onClick={handleAddToCart} className="flex-[1.5] flex items-center justify-center gap-2 md:gap-3 px-4 py-3 md:px-6 md:py-4 bg-[#ff3f6c] text-white font-bold text-xs md:text-sm tracking-widest uppercase rounded-md shadow-sm hover:shadow-lg hover:scale-[1.02] transition-all duration-300">
-                                <ShoppingCart className="w-4 h-4 md:w-5 md:h-5" />
-                                Add to Bag
+                            <button onClick={handleAddToCart} className="flex-[1.5] flex items-center justify-center gap-2 md:gap-3 px-4 py-3 md:px-6 md:py-4 bg-[#ff3f6c] text-white font-bold text-xs md:text-sm tracking-widest rounded-md shadow-sm hover:shadow-lg hover:scale-[1.02] transition-all duration-300">
+                                <ShoppingBag className="w-4 h-4 md:w-5 md:h-5" />
+                                Move to Bag
                             </button>
                             <button onClick={handleWishlist} className={`flex-1 flex items-center justify-center gap-2 md:gap-3 px-4 py-3 md:px-6 md:py-4 border font-bold text-xs md:text-sm tracking-widest uppercase rounded-md transition-all duration-300 ${isFavorited
                                 ? 'border-[#ff3f6c] text-[#ff3f6c] bg-[#ff3f6c]/5'
@@ -217,7 +215,7 @@ const ProductDetailsPage = () => {
                                 }`}
                             >
                                 <Heart className="w-4 h-4 md:w-5 md:h-5" fill={isFavorited ? "currentColor" : "none"} />
-                                <span>Wishlist</span>
+                                <span>{isFavorited ? 'Wishlisted' : 'Wishlist'}</span>
                             </button>
                         </div>
 
@@ -292,8 +290,8 @@ const ProductDetailsPage = () => {
                     <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
                         {(suggestedProducts || []).slice(0, 8).map((item: any) => (
                             <ProductCard
-                                key={item.id}
-                                id={item.id}
+                                key={item._id}
+                                id={item._id}
                                 title={item.name}
                                 price={item.discountPrice}
                                 image={item.images[0]}

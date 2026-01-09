@@ -1,8 +1,8 @@
 import { X, ShoppingBag } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { removeFromWishlist } from "../../redux/slices/wishlistSlice";
 import { addToCart } from "../../redux/slices/cartSlice";
+import { useAddToWishList } from "../../services/useApiHook";
 
 type WishlistProductCardProps = {
     id: string | number;
@@ -14,12 +14,13 @@ type WishlistProductCardProps = {
 
 const WishlistProductCard = ({ id, title, price, image, originalPrice }: WishlistProductCardProps) => {
     const dispatch = useDispatch();
+    const { mutate: toggleWishlist } = useAddToWishList();
     const discount = originalPrice ? Math.round(((originalPrice - price) / originalPrice) * 100) : null;
 
     const handleRemove = (e: React.MouseEvent) => {
         e.preventDefault();
         e.stopPropagation();
-        dispatch(removeFromWishlist(id));
+        toggleWishlist(id);
     };
 
     const handleMoveToCart = (e: React.MouseEvent) => {

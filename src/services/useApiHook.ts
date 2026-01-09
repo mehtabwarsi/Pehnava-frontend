@@ -1,5 +1,6 @@
-import { useQuery } from "@tanstack/react-query"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { filterProductApi, getAllProductsApi, getCategoryApi, getGenderApi, getProductByIdApi } from "./publicapiservice"
+import { addToWishListApi, getWishListApi } from "./privateapiservices"
 
 export const useGetAllProducts = () => {
     return useQuery({
@@ -26,7 +27,7 @@ export const useGetGender = () => {
     return useQuery({
         queryKey: ["gender"],
         queryFn: () => getGenderApi(),
-        staleTime: 0, // Ensure data is considered stale immediately
+        staleTime: 0,
     })
 }
 
@@ -34,8 +35,28 @@ export const useGetCategory = (genderId: string | undefined) => {
     return useQuery({
         queryKey: ["category", genderId],
         queryFn: () => getCategoryApi(genderId!),
-        enabled: !!genderId, // Only run if genderId is provided
-        staleTime: 0, // Ensure data is considered stale immediately
+        enabled: !!genderId,
+        staleTime: 0,
+    })
+}
+
+// private api
+
+export const useGetWishList = (options = {}) => {
+    return useQuery({
+        queryKey: ["wishlist"],
+        queryFn: () => getWishListApi(),
+        ...options
+    })
+}
+
+export const useAddToWishList = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (productId: string | number) => addToWishListApi(productId),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["wishlist"] });
+        },
     })
 }
 

@@ -1,11 +1,20 @@
-import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { Heart, ArrowRight, ShoppingBag, Sparkles } from "lucide-react";
 import WishlistProductCard from "../../../components/Profile/WishlistProductCard";
-import type { RootState } from "../../../redux/store";
+import { useGetWishList } from "../../../services/useApiHook";
 
 const WishListPage = () => {
-    const { items } = useSelector((state: RootState) => state.wishlist);
+    const { data: wishlist, isLoading } = useGetWishList();
+
+    const items = wishlist?.data?.items || [];
+
+    if (isLoading) {
+        return (
+            <div className="min-h-screen bg-pehnava-offWhite pt-10 sm:pt-20 pb-20 px-4 sm:px-6 lg:px-8 flex items-center justify-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pehnava-primary"></div>
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-pehnava-offWhite pt-10 sm:pt-20 pb-20 px-4 sm:px-6 lg:px-8">
@@ -63,12 +72,12 @@ const WishListPage = () => {
                     <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-8 md:gap-10">
                         {items.map((item: any) => (
                             <WishlistProductCard
-                                key={item.id}
-                                id={item.id}
-                                title={item.title}
-                                price={item.price}
-                                image={item.image}
-                                originalPrice={item.originalPrice}
+                                key={item._id}
+                                id={item._id}
+                                title={item.name}
+                                price={item.discountPrice}
+                                image={item.images?.[0] || ""}
+                                originalPrice={item.price}
                             />
                         ))}
                     </div>

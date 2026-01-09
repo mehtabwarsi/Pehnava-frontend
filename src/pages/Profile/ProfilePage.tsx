@@ -17,11 +17,14 @@ import { auth } from "../../utils/firebase";
 import { useDispatch } from "react-redux";
 import { logout } from "../../redux/slices/authSlice";
 import { useNavigate } from "react-router-dom";
+import { useGetWishList } from "../../services/useApiHook";
 
 const ProfilePage = () => {
     const { user } = useSelector((state: any) => state.auth);
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const { data: wishlist, isLoading } = useGetWishList();
+    const totalWishList = wishlist?.data?.total || 0;
 
     const handleLogout = async () => {
         try {
@@ -32,6 +35,8 @@ const ProfilePage = () => {
             console.error("Logout failed:", error);
         }
     };
+
+
 
 
     return (
@@ -68,7 +73,7 @@ const ProfilePage = () => {
                         <p className="text-[10px] sm:text-sm text-pehnava-slate font-medium uppercase tracking-wide">Orders</p>
                     </div>
                     <div className="text-center space-y-1">
-                        <p className="text-xl sm:text-2xl font-bold text-pehnava-charcoal">5</p>
+                        <p className="text-xl sm:text-2xl font-bold text-pehnava-charcoal">{totalWishList}</p>
                         <p className="text-[10px] sm:text-sm text-pehnava-slate font-medium uppercase tracking-wide">Wishlist</p>
                     </div>
                 </div>
