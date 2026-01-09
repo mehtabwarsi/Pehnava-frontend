@@ -1,9 +1,10 @@
-import { Link } from "react-router-dom";
-import { Heart, ArrowRight, ShoppingBag, Sparkles } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { Heart, ArrowRight, ShoppingBag, Sparkles, ChevronLeft } from "lucide-react";
 import WishlistProductCard from "../../../components/Profile/WishlistProductCard";
 import { useGetWishList } from "../../../services/useApiHook";
 
 const WishListPage = () => {
+    const navigate = useNavigate();
     const { data: wishlist, isLoading } = useGetWishList();
 
     const items = wishlist?.data?.items || [];
@@ -17,12 +18,20 @@ const WishListPage = () => {
     }
 
     return (
-        <div className="min-h-screen bg-pehnava-offWhite pt-10 sm:pt-20 pb-20 px-4 sm:px-6 lg:px-8">
+        <div className="min-h-screen bg-pehnava-offWhite pt-6 pb-20 sm:pt-12 px-4 sm:px-6 lg:px-8">
             <div className="max-w-7xl mx-auto">
 
                 {/* Header Section - Centered */}
                 <div className="relative mb-12 border-b border-pehnava-border/40 pb-10 text-center flex flex-col items-center">
                     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-pehnava-primary/5 rounded-full blur-3xl pointer-events-none" />
+
+                    {/* Back Button */}
+                    <button
+                        onClick={() => navigate(-1)}
+                        className="absolute left-0 top-0 p-2 hover:bg-white rounded-full transition-colors shadow-soft cursor-pointer z-20 group"
+                    >
+                        <ChevronLeft className="w-6 h-6 text-pehnava-charcoal group-hover:scale-110 transition-transform" />
+                    </button>
 
                     <div className="relative z-10 flex flex-col items-center">
                         <div className="flex items-center gap-3 mb-4">

@@ -1,9 +1,8 @@
-import { Heart, ShoppingBag, Star } from "lucide-react";
-import { useDispatch, useSelector } from "react-redux";
+import { Heart, Star, ShoppingCart, ShoppingBag } from "lucide-react";
+import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
-import { addToCart } from "../../redux/slices/cartSlice";
 import type { RootState } from "../../redux/store";
-import { useAddToWishList, useGetWishList } from "../../services/useApiHook";
+import { useAddToCart, useAddToWishList, useGetCart, useGetWishList } from "../../services/useApiHook";
 
 type ProductCardProps = {
     id: string | number;
@@ -17,15 +16,15 @@ type ProductCardProps = {
 
 const ProductCard = ({ id, title, price, image, originalPrice, rating = 4.5, isNew = false }: ProductCardProps) => {
     const discount = originalPrice ? Math.round(((originalPrice - price) / originalPrice) * 100) : null;
-    const dispatch = useDispatch();
     const navigate = useNavigate();
 
     const { user } = useSelector((state: RootState) => state.auth);
+    const { mutate: addToCart } = useAddToCart();
+    const { data: cartData } = useGetCart();
     const { data: wishlistData } = useGetWishList({
         enabled: !!user,
     });
     const { mutate: addToWishList } = useAddToWishList();
-
     const isFavorited = wishlistData?.data?.items?.some((item: any) => item._id === id);
 
     const handleWishlist = (e: React.MouseEvent) => {
@@ -49,13 +48,16 @@ const ProductCard = ({ id, title, price, image, originalPrice, rating = 4.5, isN
             return;
         }
 
-        dispatch(addToCart({
-            id,
-            title,
-            price,
-            image: image || "",
-            quantity: 1
-        }));
+        const isInCart = cartData?.data?.items?.some((item: any) => item.product._id === id);
+
+        if (isInCart) {
+            navigate("/cart");
+        } else {
+            addToCart({
+                productId: id,
+                quantity: 1
+            });
+        }
     };
 
     return (
@@ -98,22 +100,20 @@ const ProductCard = ({ id, title, price, image, originalPrice, rating = 4.5, isN
 
                 {/* Quick Add Button - Desktop Hover / Mobile Icon */}
                 <div className="absolute right-2 bottom-2 md:inset-x-4 md:bottom-4 z-10 transition-all duration-500 md:translate-y-12 md:opacity-0 md:group-hover:translate-y-0 md:group-hover:opacity-100">
-
-                    {/* Desktop Button */}
                     <button
                         onClick={handleAddToCart}
-                        className="hidden md:flex w-full py-2 md:py-3 bg-pehnava-charcoal text-white text-[10px] md:text-sm font-bold rounded-xl md:rounded-2xl items-center justify-center gap-1 md:gap-2 hover:bg-pehnava-primary transition-colors shadow-large"
+                        className={`p-2 sm:p-2.5 rounded-full shadow-soft hover:shadow-glow transition-all active:scale-95 cursor-pointer flex items-center gap-1.5 px-3 sm:px-4 ${cartData?.data?.items?.some((item: any) => item.product._id === id)
+                            ? "bg-pehnava-primary text-white"
+                            : "bg-pehnava-charcoal text-white hover:bg-pehnava-primary"
+                            }`}
                     >
-                        <ShoppingBag className="w-3 h-3 md:w-4 h-4" />
-                        Move to Bag
-                    </button>
-
-                    {/* Mobile Button (Icon Only) */}
-                    <button
-                        onClick={handleAddToCart}
-                        className="md:hidden p-2 bg-pehnava-charcoal text-white rounded-full shadow-large hover:bg-pehnava-primary active:scale-95 transition-all flex items-center justify-center"
-                    >
-                        <ShoppingBag className="w-3.5 h-3.5" />
+                        <ShoppingBag className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                        <span className="hidden sm:inline-block text-[10px] sm:text-xs font-bold whitespace-nowrap">
+                            {cartData?.data?.items?.some((item: any) => item.product._id === id)
+                                ? "Go to Bag"
+                                : "Move to Bag"
+                            }
+                        </span>
                     </button>
                 </div>
             </div>

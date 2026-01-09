@@ -8,12 +8,16 @@ import {
 } from "./publicapiservice"
 import {
     addAddressApi,
+    addToCartApi,
     addToWishListApi,
     deleteAddressByIdApi,
     getAddressesApi,
+    getCartApi,
     getWishListApi,
+    removeFromCartApi,
     setDefaultAddressApi,
-    updateAddressApi
+    updateAddressApi,
+    updateCartQuantityApi
 } from "./privateapiservices"
 
 export const useGetAllProducts = () => {
@@ -119,6 +123,45 @@ export const useSetDefaultAddress = () => {
         mutationFn: (addressId: string | number) => setDefaultAddressApi(addressId),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["addresses"] });
+        },
+    })
+}
+
+// cart api
+
+export const useGetCart = () => {
+    return useQuery({
+        queryKey: ["cart"],
+        queryFn: () => getCartApi(),
+    })
+}
+
+export const useAddToCart = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: ({ productId, quantity, size, color }: { productId: string | number, quantity: number, size?: string, color?: string }) => addToCartApi(productId, quantity, size, color),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["cart"] });
+        },
+    })
+}
+
+export const useUpdateCartQuantity = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: ({ productId, quantity }: { productId: string | number, quantity: number }) => updateCartQuantityApi(productId, quantity),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["cart"] });
+        },
+    })
+}
+
+export const useRemoveFromCart = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (productId: string | number) => removeFromCartApi(productId),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["cart"] });
         },
     })
 }

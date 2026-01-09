@@ -1,22 +1,19 @@
 import { useState } from 'react';
-import { useParams, Link, useLocation, useNavigate } from 'react-router-dom';
-import { Heart, ShoppingCart, ChevronRight, Check, Truck, Shield, RefreshCw, BaggageClaim, ShoppingBag } from 'lucide-react';
+import { useParams, Link, useNavigate } from 'react-router-dom';
+import { Heart, ChevronRight, Check, Truck, Shield, RefreshCw, ShoppingBag } from 'lucide-react';
 import ProductCard from '../../components/Home/ProductCard';
 import QuantitySelector from '../../components/ProductDetail/QuantitySelector';
 import CustomerReviews from '../../components/ProductDetail/CustomerReviews';
 import RatingStars from '../../components/ProductDetail/RatingStars';
-import { useGetAllProducts, useGetProductById, useAddToWishList, useGetWishList } from '../../services/useApiHook';
+import { useGetAllProducts, useGetProductById, useAddToWishList, useGetWishList, useAddToCart, useGetCart } from '../../services/useApiHook';
 import ProductDetailsSkeleton from '../../components/ProductDetail/ProductDetailsSkeleton';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import type { RootState } from '../../redux/store';
-import { addToCart } from '../../redux/slices/cartSlice';
 
 const ProductDetailsPage = () => {
     const { id } = useParams();
-    const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    const [selectedImage, setSelectedImage] = useState(0);
     const [selectedSize, setSelectedSize] = useState('');
     const [quantity, setQuantity] = useState(1);
 
@@ -24,7 +21,9 @@ const ProductDetailsPage = () => {
     const { data: wishlistData } = useGetWishList({
         enabled: !!user,
     });
+    const { data: cartData } = useGetCart();
     const { mutate: addToWishList } = useAddToWishList();
+    const { mutate: addToCart } = useAddToCart();
 
     const isFavorited = wishlistData?.data?.items?.some((item: any) => item._id === id);
 
@@ -81,14 +80,17 @@ const ProductDetailsPage = () => {
             return;
         }
 
-        dispatch(addToCart({
-            id: product.id,
-            title: product.title,
-            price: product.price,
-            image: product.images?.[0] || "",
-            quantity,
-            size: selectedSize
-        }));
+        const isInCart = cartData?.data?.items?.some((item: any) => item.product._id === product.id);
+
+        if (isInCart) {
+            navigate("/cart");
+        } else {
+            addToCart({
+                productId: product.id,
+                quantity,
+                size: selectedSize
+            });
+        }
     };
 
     if (isProductLoading || isSuggestedLoading) {
@@ -130,11 +132,10 @@ const ProductDetailsPage = () => {
                                 <div
                                     key={index}
                                     className="relative flex-shrink-0 w-[85vw] md:w-auto md:aspect-[3/4] bg-white rounded-md overflow-hidden  group cursor-pointer snap-center"
-                                    onClick={() => setSelectedImage(index)} // Optional: specialized view logic
                                 >
                                     <img
                                         src={image}
-                                        alt={`${product.title} ${index + 1}`}
+                                        alt={`${product.title} ${index + 1} `}
                                         className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                                     />
                                 </div>
@@ -186,10 +187,10 @@ const ProductDetailsPage = () => {
                                     <button
                                         key={size}
                                         onClick={() => setSelectedSize(size)}
-                                        className={`px-4 py-2 text-sm md:px-6 md:py-3 md:text-base rounded-xl font-bold transition-all duration-300 ${selectedSize === size
+                                        className={`px - 4 py - 2 text - sm md: px - 6 md: py - 3 md: text - base rounded - xl font - bold transition - all duration - 300 ${selectedSize === size
                                             ? 'bg-pehnava-primary text-white shadow-large scale-105'
                                             : 'bg-white text-pehnava-charcoal ring-1 ring-pehnava-border hover:ring-pehnava-primary shadow-soft'
-                                            }`}
+                                            } `}
                                     >
                                         {size.toUpperCase()}
                                     </button>
@@ -205,14 +206,25 @@ const ProductDetailsPage = () => {
 
                         {/* Action Buttons - Myntra Style */}
                         <div className="flex gap-2 md:gap-4 pt-4 border-t border-pehnava-border">
-                            <button onClick={handleAddToCart} className="flex-[1.5] flex items-center justify-center gap-2 md:gap-3 px-4 py-3 md:px-6 md:py-4 bg-[#ff3f6c] text-white font-bold text-xs md:text-sm tracking-widest rounded-md shadow-sm hover:shadow-lg hover:scale-[1.02] transition-all duration-300">
+                            <button
+                                onClick={handleAddToCart}
+                                className={`flex-[1.5] flex items-center justify-center gap-2 md:gap-3 px-4 py-3 md:px-6 md:py-4 font-bold text-xs md:text-sm tracking-widest rounded-md shadow-sm hover:shadow-lg hover:scale-[1.02] transition-all duration-300 ${cartData?.data?.items?.some((item: any) => item.product._id === product.id)
+                                    ? "bg-pehnava-primary text-white"
+                                    : "bg-[#ff3f6c] text-white"
+                                    }`}
+                            >
                                 <ShoppingBag className="w-4 h-4 md:w-5 md:h-5" />
-                                Move to Bag
+                                <span className="hidden sm:inline">
+                                    {cartData?.data?.items?.some((item: any) => item.product._id === product.id)
+                                        ? "GO TO BAG"
+                                        : "MOVE TO BAG"
+                                    }
+                                </span>
                             </button>
-                            <button onClick={handleWishlist} className={`flex-1 flex items-center justify-center gap-2 md:gap-3 px-4 py-3 md:px-6 md:py-4 border font-bold text-xs md:text-sm tracking-widest uppercase rounded-md transition-all duration-300 ${isFavorited
+                            <button onClick={handleWishlist} className={`flex - 1 flex items - center justify - center gap - 2 md: gap - 3 px - 4 py - 3 md: px - 6 md: py - 4 border font - bold text - xs md: text - sm tracking - widest uppercase rounded - md transition - all duration - 300 ${isFavorited
                                 ? 'border-[#ff3f6c] text-[#ff3f6c] bg-[#ff3f6c]/5'
                                 : 'border-pehnava-border text-pehnava-charcoal hover:border-pehnava-charcoal'
-                                }`}
+                                } `}
                             >
                                 <Heart className="w-4 h-4 md:w-5 md:h-5" fill={isFavorited ? "currentColor" : "none"} />
                                 <span>{isFavorited ? 'Wishlisted' : 'Wishlist'}</span>
