@@ -138,30 +138,68 @@ export const useGetCart = () => {
 
 export const useAddToCart = () => {
     const queryClient = useQueryClient();
+
     return useMutation({
-        mutationFn: ({ productId, quantity, size, color }: { productId: string | number, quantity: number, size?: string, color?: string }) => addToCartApi(productId, quantity, size, color),
+        mutationFn: ({
+            productId,
+            quantity,
+            size,
+            color,
+        }: {
+            productId: string;
+            quantity: number;
+            size: string;
+            color: string;
+        }) => addToCartApi(productId, quantity, size, color),
+
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["cart"] });
         },
-    })
-}
+    });
+};
+
 
 export const useUpdateCartQuantity = () => {
     const queryClient = useQueryClient();
+
     return useMutation({
-        mutationFn: ({ productId, quantity }: { productId: string | number, quantity: number }) => updateCartQuantityApi(productId, quantity),
+        mutationFn: ({
+            productId,
+            quantity,
+            size,
+            color,
+        }: {
+            productId: string;
+            quantity: number;
+            size: string;
+            color: string;
+        }) =>
+            updateCartQuantityApi(productId, quantity, size, color),
+
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["cart"] });
         },
-    })
-}
+    });
+};
+
 
 export const useRemoveFromCart = () => {
     const queryClient = useQueryClient();
+
     return useMutation({
-        mutationFn: (productId: string | number) => removeFromCartApi(productId),
+        mutationFn: ({
+            productId,
+            size,
+            color,
+        }: {
+            productId: string;
+            size: string;
+            color: string;
+        }) =>
+            removeFromCartApi(productId, size, color),
+
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["cart"] });
         },
-    })
-}
+    });
+};

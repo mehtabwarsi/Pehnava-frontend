@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { toast } from 'react-hot-toast';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Heart, ChevronRight, Check, Truck, Shield, RefreshCw, ShoppingBag } from 'lucide-react';
@@ -15,8 +15,13 @@ const ProductDetailsPage = () => {
     const navigate = useNavigate();
 
     const [selectedSize, setSelectedSize] = useState('');
+    const [selectedColor, setSelectedColor] = useState('');
     const [showError, setShowError] = useState(false);
 
+
+    useEffect(() => {
+        console.log("Size:", selectedSize, "Color:", selectedColor);
+    }, [selectedSize, selectedColor]);
 
 
     const { user } = useSelector((state: RootState) => state.auth);
@@ -35,6 +40,16 @@ const ProductDetailsPage = () => {
     const productApiData = productData?.data;
     const suggestedProducts = suggestedProductsData?.data;
 
+    const sizes = [
+        ...new Set(productApiData?.variants?.map((v: any) => v.size))
+    ];
+
+    const colors = [
+        ...new Set(productApiData?.variants?.map((v: any) => v.color))
+    ];
+
+
+
     const product = {
         id: id || '1',
         title: productApiData?.name,
@@ -44,11 +59,18 @@ const ProductDetailsPage = () => {
         reviews: 128,
         description: productApiData?.description,
         images: productApiData?.images,
-        sizes: productApiData?.variants?.map((variant: any) => variant.size),
-        colors: productApiData?.variants?.map((variant: any) => variant.color),
+        sizes,
+        colors,
         features: productApiData?.features,
         specifications: productApiData?.specifications,
     };
+
+    const isSizeOutOfStock = (size: string) => {
+        return !productApiData?.variants?.some(
+            (v: any) => v.size === size && v.stock > 0
+        );
+    };
+
 
     const discount = Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100);
 
@@ -75,34 +97,44 @@ const ProductDetailsPage = () => {
             return;
         }
 
-        // Check if the specific size variant is already in the cart
-        const isVariantInCart = cartData?.data?.items?.some((item: any) =>
-            item.product._id === product.id &&
-            (item.size === selectedSize || item.variant?.size === selectedSize)
+        if (!selectedSize || !selectedColor) {
+            setShowError(true);
+            return;
+        }
+
+        const selectedVariant = productApiData?.variants?.find(
+            (v: any) =>
+                v.size === selectedSize &&
+                v.color === selectedColor
+        );
+
+        if (!selectedVariant || selectedVariant.stock === 0) {
+            toast.error("This variant is out of stock");
+            return;
+        }
+
+        const isVariantInCart = cartData?.data?.items?.some(
+            (item: any) =>
+                item.product._id === product.id &&
+                item.variant.size === selectedSize &&
+                item.variant.color === selectedColor
         );
 
         if (isVariantInCart) {
             navigate("/cart");
-        } else {
-            // Find variant for selected size to get color
-            const selectedVariant = productApiData?.variants?.find((v: any) => v.size === selectedSize);
-            const selectedColor = selectedVariant?.color || product.colors?.[0]; // Fallback to first color if no match
-
-            if (!selectedSize || !selectedColor) {
-                setShowError(true);
-                return;
-            }
-            setShowError(false);
-
-            addToCart({
-                productId: product.id,
-                quantity: 1,
-                size: selectedSize,
-                color: selectedColor,
-                price: product.price
-            } as any); // Type assertion until hook types are updated
+            return;
         }
+
+        setShowError(false);
+
+        addToCart({
+            productId: product.id,
+            quantity: 1,
+            size: selectedSize,
+            color: selectedColor,
+        });
     };
+
 
     if (isProductLoading || isSuggestedLoading) {
         return <ProductDetailsSkeleton />;
@@ -194,21 +226,30 @@ const ProductDetailsPage = () => {
                                 Select Size
                             </h3>
                             <div className="flex flex-wrap gap-2 md:gap-3">
-                                {product?.sizes?.map((size: any) => (
-                                    <button
-                                        key={size}
-                                        onClick={() => {
-                                            setSelectedSize(size);
-                                            setShowError(false);
-                                        }}
-                                        className={`w-12 h-12 flex items-center justify-center rounded-full font-bold transition-all duration-300 ${selectedSize === size
-                                            ? 'bg-pehnava-primary text-white shadow-glow scale-110'
-                                            : 'bg-white text-pehnava-charcoal border border-pehnava-border hover:border-pehnava-primary hover:text-pehnava-primary shadow-soft'
-                                            }`}
-                                    >
-                                        {size.toUpperCase()}
-                                    </button>
-                                ))}
+                                {product?.sizes?.map((size: any) => {
+                                    const isOutOfStock = isSizeOutOfStock(size);
+                                    return (
+                                        <button
+                                            key={size}
+                                            disabled={isOutOfStock}
+                                            onClick={() => {
+                                                setSelectedSize(size);
+                                                const firstAvailableVariant = productApiData?.variants?.find(
+                                                    (v: any) => v.size === size && v.stock > 0
+                                                );
+
+                                                setSelectedColor(firstAvailableVariant?.color || '');
+                                                setShowError(false);
+                                            }}
+                                            className={`w-12 h-12 flex items-center justify-center rounded-full font-bold transition-all duration-300 ${selectedSize === size
+                                                ? 'bg-pehnava-primary text-white shadow-glow scale-110'
+                                                : 'bg-white text-pehnava-charcoal border border-pehnava-border hover:border-pehnava-primary hover:text-pehnava-primary shadow-soft'
+                                                }`}
+                                        >
+                                            {size.toUpperCase()}
+                                        </button>
+                                    )
+                                })}
                             </div>
                         </div>
 
@@ -222,10 +263,15 @@ const ProductDetailsPage = () => {
                             )}
                             <div className="flex gap-3 md:gap-4">
                                 {(() => {
-                                    const isVariantInCart = selectedSize && cartData?.data?.items?.some((item: any) =>
-                                        item.product._id === product.id &&
-                                        (item.size === selectedSize || item.variant?.size === selectedSize)
-                                    );
+                                    const isVariantInCart =
+                                        selectedSize &&
+                                        selectedColor &&
+                                        cartData?.data?.items?.some(
+                                            (item: any) =>
+                                                item.product._id === product.id &&
+                                                item.variant.size === selectedSize &&
+                                                item.variant.color === selectedColor
+                                        );
 
                                     return (
                                         <button

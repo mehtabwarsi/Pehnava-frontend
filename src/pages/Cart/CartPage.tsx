@@ -1,26 +1,88 @@
-import { Minus, Plus, Trash2, ShoppingBag, ArrowRight, ShieldCheck, CreditCard, Loader2 } from "lucide-react";
+import { Trash2, ShoppingBag, ArrowRight, ShieldCheck, CreditCard, Loader2, ChevronDown, X } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useState } from "react";
 import { useGetCart, useRemoveFromCart, useUpdateCartQuantity } from "../../services/useApiHook";
+
+const QuantityModal = ({
+    isOpen,
+    onClose,
+    currentQuantity,
+    maxStock,
+    onSelect
+}: {
+    isOpen: boolean;
+    onClose: () => void;
+    currentQuantity: number;
+    maxStock: number;
+    onSelect: (qty: number) => void;
+}) => {
+    if (!isOpen) return null;
+
+    const availableStock = Math.min(maxStock, 10);
+    const quantities = Array.from({ length: availableStock }, (_, i) => i + 1);
+
+    return (
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/10  transition-all animate-in fade-in duration-200" onClick={onClose}>
+            <div
+                className="w-full sm:w-[400px] bg-white rounded-t-2xl sm:rounded-2xl shadow-xl overflow-hidden animate-in slide-in-from-bottom duration-300"
+                onClick={(e) => e.stopPropagation()}
+            >
+                <div className="flex items-center justify-between p-4 border-b border-pehnava-border/40">
+                    <h3 className="text-lg font-bold text-pehnava-charcoal">Select Quantity</h3>
+                    <button onClick={onClose} className="p-2 hover:bg-pehnava-offWhite rounded-full transition-colors">
+                        <X className="w-5 h-5 text-pehnava-slate" />
+                    </button>
+                </div>
+                <div className="p-4 max-h-[60vh] overflow-y-auto">
+                    <div className="grid grid-cols-5 gap-3">
+                        {quantities.map((qty) => (
+                            <button
+                                key={qty}
+                                onClick={() => onSelect(qty)}
+                                className={`h-12 flex items-center justify-center rounded-xl font-bold text-lg transition-all ${qty === currentQuantity
+                                    ? "bg-pehnava-charcoal text-white shadow-md scale-105"
+                                    : "bg-pehnava-offWhite text-pehnava-charcoal hover:bg-pehnava-primary/10 hover:text-pehnava-primary hover:border-pehnava-primary/30 border border-transparent"
+                                    }`}
+                            >
+                                {qty}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
 
 const CartPage = () => {
     const { data: cartData, isLoading: isCartLoading } = useGetCart();
     const { mutate: updateQuantity } = useUpdateCartQuantity();
     const { mutate: removeProduct } = useRemoveFromCart();
+    const [activeQuantityModalId, setActiveQuantityModalId] = useState<string | null>(null);
 
     console.log(cartData);
 
     const items = cartData?.data?.items || [];
-    const subtotal = items.reduce((acc: number, item: any) => acc + (item.product.discountPrice * item.quantity), 0);
+    const subtotal = items.reduce((acc: number, item: any) => acc + (item.variant.discountPrice * item.quantity), 0);
     const taxEstimate = Math.round(subtotal * 0.05); // 5% tax example
     const orderTotal = subtotal + taxEstimate;
 
-    const handleUpdateQuantity = (productId: string, newQuantity: number) => {
+    const handleUpdateQuantity = (item: any, newQuantity: number) => {
         if (newQuantity < 1) return;
-        updateQuantity({ productId, quantity: newQuantity });
+        updateQuantity({
+            productId: item.product._id,
+            quantity: newQuantity,
+            size: item.variant.size,
+            color: item.variant.color
+        });
     };
 
-    const handleRemove = (productId: string) => {
-        removeProduct(productId);
+    const handleRemove = (item: any) => {
+        removeProduct({
+            productId: item.product._id,
+            size: item.variant.size,
+            color: item.variant.color
+        });
     };
 
     if (isCartLoading) {
@@ -91,46 +153,22 @@ const CartPage = () => {
                                                     </h3>
                                                 </Link>
                                                 <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1">
-                                                    {(() => {
-                                                        // Fallback logic order: item.variant object -> item top-level props -> product variant fallback
-                                                        const variantObj = item.variant;
-                                                        const productVariants = item.product.variants;
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="text-[10px] sm:text-xs font-bold text-pehnava-charcoal bg-pehnava-offWhite px-2 py-0.5 rounded border border-pehnava-border/30">
+                                                            Size: {item.variant.size.toUpperCase()}
+                                                        </span>
+                                                        <span className="text-[10px] sm:text-xs font-medium text-pehnava-slate flex items-center gap-1.5 uppercase tracking-wider">
+                                                            <span
+                                                                className="w-2 h-2 rounded-full border border-black/10"
+                                                                style={{ backgroundColor: item.variant.color }}
+                                                            ></span>
+                                                            {item.variant.color}
+                                                        </span>
+                                                    </div>
 
-                                                        const displaySize = variantObj?.size || item.size;
-                                                        // Try to find color in this order:
-                                                        // 1. Direct variant object from cart item
-                                                        // 2. Direct color prop on cart item
-                                                        // 3. Find matching variant in product variants list by size
-                                                        // 4. Fallback to first variant's color
-                                                        const displayColor = variantObj?.color ||
-                                                            item.color ||
-                                                            productVariants?.find((v: any) => v.size === displaySize)?.color ||
-                                                            productVariants?.[0]?.color;
-
-                                                        if (!displaySize && !displayColor) return null;
-
-                                                        return (
-                                                            <div className="flex items-center gap-2">
-                                                                {displaySize && (
-                                                                    <span className="text-[10px] sm:text-xs font-bold text-pehnava-charcoal bg-pehnava-offWhite px-2 py-0.5 rounded border border-pehnava-border/30">
-                                                                        Size: {displaySize.toUpperCase()}
-                                                                    </span>
-                                                                )}
-                                                                {displayColor && (
-                                                                    <span className="text-[10px] sm:text-xs font-medium text-pehnava-slate flex items-center gap-1.5 uppercase tracking-wider">
-                                                                        <span
-                                                                            className="w-2 h-2 rounded-full border border-black/10"
-                                                                            style={{ backgroundColor: displayColor }}
-                                                                        ></span>
-                                                                        {displayColor}
-                                                                    </span>
-                                                                )}
-                                                            </div>
-                                                        );
-                                                    })()}
-                                                    {item.product.price > item.product.discountPrice && (
+                                                    {item.variant.discountPrice < item.variant.price && (
                                                         <span className="text-[10px] sm:text-xs font-bold text-green-600 bg-green-50 px-2 py-0.5 rounded border border-green-100">
-                                                            {Math.round(((item.product.price - item.product.discountPrice) / item.product.price) * 100)}% OFF
+                                                            {Math.round(((item.variant.price - item.variant.discountPrice) / item.variant.price) * 100)}% OFF
                                                         </span>
                                                     )}
                                                 </div>
@@ -139,7 +177,7 @@ const CartPage = () => {
                                                 </p>
                                             </div>
                                             <button
-                                                onClick={() => handleRemove(item.product._id)}
+                                                onClick={() => handleRemove(item)}
                                                 className="text-pehnava-slate hover:text-red-500 transition-colors p-1.5 sm:p-2 hover:bg-red-50 rounded-full cursor-pointer -mr-2 sm:mr-0"
                                             >
                                                 <Trash2 className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -149,30 +187,36 @@ const CartPage = () => {
 
                                     <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 sm:gap-0 mt-2 sm:mt-0">
                                         {/* Quantity Control */}
-                                        <div className="flex items-center gap-3 bg-pehnava-offWhite rounded-lg sm:rounded-xl p-1 border border-pehnava-border/40 w-fit">
+                                        <div className="flex flex-col gap-1.5">
                                             <button
-                                                onClick={() => handleUpdateQuantity(item.product._id, item.quantity - 1)}
-                                                className="h-7 w-7 sm:h-8 sm:w-8 rounded-md sm:rounded-lg bg-white shadow-xs flex items-center justify-center text-pehnava-charcoal hover:text-pehnava-primary active:scale-95 transition-all cursor-pointer disabled:opacity-50"
-                                                disabled={item.quantity <= 1}
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    setActiveQuantityModalId(item._id);
+                                                }}
+                                                disabled={item.variant.stock === 0}
+                                                className="flex items-center gap-1.5 sm:gap-2 px-2 py-1.5 sm:px-3 sm:py-2 bg-pehnava-offWhite rounded-lg border border-pehnava-border/40 hover:border-pehnava-primary/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed group cursor-pointer"
                                             >
-                                                <Minus className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+                                                <span className="text-xs sm:text-sm font-bold text-pehnava-charcoal">
+                                                    <span className="hidden sm:inline">Qty: </span>{item.quantity}
+                                                </span>
+                                                <ChevronDown className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-pehnava-slate group-hover:text-pehnava-primary transition-colors" />
                                             </button>
-                                            <span className="text-xs sm:text-sm font-bold w-4 text-center">{item.quantity}</span>
-                                            <button
-                                                onClick={() => handleUpdateQuantity(item.product._id, item.quantity + 1)}
-                                                className="h-7 w-7 sm:h-8 sm:w-8 rounded-md sm:rounded-lg bg-white shadow-xs flex items-center justify-center text-pehnava-charcoal hover:text-pehnava-primary active:scale-95 transition-all cursor-pointer"
-                                            >
-                                                <Plus className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
-                                            </button>
+                                            <div className="text-[10px] font-medium ml-1">
+                                                {item.variant.stock === 0 ? (
+                                                    <span className="text-red-500">Out of Stock</span>
+                                                ) : item.variant.stock < 11 ? (
+                                                    <span className="text-orange-600 font-bold">Only {item.variant.stock} left</span>
+                                                ) : null}
+                                            </div>
                                         </div>
 
                                         <div className="flex flex-col items-end gap-1">
                                             <span className="text-base sm:text-lg font-bold text-pehnava-charcoal">
-                                                ₹{(item.product.discountPrice * item.quantity).toLocaleString('en-IN')}
+                                                ₹{(item.variant.discountPrice * item.quantity).toLocaleString('en-IN')}
                                             </span>
-                                            {item.product.price > item.product.discountPrice && (
+                                            {item.variant.price > item.variant.discountPrice && (
                                                 <span className="text-xs text-pehnava-slate line-through opacity-60">
-                                                    ₹{(item.product.price * item.quantity).toLocaleString('en-IN')}
+                                                    ₹{(item.variant.price * item.quantity).toLocaleString('en-IN')}
                                                 </span>
                                             )}
                                         </div>
@@ -240,6 +284,21 @@ const CartPage = () => {
                     </div>
                 </div>
             </div>
+            {activeQuantityModalId && (
+                <QuantityModal
+                    isOpen={!!activeQuantityModalId}
+                    onClose={() => setActiveQuantityModalId(null)}
+                    currentQuantity={items.find((i: any) => i._id === activeQuantityModalId)?.quantity || 1}
+                    maxStock={items.find((i: any) => i._id === activeQuantityModalId)?.variant?.stock || 0}
+                    onSelect={(qty) => {
+                        const item = items.find((i: any) => i._id === activeQuantityModalId);
+                        if (item) {
+                            handleUpdateQuantity(item, qty);
+                        }
+                        setActiveQuantityModalId(null);
+                    }}
+                />
+            )}
         </div>
     );
 };
