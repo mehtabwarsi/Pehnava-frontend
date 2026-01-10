@@ -84,6 +84,10 @@ const CartPage = () => {
             productId: item.product._id,
             size: item.variant.size,
             color: item.variant.color
+        }, {
+            onSuccess: () => {
+                queryClient.invalidateQueries({ queryKey: ["checkout"] });
+            }
         });
     };
 
