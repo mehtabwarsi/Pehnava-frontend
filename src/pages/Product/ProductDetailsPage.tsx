@@ -65,12 +65,6 @@ const ProductDetailsPage = () => {
         specifications: productApiData?.specifications,
     };
 
-    const isSizeOutOfStock = (size: string) => {
-        return !productApiData?.variants?.some(
-            (v: any) => v.size === size && v.stock > 0
-        );
-    };
-
 
     const discount = Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100);
 
@@ -227,27 +221,42 @@ const ProductDetailsPage = () => {
                             </h3>
                             <div className="flex flex-wrap gap-2 md:gap-3">
                                 {product?.sizes?.map((size: any) => {
-                                    const isOutOfStock = isSizeOutOfStock(size);
-                                    return (
-                                        <button
-                                            key={size}
-                                            disabled={isOutOfStock}
-                                            onClick={() => {
-                                                setSelectedSize(size);
-                                                const firstAvailableVariant = productApiData?.variants?.find(
-                                                    (v: any) => v.size === size && v.stock > 0
-                                                );
+                                    // Calculate total stock for this size across all variants
+                                    const sizeVariants = productApiData?.variants?.filter((v: any) => v.size === size) || [];
+                                    const totalStock = sizeVariants.reduce((acc: number, v: any) => acc + v.stock, 0);
+                                    const isOutOfStock = totalStock === 0;
 
-                                                setSelectedColor(firstAvailableVariant?.color || '');
-                                                setShowError(false);
-                                            }}
-                                            className={`w-12 h-12 flex items-center justify-center rounded-full font-bold transition-all duration-300 ${selectedSize === size
-                                                ? 'bg-pehnava-primary text-white shadow-glow scale-110'
-                                                : 'bg-white text-pehnava-charcoal border border-pehnava-border hover:border-pehnava-primary hover:text-pehnava-primary shadow-soft'
-                                                }`}
-                                        >
-                                            {size.toUpperCase()}
-                                        </button>
+                                    return (
+                                        <div key={size} className="flex flex-col items-center gap-1">
+                                            <button
+                                                disabled={isOutOfStock}
+                                                onClick={() => {
+                                                    setSelectedSize(size);
+                                                    const firstAvailableVariant = sizeVariants.find((v: any) => v.stock > 0);
+                                                    setSelectedColor(firstAvailableVariant?.color || '');
+                                                    setShowError(false);
+                                                }}
+                                                className={`w-12 h-12 flex items-center justify-center rounded-full font-bold transition-all duration-300 relative ${isOutOfStock
+                                                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed border border-gray-200'
+                                                    : selectedSize === size
+                                                        ? 'bg-pehnava-primary text-white shadow-glow scale-110'
+                                                        : 'bg-white text-pehnava-charcoal border border-pehnava-border hover:border-pehnava-primary hover:text-pehnava-primary shadow-soft'
+                                                    }`}
+                                            >
+                                                {size.toUpperCase()}
+                                                {isOutOfStock && (
+                                                    <div className="absolute inset-0 flex items-center justify-center">
+                                                        <div className="w-full h-0.5 bg-gray-400 rotate-45 transform scale-75"></div>
+                                                    </div>
+                                                )}
+                                            </button>
+                                            {/* Show remaining stock if less than 11 */}
+                                            {!isOutOfStock && totalStock < 11 && (
+                                                <span className="text-[10px] text-orange-600 font-bold whitespace-nowrap">
+                                                    {totalStock} left
+                                                </span>
+                                            )}
+                                        </div>
                                     )
                                 })}
                             </div>
