@@ -193,7 +193,7 @@ const CartPage = () => {
                                                     e.stopPropagation();
                                                     setActiveQuantityModalId(item._id);
                                                 }}
-                                                disabled={item.variant.stock === 0}
+                                                disabled={item.isOutOfStock || item.variant.stock === 0}
                                                 className="flex items-center gap-1.5 sm:gap-2 px-2 py-1.5 sm:px-3 sm:py-2 bg-pehnava-offWhite rounded-lg border border-pehnava-border/40 hover:border-pehnava-primary/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed group cursor-pointer"
                                             >
                                                 <span className="text-xs sm:text-sm font-bold text-pehnava-charcoal">
@@ -202,8 +202,8 @@ const CartPage = () => {
                                                 <ChevronDown className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-pehnava-slate group-hover:text-pehnava-primary transition-colors" />
                                             </button>
                                             <div className="text-[10px] font-medium ml-1">
-                                                {item.variant.stock === 0 ? (
-                                                    <span className="text-red-500">Out of Stock</span>
+                                                {item.isOutOfStock || item.variant.stock === 0 ? (
+                                                    <span className="text-red-500 font-bold">Out of Stock</span>
                                                 ) : item.variant.stock < 11 ? (
                                                     <span className="text-orange-600 font-bold">Only {item.variant.stock} left</span>
                                                 ) : null}
