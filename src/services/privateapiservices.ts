@@ -110,3 +110,15 @@ export const removeFromCartApi = async (
     );
     return response.data;
 };
+
+// checkout api
+
+export const checkoutApi = async () => {
+    try {
+        const response = await privateApi.get(`/checkout/summary`);
+        return response.data
+    } catch (error) {
+        throw error
+    }
+}
+

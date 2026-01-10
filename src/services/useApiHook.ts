@@ -10,6 +10,7 @@ import {
     addAddressApi,
     addToCartApi,
     addToWishListApi,
+    checkoutApi,
     deleteAddressByIdApi,
     getAddressesApi,
     getCartApi,
@@ -203,3 +204,10 @@ export const useRemoveFromCart = () => {
         },
     });
 };
+
+export const useCheckout = () => {
+    return useQuery({
+        queryKey: ["checkout"],
+        queryFn: () => checkoutApi(),
+    })
+}

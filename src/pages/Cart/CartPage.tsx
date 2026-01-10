@@ -1,7 +1,8 @@
 import { Trash2, ShoppingBag, ArrowRight, ShieldCheck, CreditCard, Loader2, ChevronDown, X } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
-import { useGetCart, useRemoveFromCart, useUpdateCartQuantity } from "../../services/useApiHook";
+import { useCheckout, useGetCart, useRemoveFromCart, useUpdateCartQuantity } from "../../services/useApiHook";
+import { useQueryClient } from "@tanstack/react-query";
 
 const QuantityModal = ({
     isOpen,
@@ -55,17 +56,14 @@ const QuantityModal = ({
 };
 
 const CartPage = () => {
+    const queryClient = useQueryClient();
     const { data: cartData, isLoading: isCartLoading } = useGetCart();
     const { mutate: updateQuantity } = useUpdateCartQuantity();
     const { mutate: removeProduct } = useRemoveFromCart();
     const [activeQuantityModalId, setActiveQuantityModalId] = useState<string | null>(null);
-
-    console.log(cartData);
+    const { data: checkoutData, isLoading: isCheckoutLoading } = useCheckout();
 
     const items = cartData?.data?.items || [];
-    const subtotal = items.reduce((acc: number, item: any) => acc + (item.variant.discountPrice * item.quantity), 0);
-    const taxEstimate = Math.round(subtotal * 0.05); // 5% tax example
-    const orderTotal = subtotal + taxEstimate;
 
     const handleUpdateQuantity = (item: any, newQuantity: number) => {
         if (newQuantity < 1) return;
@@ -74,6 +72,10 @@ const CartPage = () => {
             quantity: newQuantity,
             size: item.variant.size,
             color: item.variant.color
+        }, {
+            onSuccess: () => {
+                queryClient.invalidateQueries({ queryKey: ["checkout"] });
+            }
         });
     };
 
@@ -244,24 +246,15 @@ const CartPage = () => {
                             </h2>
 
                             <div className="space-y-4 text-sm relative z-10">
-                                <div className="flex justify-between text-pehnava-slate">
-                                    <span>Subtotal</span>
-                                    <span className="font-medium text-pehnava-charcoal">₹{subtotal.toLocaleString('en-IN')}</span>
-                                </div>
-
-                                <div className="flex justify-between text-pehnava-slate">
-                                    <span>Shipping Estimate</span>
-                                    <span className="font-medium text-green-600">Free</span>
-                                </div>
-
-                                <div className="flex justify-between text-pehnava-slate">
-                                    <span>Tax Estimate</span>
-                                    <span className="font-medium text-pehnava-charcoal">₹{taxEstimate.toLocaleString('en-IN')}</span>
-                                </div>
-
                                 <div className="border-t border-dashed border-pehnava-border/60 my-6 pt-6 flex justify-between items-center">
                                     <span className="text-base font-bold text-pehnava-charcoal">Order Total</span>
-                                    <span className="text-xl sm:text-2xl font-bold text-pehnava-charcoal">₹{orderTotal.toLocaleString('en-IN')}</span>
+                                    <span className="text-xl sm:text-2xl font-bold text-pehnava-charcoal">
+                                        {isCheckoutLoading ? (
+                                            <Loader2 className="w-5 h-5 animate-spin" />
+                                        ) : (
+                                            `₹${checkoutData?.data?.totalAmount?.toLocaleString('en-IN') || 0}`
+                                        )}
+                                    </span>
                                 </div>
                             </div>
 
