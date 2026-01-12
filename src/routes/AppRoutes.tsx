@@ -17,6 +17,8 @@ import EditAddressPage from "../pages/Profile/address/EditAddressPage";
 import WishListPage from "../pages/Profile/WishList/WishListPage";
 import AddressSelectionPage from "../pages/Cart/AddressSelectionPage";
 import PaymentPage from "../pages/Cart/PaymentPage";
+import MyOrdersPage from "../pages/Profile/MyOrders/MyOrdersPage";
+import MyOrderDetailsPage from "../pages/Profile/MyOrders/MyOrdersDetailPage";
 
 const AppRoutes = () => {
     return (
@@ -102,6 +104,23 @@ const AppRoutes = () => {
                         }
                     />
                 </Route>
+
+                <Route
+                    path="profile/my-orders"
+                    element={
+                        <ProtectedRoute>
+                            <MyOrdersPage />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="profile/my-orders/:orderId"
+                    element={
+                        <ProtectedRoute>
+                            <MyOrderDetailsPage />
+                        </ProtectedRoute>
+                    }
+                />
 
                 {/* AUTH */}
                 <Route path="/login" element={<LoginPage />} />

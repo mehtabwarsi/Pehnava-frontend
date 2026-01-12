@@ -20,7 +20,10 @@ import {
     updateAddressApi,
     updateCartQuantityApi,
     placeOrderApi,
-    clearCartApi
+    clearCartApi,
+    getAllMyOrders,
+    getMyOrderById,
+    orderCancel
 } from "./privateapiservices"
 
 export const useGetAllProducts = () => {
@@ -232,5 +235,25 @@ export const usePlaceOrder = () => {
             queryClient.invalidateQueries({ queryKey: ["cart"] });
             queryClient.invalidateQueries({ queryKey: ["checkout"] });
         },
+    })
+}
+
+export const useMyorders = () => {
+    return useQuery({
+        queryKey: ["myorders"],
+        queryFn: () => getAllMyOrders(),
+    })
+}
+
+export const useMyOrderById = (orderId: string) => {
+    return useQuery({
+        queryKey: ["myorder", orderId],
+        queryFn: () => getMyOrderById(orderId),
+    })
+}
+
+export const useCancelOrder = (orderId: string) => {
+    return useMutation({
+        mutationFn: () => orderCancel(orderId),
     })
 }

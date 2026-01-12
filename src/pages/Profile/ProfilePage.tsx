@@ -23,7 +23,7 @@ const ProfilePage = () => {
     const { user } = useSelector((state: any) => state.auth);
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const { data: wishlist, isLoading } = useGetWishList();
+    const { data: wishlist } = useGetWishList();
     const totalWishList = wishlist?.data?.total || 0;
 
     const handleLogout = async () => {
@@ -80,7 +80,7 @@ const ProfilePage = () => {
 
                 {/* 3. Menu List - Clean & Functional */}
                 <div className="bg-white rounded-2xl shadow-soft border border-pehnava-border/40 overflow-hidden divide-y divide-pehnava-border/40">
-                    <MenuItem icon={Package} title="My Orders" desc="Track active orders and returns" />
+                    <MenuItem icon={Package} title="My Orders" desc="Track active orders and returns" onClick={() => navigate('/profile/my-orders')} />
                     <MenuItem icon={Heart} title="Wishlist" desc="Your curated collection" onClick={() => navigate("/wishlist")} />
                     <MenuItem icon={MapPin} title="Addresses" desc="Manage delivery locations" onClick={() => navigate("/profile/address")} />
                     <MenuItem icon={CreditCard} title="Payment Methods" desc="Manage cards and UPI" />

@@ -141,3 +141,30 @@ export const placeOrderApi = async (orderData: any) => {
     }
 }
 
+export const getAllMyOrders = async () => {
+    try {
+        const response = await privateApi.get(`/order/my-orders`)
+        return response.data
+    } catch (error) {
+
+    }
+}
+
+export const getMyOrderById = async (orderId: string) => {
+    try {
+        const response = await privateApi.get(`/order/${orderId}`)
+        return response.data
+    } catch (error) {
+        throw error
+    }
+}
+
+export const orderCancel = async (orderId: string) => {
+    try {
+        const response = await privateApi.put(`/order/${orderId}/cancel`)
+        return response.data
+    } catch (error) {
+        throw error
+    }
+}
+
