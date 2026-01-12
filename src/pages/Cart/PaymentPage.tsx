@@ -84,7 +84,7 @@ const PaymentPage = () => {
             onSuccess: (data: any) => {
                 clearCart()
                 alert(`Order placed successfully! Order ID: ${data?.data?._id}`);
-                navigate("/");
+                navigate("/profile/my-orders");
             },
             onError: (error: any) => {
                 console.error("Failed to place order:", error);
@@ -260,6 +260,10 @@ const PaymentPage = () => {
                                 </div>
                                 <div className="flex justify-between items-center">
                                     <span className="text-pehnava-slate">Delivery Charges</span>
+                                    <span className="font-bold text-green-600">FREE</span>
+                                </div>
+                                <div className="flex justify-between items-center">
+                                    <span className="text-pehnava-slate">Platform Charges</span>
                                     <span className="font-bold text-green-600">FREE</span>
                                 </div>
                                 <div className="border-t border-dashed border-pehnava-border/60 my-3 pt-3 flex justify-between items-center">
