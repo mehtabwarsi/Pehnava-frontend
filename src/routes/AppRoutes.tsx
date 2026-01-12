@@ -15,6 +15,8 @@ import AddressPage from "../pages/Profile/address/AddressPage";
 import AddAddressPage from "../pages/Profile/address/AddAddressPage";
 import EditAddressPage from "../pages/Profile/address/EditAddressPage";
 import WishListPage from "../pages/Profile/WishList/WishListPage";
+import AddressSelectionPage from "../pages/Cart/AddressSelectionPage";
+import PaymentPage from "../pages/Cart/PaymentPage";
 
 const AppRoutes = () => {
     return (
@@ -53,6 +55,24 @@ const AppRoutes = () => {
                         element={
                             <ProtectedRoute>
                                 <CartPage />
+                            </ProtectedRoute>
+                        }
+                    />
+
+                    <Route
+                        path="checkout/address"
+                        element={
+                            <ProtectedRoute>
+                                <AddressSelectionPage />
+                            </ProtectedRoute>
+                        }
+                    />
+
+                    <Route
+                        path="checkout/payment"
+                        element={
+                            <ProtectedRoute>
+                                <PaymentPage />
                             </ProtectedRoute>
                         }
                     />

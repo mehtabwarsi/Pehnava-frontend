@@ -1,11 +1,13 @@
 import { ChevronLeft, MapPin, User, Home, Briefcase, Info, Loader2 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useState } from "react";
 import { useAddAddress } from "../../../services/useApiHook";
 
 const AddAddressPage = () => {
     const navigate = useNavigate();
+    const location = useLocation();
     const { mutate: addAddress, isPending } = useAddAddress();
+    const returnTo = location.state?.returnTo;
 
     const [formData, setFormData] = useState({
         fullName: "",
@@ -64,7 +66,12 @@ const AddAddressPage = () => {
 
         addAddress(addressData, {
             onSuccess: () => {
-                navigate(-1);
+                // If came from checkout, go back to checkout
+                if (returnTo) {
+                    navigate(returnTo);
+                } else {
+                    navigate(-1);
+                }
             },
             onError: (error) => {
                 console.error("Failed to add address:", error);

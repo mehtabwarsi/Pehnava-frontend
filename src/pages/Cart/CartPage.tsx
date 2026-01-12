@@ -262,9 +262,12 @@ const CartPage = () => {
                                 </div>
                             </div>
 
-                            <button className="w-full py-3.5 sm:py-4 rounded-xl bg-pehnava-charcoal text-white font-bold tracking-wide hover:bg-pehnava-primary hover:shadow-glow hover:-translate-y-0.5 transition-all duration-300 relative z-10 flex items-center justify-center gap-2 cursor-pointer active:scale-95">
+                            <Link
+                                to="/checkout/address"
+                                className="w-full py-3.5 sm:py-4 rounded-xl bg-pehnava-charcoal text-white font-bold tracking-wide hover:bg-pehnava-primary hover:shadow-glow hover:-translate-y-0.5 transition-all duration-300 relative z-10 flex items-center justify-center gap-2 cursor-pointer active:scale-95"
+                            >
                                 Checkout Now <ArrowRight className="w-4 h-4" />
-                            </button>
+                            </Link>
 
                             <div className="mt-6 flex flex-col gap-3 relative z-10">
                                 <div className="flex items-center gap-2 text-[10px] sm:text-xs text-pehnava-slate justify-center">
