@@ -234,6 +234,7 @@ export const usePlaceOrder = () => {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["cart"] });
             queryClient.invalidateQueries({ queryKey: ["checkout"] });
+            queryClient.invalidateQueries({ queryKey: ["myorders"] });
         },
     })
 }
