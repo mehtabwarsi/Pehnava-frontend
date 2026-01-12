@@ -159,9 +159,10 @@ export const getMyOrderById = async (orderId: string) => {
     }
 }
 
-export const orderCancel = async (orderId: string) => {
+export const orderCancel = async (orderId: string, reason: string) => {
     try {
-        const response = await privateApi.put(`/order/${orderId}/cancel`)
+        const response = await privateApi.patch(`/order/${orderId}/cancel`, { reason })
+        console.log(`response cancel order`, response.data)
         return response.data
     } catch (error) {
         throw error

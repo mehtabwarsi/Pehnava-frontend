@@ -4,14 +4,14 @@ import { Package, MapPin, CreditCard, Calendar, Loader2, ChevronLeft, CheckCircl
 import { useState } from "react";
 
 const MyOrderDetailsPage = () => {
-    const { orderId } = useParams();
+    const { orderId } = useParams<{ orderId: string }>();
+    const [selectedReason, setSelectedReason] = useState("");
     const navigate = useNavigate();
     const { data, isLoading } = useMyOrderById(orderId || "");
-    const { mutateAsync: cancelOrder } = useCancelOrder(orderId || "")
+    const { mutateAsync: cancelOrder } = useCancelOrder()
 
     // Modal State
     const [showCancelModal, setShowCancelModal] = useState(false);
-    const [selectedReason, setSelectedReason] = useState("");
     const [isCancelling, setIsCancelling] = useState(false);
 
     const order = data?.message;
@@ -32,9 +32,7 @@ const MyOrderDetailsPage = () => {
 
         setIsCancelling(true);
         try {
-            await cancelOrder();
-            // In a real app, we might pass the reason to the backend here if supported
-            // await cancelOrder({ reason: selectedReason }); 
+            await cancelOrder({ orderId: orderId, reason: selectedReason });
 
             setShowCancelModal(false);
             window.location.reload(); // Refresh to show new status

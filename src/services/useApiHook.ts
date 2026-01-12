@@ -252,8 +252,8 @@ export const useMyOrderById = (orderId: string) => {
     })
 }
 
-export const useCancelOrder = (orderId: string) => {
+export const useCancelOrder = () => {
     return useMutation({
-        mutationFn: () => orderCancel(orderId),
+        mutationFn: ({ orderId, reason }: { orderId: string, reason: string }) => orderCancel(orderId, reason),
     })
 }
