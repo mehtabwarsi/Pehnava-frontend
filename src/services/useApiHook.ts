@@ -18,7 +18,9 @@ import {
     removeFromCartApi,
     setDefaultAddressApi,
     updateAddressApi,
-    updateCartQuantityApi
+    updateCartQuantityApi,
+    placeOrderApi,
+    clearCartApi
 } from "./privateapiservices"
 
 export const useGetAllProducts = () => {
@@ -205,9 +207,30 @@ export const useRemoveFromCart = () => {
     });
 };
 
+export const useClearCart = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: () => clearCartApi(),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["cart"] });
+        },
+    });
+};
+
 export const useCheckout = () => {
     return useQuery({
         queryKey: ["checkout"],
         queryFn: () => checkoutApi(),
+    })
+}
+
+export const usePlaceOrder = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (orderData: any) => placeOrderApi(orderData),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["cart"] });
+            queryClient.invalidateQueries({ queryKey: ["checkout"] });
+        },
     })
 }

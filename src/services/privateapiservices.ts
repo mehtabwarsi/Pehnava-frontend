@@ -111,11 +111,30 @@ export const removeFromCartApi = async (
     return response.data;
 };
 
+export const clearCartApi = async () => {
+    try {
+        const response = await privateApi.delete("/cart/clear-cart");
+        return response.data
+    } catch (error) {
+        throw error
+    }
+}
+
 // checkout api
 
 export const checkoutApi = async () => {
     try {
         const response = await privateApi.get(`/checkout/summary`);
+        return response.data
+    } catch (error) {
+        throw error
+    }
+}
+
+// place order address 
+export const placeOrderApi = async (orderData: any) => {
+    try {
+        const response = await privateApi.post(`/order/place-order`, orderData)
         return response.data
     } catch (error) {
         throw error

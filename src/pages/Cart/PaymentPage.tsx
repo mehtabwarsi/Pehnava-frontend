@@ -1,6 +1,6 @@
 import { ChevronLeft, MapPin, CreditCard, Smartphone, Wallet, ChevronRight, ShieldCheck, Loader2, Home, Briefcase, CheckCircle2, Package } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { useCheckout, useGetAddresses } from "../../services/useApiHook";
+import { useCheckout, useClearCart, useGetAddresses, usePlaceOrder } from "../../services/useApiHook";
 import { useState, useEffect } from "react";
 
 type PaymentMethod = "COD" | "UPI" | "CARD" | "WALLET";
@@ -12,7 +12,8 @@ const PaymentPage = () => {
     const { data: addressResponse } = useGetAddresses();
 
     const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<PaymentMethod | null>(null);
-    const [isPlacingOrder, setIsPlacingOrder] = useState(false);
+    const { mutate: placeOrder, isPending: isPlacingOrder } = usePlaceOrder();
+    const { mutate: clearCart } = useClearCart();
 
     // Get selected address ID from navigation state or sessionStorage
     const selectedAddressId = location.state?.addressId || sessionStorage.getItem("selectedAddressId");
@@ -54,17 +55,42 @@ const PaymentPage = () => {
     ];
 
     const handlePlaceOrder = async () => {
-        if (!selectedPaymentMethod) return;
+        if (!selectedPaymentMethod || !selectedAddress) return;
 
-        setIsPlacingOrder(true);
+        const validItems = items.filter((item: any) => item.productId);
 
-        // Simulate order placement (replace with actual API call)
-        setTimeout(() => {
-            setIsPlacingOrder(false);
-            // Navigate to order confirmation or success page
-            alert(`Order placed successfully with ${selectedPaymentMethod}! 🎉`);
-            navigate("/");
-        }, 2000);
+        if (validItems.length === 0) {
+            alert("No valid items in cart to place order");
+            return;
+        }
+
+        const orderData = {
+            items: validItems.map((item: any) => ({
+                product: item.productId,
+                quantity: item.quantity,
+                price: item.price,
+                size: item.size,
+                color: item.color,
+                image: item.image,
+                name: item.name
+            })),
+            shippingAddress: selectedAddress,
+            paymentMethod: selectedPaymentMethod,
+            shippingCharge: 0,
+            discount: 0
+        };
+
+        placeOrder(orderData, {
+            onSuccess: (data: any) => {
+                clearCart()
+                alert(`Order placed successfully! Order ID: ${data?.data?._id}`);
+                navigate("/");
+            },
+            onError: (error: any) => {
+                console.error("Failed to place order:", error);
+                alert(error?.response?.data?.message || "Failed to place order. Please try again.");
+            }
+        });
     };
 
     if (isCheckoutLoading) {
@@ -195,20 +221,20 @@ const PaymentPage = () => {
                                 Order Summary ({itemCount} {itemCount === 1 ? 'item' : 'items'})
                             </h3>
                             <div className="space-y-3 max-h-[300px] overflow-y-auto">
-                                {items.filter((item: any) => item.product).map((item: any) => (
-                                    <div key={item._id} className="flex gap-3 pb-3 border-b border-pehnava-border/40 last:border-0">
+                                {items.filter((item: any) => item.productId).map((item: any) => (
+                                    <div key={item.productId} className="flex gap-3 pb-3 border-b border-pehnava-border/40 last:border-0">
                                         <div className="w-16 h-20 rounded-lg bg-pehnava-lightGray overflow-hidden flex-shrink-0">
                                             <img
-                                                src={item.product?.images?.[0] || "/placeholder-product.jpg"}
-                                                alt={item.product?.name || "Product"}
+                                                src={item.image || "/placeholder-product.jpg"}
+                                                alt={item.name || "Product"}
                                                 className="w-full h-full object-cover"
                                             />
                                         </div>
                                         <div className="flex-1 min-w-0">
-                                            <h4 className="font-bold text-sm text-pehnava-charcoal line-clamp-1">{item.product?.name || "Product"}</h4>
+                                            <h4 className="font-bold text-sm text-pehnava-charcoal line-clamp-1">{item.name || "Product"}</h4>
                                             <div className="flex items-center gap-2 mt-1">
                                                 <span className="text-xs text-pehnava-slate">
-                                                    Size: {item.variant?.size?.toUpperCase() || "N/A"}
+                                                    Size: {item.size?.toUpperCase() || "N/A"}
                                                 </span>
                                                 <span className="text-xs text-pehnava-slate">•</span>
                                                 <span className="text-xs text-pehnava-slate">
@@ -216,7 +242,7 @@ const PaymentPage = () => {
                                                 </span>
                                             </div>
                                             <p className="font-bold text-sm text-pehnava-charcoal mt-1">
-                                                ₹{((item.variant?.discountPrice || 0) * (item.quantity || 1)).toLocaleString('en-IN')}
+                                                ₹{((item.price || 0) * (item.quantity || 1)).toLocaleString('en-IN')}
                                             </p>
                                         </div>
                                     </div>
