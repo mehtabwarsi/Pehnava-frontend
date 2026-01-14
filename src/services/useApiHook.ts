@@ -3,9 +3,9 @@ import {
     filterProductApi,
     getAllProductsApi,
     getCategoriesApi,
-    getCategoryApi,
     getGenderApi,
-    getProductByIdApi
+    getProductByIdApi,
+    getSubCategoryApi
 } from "./publicapiservice"
 import {
     addAddressApi,
@@ -56,14 +56,14 @@ export const useGetGender = () => {
     })
 }
 
-export const useGetCategory = (genderId: string | undefined) => {
+export const useGetSubCategory = (categoryId?: string) => {
     return useQuery({
-        queryKey: ["category", genderId],
-        queryFn: () => getCategoryApi(genderId!),
-        enabled: !!genderId,
+        queryKey: ["subCategory", categoryId],
+        queryFn: () => getSubCategoryApi(categoryId!),
+        enabled: !!categoryId,
         staleTime: 0,
-    })
-}
+    });
+};
 
 // private api
 

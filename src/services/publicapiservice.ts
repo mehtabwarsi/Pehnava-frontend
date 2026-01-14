@@ -51,18 +51,14 @@ export const getGenderApi = async () => {
     }
 }
 
-export const getCategoryApi = async (genderId: string) => {
-    try {
-        const response = await publicApi.get("category/subcategory", {
-            params: {
-                genderId
-            }
-        });
-        return response.data
-    } catch (error) {
-        throw error
-    }
-}
+export const getSubCategoryApi = async (categoryId: string) => {
+    const response = await publicApi.get("category/subcategory", {
+        params: {
+            categoryId // ✅ backend expects this
+        }
+    });
+    return response.data;
+};
 
 // get cateoseos api
 export const getCategoriesApi = async () => {

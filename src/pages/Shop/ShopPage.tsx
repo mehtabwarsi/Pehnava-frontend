@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import ProductCard from "../../components/Home/ProductCard";
 import { SlidersHorizontal, ChevronDown, ShoppingBag, X, Sparkles } from "lucide-react";
-import { useFilterProduct, useGetCategory, useGetGender } from "../../services/useApiHook";
+import { useFilterProduct, useGetGender, useGetSubCategory } from "../../services/useApiHook";
 
 const ShopPage = () => {
     const [searchParams, setSearchParams] = useSearchParams();
@@ -28,16 +28,25 @@ const ShopPage = () => {
         )?._id;
     }, [genderData, gender]);
 
-    const { data: categoryData } = useGetCategory(genderId);
+    const { data: subCategoryData, isLoading: subLoading } =
+        useGetSubCategory(genderId);
+
     // Stable filter object for the API hook
     const filter = useMemo(() => ({
         category: gender === "all" ? undefined : gender,
         subCategory: subCategory === "all" ? undefined : subCategory,
-        sortByPrice: sort === "low-high" ? "low-to-high" : sort === "high-low" ? "high-to-low" : undefined,
+        sortByPrice:
+            sort === "low-high" ?
+                "low-to-high" :
+                sort === "high-low" ?
+                    "high-to-low"
+                    : undefined,
         isFeatured: isFeatured || undefined
     }), [gender, subCategory, sort, isFeatured]);
 
     const { data, isLoading, isError } = useFilterProduct(filter);
+
+    console.log(`filter data :${JSON.stringify(filter)}`);
 
     // Only show active products
     const apiProducts = useMemo(() => {
@@ -45,9 +54,14 @@ const ShopPage = () => {
     }, [data]);
 
     const categories = useMemo(() => {
-        const fetched: string[] = categoryData?.data?.map((item: any) => item.name as string) || [];
-        return ["all", ...Array.from(new Set(fetched))];
-    }, [categoryData]);
+        if (!subCategoryData?.data) return ["all"];
+
+        return [
+            "all",
+            ...subCategoryData.data.map((item: any) => item.name),
+        ];
+    }, [subCategoryData]);
+
 
 
 
@@ -103,7 +117,7 @@ const ShopPage = () => {
                                         <span className="text-xs font-bold text-pehnava-charcoal uppercase tracking-widest min-w-[60px]">Type:</span>
                                         {(gender === "all") ? (
                                             <span className="text-[10px] text-pehnava-slate italic">Select a gender to see types</span>
-                                        ) : (categoryData === undefined) ? (
+                                        ) : (subCategoryData === undefined) ? (
                                             <div className="flex gap-2 animate-pulse">
                                                 {[1, 2, 3].map(i => <div key={i} className="h-7 w-16 bg-pehnava-lightGray rounded-full" />)}
                                             </div>
