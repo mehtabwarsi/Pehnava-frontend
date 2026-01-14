@@ -29,8 +29,7 @@ const ShopPage = () => {
         )?._id;
     }, [genderData, gender]);
 
-    const { data: subCategoryData, isLoading: subLoading } =
-        useGetSubCategory(genderId);
+    const { data: subCategoryData } = useGetSubCategory(genderId);
 
     // Stable filter object for the API hook
     const filter = useMemo(() => ({
@@ -46,8 +45,6 @@ const ShopPage = () => {
     }), [gender, subCategory, sort, isFeatured]);
 
     const { data, isLoading, isError } = useFilterProduct(filter);
-
-    console.log(`filter data :${JSON.stringify(filter)}`);
 
     // Only show active products
     const apiProducts = useMemo(() => {
