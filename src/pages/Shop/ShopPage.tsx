@@ -12,11 +12,12 @@ const ShopPage = () => {
 
     // Use URL params directly for gender (which matches 'category' in backend)
     const gender = searchParams.get("gender") || "all";
+    const categoryParam = searchParams.get("category");
 
-    // Reset subCategory when gender changes
+    // Reset subCategory when gender changes or when URL category param changes
     useEffect(() => {
-        setSubCategory("all");
-    }, [gender]);
+        setSubCategory(categoryParam || "all");
+    }, [gender, categoryParam]);
 
     const { data: genderData } = useGetGender();
 
@@ -66,6 +67,7 @@ const ShopPage = () => {
 
 
     const handleGenderChange = (newGender: string) => {
+        searchParams.delete("category"); // Clear category param when switching gender
         if (newGender === "all") {
             searchParams.delete("gender");
         } else {
