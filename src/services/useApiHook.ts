@@ -135,10 +135,11 @@ export const useSetDefaultAddress = () => {
 
 // cart api
 
-export const useGetCart = () => {
+export const useGetCart = (options = {}) => {
     return useQuery({
         queryKey: ["cart"],
         queryFn: () => getCartApi(),
+        ...options
     })
 }
 

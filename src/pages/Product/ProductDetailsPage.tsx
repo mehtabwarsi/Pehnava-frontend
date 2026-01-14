@@ -28,7 +28,9 @@ const ProductDetailsPage = () => {
     const { data: wishlistData } = useGetWishList({
         enabled: !!user,
     });
-    const { data: cartData } = useGetCart();
+    const { data: cartData } = useGetCart({
+        enabled: !!user,
+    });
     const { mutate: addToWishList } = useAddToWishList();
     const { mutate: addToCart } = useAddToCart();
 
@@ -302,12 +304,12 @@ const ProductDetailsPage = () => {
                                 })()}
                                 <button
                                     onClick={handleWishlist}
-                                    className={`w-12 h-12 md:w-14 md:h-14 flex items-center justify-center rounded-lg transition-all duration-300 ${isFavorited
+                                    className={`w-12 h-12 md:w-14 md:h-14 flex items-center justify-center rounded-lg transition-all duration-300 ${isFavorited && user
                                         ? 'bg-pehnava-accent/10 text-pehnava-accent hover:bg-pehnava-accent/20 shadow-soft'
                                         : 'bg-white border-2 border-pehnava-border text-pehnava-slate hover:border-pehnava-primary hover:text-pehnava-primary shadow-soft'
                                         }`}
                                 >
-                                    <Heart className={`w-5 h-5 md:w-6 md:h-6 transition-transform hover:scale-110 ${isFavorited ? 'fill-pehnava-accent' : ''}`} />
+                                    <Heart className={`w-5 h-5 md:w-6 md:h-6 transition-transform hover:scale-110 ${isFavorited && user ? 'fill-pehnava-accent' : ''}`} />
                                 </button>
                             </div>
                         </div>
