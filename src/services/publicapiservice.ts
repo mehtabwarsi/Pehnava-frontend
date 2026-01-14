@@ -64,6 +64,16 @@ export const getCategoryApi = async (genderId: string) => {
     }
 }
 
+// get cateoseos api
+export const getCategoriesApi = async () => {
+    try {
+        const response = await publicApi.get("catalog/getAllCatalogsAdmin");
+        return response.data
+    } catch (error) {
+        throw error
+    }
+}
+
 
 
 

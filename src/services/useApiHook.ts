@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import {
     filterProductApi,
     getAllProductsApi,
+    getCategoriesApi,
     getCategoryApi,
     getGenderApi,
     getProductByIdApi
@@ -258,5 +259,12 @@ export const useMyOrderById = (orderId: string) => {
 export const useCancelOrder = () => {
     return useMutation({
         mutationFn: ({ orderId, reason }: { orderId: string, reason: string }) => orderCancel(orderId, reason),
+    })
+}
+
+export const useGetCategories = () => {
+    return useQuery({
+        queryKey: ["categories"],
+        queryFn: () => getCategoriesApi(),
     })
 }
