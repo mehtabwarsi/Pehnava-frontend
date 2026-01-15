@@ -70,6 +70,15 @@ export const getCategoriesApi = async () => {
     }
 }
 
+export const getCollectionsApi = async () => {
+    try {
+        const response = await publicApi.get("collection");
+        return response.data
+    } catch (error) {
+        throw error
+    }
+}
+
 
 
 

@@ -73,6 +73,41 @@ const ShopPage = () => {
         setSearchParams(searchParams);
     };
 
+    // Scroll detection for Sticky Filter / Hiding Navbar
+    const [isScrolled, setIsScrolled] = useState(false);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            const threshold = 100; // Adjust as needed
+            const scrolled = window.scrollY > threshold;
+            setIsScrolled(scrolled);
+
+            // Direct DOM manipulation for Navbar (since it's outside this component tree)
+            const navbar = document.getElementById("main-navbar");
+            if (navbar) {
+                if (scrolled) {
+                    navbar.style.transform = "translateY(-100%)";
+                } else {
+                    navbar.style.transform = "translateY(0)";
+                }
+            }
+        };
+
+        window.addEventListener("scroll", handleScroll);
+
+        // Initial check
+        handleScroll();
+
+        return () => {
+            window.removeEventListener("scroll", handleScroll);
+            // RESET Navbar on unmount
+            const navbar = document.getElementById("main-navbar");
+            if (navbar) {
+                navbar.style.transform = "translateY(0)";
+            }
+        };
+    }, []);
+
     return (
         <div className="min-h-screen bg-pehnava-offWhite pt-2 sm:pt-6 pb-20 px-3 sm:px-6 lg:px-8">
             <div className="max-w-7xl mx-auto">
@@ -88,7 +123,7 @@ const ShopPage = () => {
                 </div>
 
                 {/* CONTROLS BAR (Sticky) */}
-                <div className="sticky top-16 sm:top-20 z-30 py-2 sm:py-4 -mx-3 px-3 sm:mx-0 sm:px-0 bg-pehnava-offWhite/95 backdrop-blur-sm transition-all duration-300">
+                <div className={`sticky z-30 py-2 sm:py-4 -mx-3 px-3 sm:mx-0 sm:px-0 bg-pehnava-offWhite/95 backdrop-blur-sm transition-all duration-300 ${isScrolled ? 'top-0 shadow-md' : 'top-16 sm:top-20'}`}>
                     <div className="bg-white p-3 sm:p-4 rounded-xl shadow-soft border border-pehnava-border/50">
                         <div className="flex flex-col gap-4">
 

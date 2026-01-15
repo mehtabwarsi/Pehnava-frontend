@@ -5,7 +5,8 @@ import {
     getCategoriesApi,
     getGenderApi,
     getProductByIdApi,
-    getSubCategoryApi
+    getSubCategoryApi,
+    getCollectionsApi
 } from "./publicapiservice"
 import {
     addAddressApi,
@@ -266,5 +267,12 @@ export const useGetCategories = () => {
     return useQuery({
         queryKey: ["categories"],
         queryFn: () => getCategoriesApi(),
+    })
+}
+
+export const useGetCollections = () => {
+    return useQuery({
+        queryKey: ["collections"],
+        queryFn: () => getCollectionsApi(),
     })
 }

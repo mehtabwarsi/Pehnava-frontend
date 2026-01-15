@@ -1,34 +1,14 @@
 import CollectionCard from "../../components/Collection/CollectionCard";
-import { ArrowRight } from "lucide-react";
-
-const collections = [
-    {
-        id: 1,
-        title: "Summer Collection",
-        subtitle: "Light, breathable & effortless styles",
-        image: "https://images.unsplash.com/photo-1503342217505-b0a15ec3261c",
-    },
-    {
-        id: 2,
-        title: "Winter Collection",
-        subtitle: "Warm layers for cold days",
-        image: "https://images.unsplash.com/photo-1542060748-10c28b62716f",
-    },
-    {
-        id: 3,
-        title: "Festive Collection",
-        subtitle: "Celebrate in style",
-        image: "https://images.unsplash.com/photo-1520975916090-3105956dac38",
-    },
-    {
-        id: 4,
-        title: "Everyday Essentials",
-        subtitle: "Comfort for daily wear",
-        image: "https://images.unsplash.com/photo-1512436991641-6745cdb1723f",
-    },
-];
+import { ArrowRight, Loader } from "lucide-react";
+import { useGetCollections } from "../../services/useApiHook";
+import { useNavigate } from "react-router-dom";
 
 const CollectionPage = () => {
+    const { data: collectionResponse, isLoading } = useGetCollections();
+    const navigate = useNavigate();
+
+    const collections = collectionResponse?.data || [];
+
     return (
         <div className="min-h-screen bg-pehnava-offWhite pt-6 pb-20 px-4 sm:px-6 lg:px-8">
             <div className="max-w-7xl mx-auto">
@@ -44,21 +24,37 @@ const CollectionPage = () => {
                 </div>
 
                 {/* Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
-                    {collections.map((item) => (
-                        <CollectionCard
-                            key={item.id}
-                            title={item.title}
-                            subtitle={item.subtitle}
-                            image={item.image}
-                            onClick={() => console.log(item.title)}
-                        />
-                    ))}
-                </div>
+                {isLoading ? (
+                    <div className="flex justify-center items-center py-20">
+                        <Loader className="w-8 h-8 animate-spin text-pehnava-primary" />
+                    </div>
+                ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
+                        {collections.map((item: any) => (
+                            <CollectionCard
+                                key={item._id}
+                                title={item.title}
+                                subtitle={item.subtitle}
+                                image={item.image}
+                                onClick={() => navigate(item.redirectUrl || '#')}
+                            />
+                        ))}
+                    </div>
+                )}
+
+                {collections.length === 0 && !isLoading && (
+                    <div className="text-center py-20 text-pehnava-slate">
+                        No collections found.
+                    </div>
+                )}
+
 
                 {/* View All / Bottom CTA */}
                 <div className="mt-12 text-center">
-                    <button className="group inline-flex items-center gap-2 text-pehnava-charcoal font-semibold hover:text-pehnava-primary transition-colors cursor-pointer">
+                    <button
+                        onClick={() => navigate('/shop?gender=all')}
+                        className="group inline-flex items-center gap-2 text-pehnava-charcoal font-semibold hover:text-pehnava-primary transition-colors cursor-pointer"
+                    >
                         View All Categories <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
                     </button>
                 </div>

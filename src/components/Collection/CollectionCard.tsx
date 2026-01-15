@@ -11,31 +11,32 @@ const CollectionCard = ({ title, subtitle, image, onClick }: CollectionCardProps
             onClick={onClick}
             className="
         group relative cursor-pointer
-        h-[220px] sm:h-[280px] md:h-[320px]
-        rounded-xl sm:rounded-2xl
+        h-[300px] sm:h-[350px] md:h-[400px]
+        rounded-2xl
         overflow-hidden
+        shadow-md hover:shadow-xl transition-all duration-300
       "
         >
             {/* Image */}
             <img
                 src={image}
                 alt={title}
-                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
             />
 
             {/* Overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/25 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-90 transition-opacity duration-300" />
 
             {/* Content */}
-            <div className="absolute bottom-4 sm:bottom-6 left-4 sm:left-6 right-4 sm:right-6 text-white">
-                <h3 className="text-base sm:text-lg md:text-xl font-medium mb-1">
+            <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-8 text-white transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
+                <h3 className="text-2xl sm:text-3xl font-bold mb-2 drop-shadow-sm">
                     {title}
                 </h3>
-                <p className="text-xs sm:text-sm text-white/80">
+                <p className="text-sm sm:text-base text-gray-200 mb-4 line-clamp-2 max-w-[90%] font-medium">
                     {subtitle}
                 </p>
 
-                <span className="inline-block mt-3 sm:mt-4 text-xs sm:text-sm font-medium underline underline-offset-4">
+                <span className="inline-block text-sm font-semibold border-b-2 border-white/80 pb-0.5 group-hover:text-pehnava-accentLight group-hover:border-pehnava-accentLight transition-colors">
                     Explore Collection
                 </span>
             </div>
