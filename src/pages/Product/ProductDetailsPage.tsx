@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { toast } from 'react-hot-toast';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { Heart, ChevronRight, Check, Truck, Shield, RefreshCw, ShoppingBag } from 'lucide-react';
+import { Heart, ChevronRight, Check, Truck, Shield, RefreshCw, ShoppingBag, Maximize2, X } from 'lucide-react';
 import ProductCard from '../../components/Home/ProductCard';
 import CustomerReviews from '../../components/ProductDetail/CustomerReviews';
 import RatingStars from '../../components/ProductDetail/RatingStars';
@@ -17,7 +17,16 @@ const ProductDetailsPage = () => {
     const [selectedSize, setSelectedSize] = useState('');
     const [selectedColor, setSelectedColor] = useState('');
     const [showError, setShowError] = useState(false);
+    const [previewImage, setPreviewImage] = useState<string | null>(null);
 
+
+    useEffect(() => {
+        const handleEsc = (e: KeyboardEvent) => {
+            if (e.key === "Escape") setPreviewImage(null);
+        };
+        window.addEventListener("keydown", handleEsc);
+        return () => window.removeEventListener("keydown", handleEsc);
+    }, []);
 
     useEffect(() => {
         console.log("Size:", selectedSize, "Color:", selectedColor);
@@ -170,13 +179,19 @@ const ProductDetailsPage = () => {
                             {product.images?.map((image: string, index: number) => (
                                 <div
                                     key={index}
-                                    className="relative flex-shrink-0 w-[85vw] md:w-auto md:aspect-[3/4] bg-white rounded-md overflow-hidden  group cursor-pointer snap-center"
+                                    onClick={() => setPreviewImage(image)}
+                                    className="relative flex-shrink-0 w-[85vw] md:w-auto md:aspect-[3/4] bg-white rounded-md overflow-hidden group cursor-zoom-in snap-center shadow-soft hover:shadow-medium transition-all duration-300"
                                 >
                                     <img
                                         src={image}
                                         alt={`${product.title} ${index + 1} `}
                                         className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                                     />
+                                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-300 flex items-center justify-center">
+                                        <div className="w-10 h-10 bg-white/90 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 shadow-large">
+                                            <Maximize2 className="w-5 h-5 text-pehnava-charcoal" />
+                                        </div>
+                                    </div>
                                 </div>
                             ))}
                         </div>
@@ -396,6 +411,30 @@ const ProductDetailsPage = () => {
                     </div>
                 </div>
             </div>
+            {/* Image Preview Modal */}
+            {previewImage && (
+                <div
+                    className="fixed inset-0 z-[10000] bg-pehnava-charcoal/95 backdrop-blur-md flex items-center justify-center p-4 md:p-8 animate-fadeIn"
+                    onClick={() => setPreviewImage(null)}
+                >
+                    <button
+                        className="absolute top-6 right-6 p-3 bg-white/10 hover:bg-white/20 rounded-full text-white transition-all duration-300 transform hover:scale-110 active:scale-95"
+                        onClick={() => setPreviewImage(null)}
+                    >
+                        <X className="w-6 h-6" />
+                    </button>
+                    <div
+                        className="relative max-w-4xl w-full h-full flex items-center justify-center p-2"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <img
+                            src={previewImage}
+                            alt="Preview"
+                            className="max-w-full max-h-full object-contain rounded-lg shadow-2xl animate-scaleIn"
+                        />
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

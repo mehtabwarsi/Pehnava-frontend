@@ -20,11 +20,12 @@ const CategorySection = ({ title, description, categories, gender }: any) => {
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            {/* Horizontal Scroll on Mobile, Grid on Desktop */}
+            <div className="flex overflow-x-auto lg:grid lg:grid-cols-4 gap-6 sm:gap-8 pb-4 -mx-6 px-6 lg:mx-0 lg:px-0 no-scrollbar snap-x snap-mandatory">
                 {categories.map((category: any, index: number) => (
                     <div
                         key={category._id || index}
-                        className="group relative h-[450px] rounded-2xl overflow-hidden shadow-medium hover:shadow-xl transition-all duration-500 hover:-translate-y-2 animate-scaleIn"
+                        className="group relative h-[400px] sm:h-[450px] min-w-[280px] sm:min-w-[320px] lg:min-w-0 flex-shrink-0 lg:flex-shrink rounded-2xl overflow-hidden shadow-medium hover:shadow-xl transition-all duration-500 hover:-translate-y-2 animate-scaleIn snap-center"
                         style={{ animationDelay: `${index * 100}ms` }}
                     >
                         <img
@@ -64,7 +65,7 @@ const Categories = () => {
     const womenCategories = categories.filter((cat: any) => cat.gender === 'women' && cat.isActive);
 
     return (
-        <div className="bg-pehnava-offWhite space-y-8">
+        <div className="bg-pehnava-offWhite">
             <CategorySection
                 title="Men's"
                 gender="Catalog"
@@ -83,7 +84,7 @@ const Categories = () => {
                 categories={womenCategories}
             />
 
-            <div className="pb-16" />
+            <div className="pb-4" />
         </div>
     );
 };
