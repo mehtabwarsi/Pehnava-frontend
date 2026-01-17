@@ -19,6 +19,7 @@ import AddressSelectionPage from "../pages/Cart/AddressSelectionPage";
 import PaymentPage from "../pages/Cart/PaymentPage";
 import MyOrdersPage from "../pages/Profile/MyOrders/MyOrdersPage";
 import MyOrderDetailsPage from "../pages/Profile/MyOrders/MyOrdersDetailPage";
+import SearchPage from "../pages/Search/SearchPage";
 
 const AppRoutes = () => {
     return (
@@ -123,6 +124,7 @@ const AppRoutes = () => {
                 />
 
                 {/* AUTH */}
+                <Route path="/search" element={<SearchPage />} />
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/otp-verify" element={<OtpVerifyPage />} />
             </Routes>
