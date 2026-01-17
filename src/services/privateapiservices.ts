@@ -120,6 +120,15 @@ export const clearCartApi = async () => {
     }
 }
 
+export const cartCountApi = async () => {
+    try {
+        const response = await privateApi.get("/cart/count");
+        return response.data
+    } catch (error) {
+        throw error
+    }
+}
+
 // checkout api
 
 export const checkoutApi = async () => {
@@ -168,4 +177,6 @@ export const orderCancel = async (orderId: string, reason: string) => {
         throw error
     }
 }
+
+
 

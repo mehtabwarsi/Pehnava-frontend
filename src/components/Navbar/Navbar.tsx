@@ -1,16 +1,28 @@
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { useState } from "react";
-import { Search, UserRound, Menu, X, ShoppingCart, ShoppingBag } from "lucide-react";
+import { Search, UserRound, Menu, X, ShoppingBag } from "lucide-react";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../redux/store";
+import { useCartCount, useSearchProducts } from "../../services/useApiHook";
+
+import { useDebounce } from "../../hooks/useDebounce";
 
 const Navbar = () => {
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
     // Dynamic counts from Redux
-    const cartItems = useSelector((state: RootState) => state.cart.items);
-    const cartItemCount = cartItems.reduce((total: number, item: any) => total + item.quantity, 0);
+    const user = useSelector((state: RootState) => state.auth.user);
+    const [searchQuery, setSearchQuery] = useState("");
+
+    // Debounce search query by 500ms
+    const debouncedSearchQuery = useDebounce(searchQuery, 500);
+
+    const { data: searchResults, isLoading } = useSearchProducts(debouncedSearchQuery);
+    const { data: cartCount } = useCartCount({
+        enabled: !!user
+    });
+
 
     const NAV_ITEMS = [
         { label: "Home", path: "/" },
@@ -95,6 +107,8 @@ const Navbar = () => {
                                     <Search className="w-5 h-5 text-pehnava-slate" />
                                 </div>
                                 <input
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
                                     type="text"
                                     placeholder="Search for kurtas, sherwanis, accessories..."
                                     className="w-full pl-12 pr-12 py-2.5 bg-pehnava-offWhite border-2 border-pehnava-border rounded-xl 
@@ -104,11 +118,43 @@ const Navbar = () => {
                                     autoFocus
                                 />
                                 <button
-                                    onClick={() => setIsSearchOpen(false)}
+                                    onClick={() => {
+                                        setIsSearchOpen(false);
+                                        setSearchQuery("");
+                                    }}
                                     className="absolute inset-y-0 right-0 pr-4 flex items-center group"
                                 >
                                     <X className="w-5 h-5 text-pehnava-slate group-hover:text-pehnava-accent transition-colors" />
                                 </button>
+
+                                {/* Desktop Search Dropdown */}
+                                {searchQuery && (
+                                    <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-xl border border-pehnava-border overflow-hidden max-h-[400px] overflow-y-auto z-50">
+                                        {isLoading ? (
+                                            <div className="p-4 flex items-center justify-center gap-2 text-pehnava-slate text-sm">
+                                                <div className="w-4 h-4 border-2 border-pehnava-primary border-t-transparent rounded-full animate-spin"></div>
+                                                Searching...
+                                            </div>
+                                        ) : searchResults?.data?.products?.length > 0 ? (
+                                            <div className="py-2">
+                                                {searchResults.data.products.map((product: any) => (
+                                                    <a
+                                                        key={product._id}
+                                                        href={`/product/${product._id}`}
+                                                        className="flex items-center gap-3 px-4 py-2.5 hover:bg-pehnava-offWhite transition-colors border-b border-pehnava-border/50 last:border-0"
+                                                    >
+                                                        <Search className="w-4 h-4 text-pehnava-slate/70" />
+                                                        <h4 className="text-sm font-medium text-pehnava-charcoal truncate">{product.name}</h4>
+                                                    </a>
+                                                ))}
+                                            </div>
+                                        ) : debouncedSearchQuery ? (
+                                            <div className="p-4 text-center text-pehnava-slate text-sm">
+                                                No products found for "{searchQuery}"
+                                            </div>
+                                        ) : null}
+                                    </div>
+                                )}
                             </div>
                         ) : (
                             // Navigation Items
@@ -149,9 +195,9 @@ const Navbar = () => {
                                     <ShoppingBag className="w-5 h-5 text-white" />
                                     <span className="hidden sm:inline text-sm font-bold text-white">Bag</span>
                                 </div>
-                                {cartItemCount > 0 && (
+                                {user && cartCount?.data?.totalQuantity > 0 && (
                                     <span className="absolute -top-2 -right-2 bg-pehnava-primary text-white text-xs font-bold rounded-full w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center shadow-soft ring-2 ring-white animate-scaleIn">
-                                        {cartItemCount}
+                                        {cartCount?.data?.totalQuantity}
                                     </span>
                                 )}
                             </div>
@@ -212,6 +258,8 @@ const Navbar = () => {
                                         <Search className="w-5 h-5 text-pehnava-slate" />
                                     </div>
                                     <input
+                                        value={searchQuery}
+                                        onChange={(e) => setSearchQuery(e.target.value)}
                                         type="text"
                                         placeholder="Search products..."
                                         className="w-full pl-10 pr-4 py-3 bg-pehnava-offWhite border-2 border-pehnava-border rounded-xl 
@@ -224,24 +272,52 @@ const Navbar = () => {
                             </div>
                         </div>
 
-                        {/* Popular Searches */}
+                        {/* Search Results or Popular Searches */}
                         <div className="flex-1 bg-pehnava-white p-4 overflow-y-auto">
-                            <h3 className="text-sm font-bold text-pehnava-charcoal uppercase tracking-wider mb-3">
-                                Popular Searches
-                            </h3>
-                            <div className="flex flex-wrap gap-2">
-                                {['Kurta Sets', 'Sherwani', 'Ethnic Jackets', 'Accessories', 'Traditional Wear', 'Wedding Collection'].map((tag) => (
-                                    <button
-                                        key={tag}
-                                        onClick={() => setIsSearchOpen(false)}
-                                        className="px-4 py-2 bg-pehnava-lightGray hover:bg-pehnava-primary hover:text-white 
-                                                 text-pehnava-charcoal text-sm rounded-lg font-medium
-                                                 transition-all duration-300"
-                                    >
-                                        {tag}
-                                    </button>
-                                ))}
-                            </div>
+                            {searchQuery ? (
+                                <div className="space-y-2">
+                                    {isLoading ? (
+                                        <div className="flex flex-col items-center justify-center py-10 gap-3 text-pehnava-slate">
+                                            <div className="w-8 h-8 border-3 border-pehnava-primary border-t-transparent rounded-full animate-spin"></div>
+                                            <p className="text-sm font-medium">Searching products...</p>
+                                        </div>
+                                    ) : searchResults?.data?.products?.length > 0 ? (
+                                        searchResults.data.products.map((product: any) => (
+                                            <a
+                                                key={product._id}
+                                                href={`/product/${product._id}`}
+                                                className="flex items-center gap-3 p-3 rounded-xl bg-pehnava-offWhite active:bg-pehnava-lightGray transition-all"
+                                            >
+                                                <Search className="w-4 h-4 text-pehnava-slate/70" />
+                                                <span className="text-sm font-medium text-pehnava-charcoal truncate">{product.name}</span>
+                                            </a>
+                                        ))
+                                    ) : debouncedSearchQuery ? (
+                                        <div className="text-center py-10">
+                                            <p className="text-pehnava-slate">No products found for "{searchQuery}"</p>
+                                        </div>
+                                    ) : null}
+                                </div>
+                            ) : (
+                                <>
+                                    <h3 className="text-sm font-bold text-pehnava-charcoal uppercase tracking-wider mb-3">
+                                        Popular Searches
+                                    </h3>
+                                    <div className="flex flex-wrap gap-2">
+                                        {['Kurta Sets', 'Sherwani', 'Ethnic Jackets', 'Accessories', 'Traditional Wear', 'Wedding Collection'].map((tag) => (
+                                            <button
+                                                key={tag}
+                                                onClick={() => setIsSearchOpen(false)}
+                                                className="px-4 py-2 bg-pehnava-lightGray hover:bg-pehnava-primary hover:text-white 
+                                                         text-pehnava-charcoal text-sm rounded-lg font-medium
+                                                         transition-all duration-300"
+                                            >
+                                                {tag}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </>
+                            )}
                         </div>
                     </div>
                 </div>

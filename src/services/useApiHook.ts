@@ -6,7 +6,8 @@ import {
     getGenderApi,
     getProductByIdApi,
     getSubCategoryApi,
-    getCollectionsApi
+    getCollectionsApi,
+    searchProductsApi
 } from "./publicapiservice"
 import {
     addAddressApi,
@@ -25,7 +26,8 @@ import {
     clearCartApi,
     getAllMyOrders,
     getMyOrderById,
-    orderCancel
+    orderCancel,
+    cartCountApi
 } from "./privateapiservices"
 
 export const useGetAllProducts = () => {
@@ -163,6 +165,7 @@ export const useAddToCart = () => {
 
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["cart"] });
+            queryClient.invalidateQueries({ queryKey: ["cartcount"] });
         },
     });
 };
@@ -187,6 +190,7 @@ export const useUpdateCartQuantity = () => {
 
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["cart"] });
+            queryClient.invalidateQueries({ queryKey: ["cartcount"] });
         },
     });
 };
@@ -209,9 +213,18 @@ export const useRemoveFromCart = () => {
 
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["cart"] });
+            queryClient.invalidateQueries({ queryKey: ["cartcount"] });
         },
     });
 };
+
+export const useCartCount = (options = {}) => {
+    return useQuery({
+        queryKey: ["cartcount"],
+        queryFn: () => cartCountApi(),
+        ...options
+    })
+}
 
 export const useClearCart = () => {
     const queryClient = useQueryClient();
@@ -219,6 +232,7 @@ export const useClearCart = () => {
         mutationFn: () => clearCartApi(),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["cart"] });
+            queryClient.invalidateQueries({ queryKey: ["cartcount"] });
         },
     });
 };
@@ -238,10 +252,11 @@ export const usePlaceOrder = () => {
             queryClient.invalidateQueries({ queryKey: ["cart"] });
             queryClient.invalidateQueries({ queryKey: ["checkout"] });
             queryClient.invalidateQueries({ queryKey: ["myorders"] });
+            queryClient.invalidateQueries({ queryKey: ["cartcount"] });
             queryClient.invalidateQueries({ queryKey: ["product"] });
         },
-    })
-}
+    });
+};
 
 export const useMyorders = () => {
     return useQuery({
@@ -274,5 +289,13 @@ export const useGetCollections = () => {
     return useQuery({
         queryKey: ["collections"],
         queryFn: () => getCollectionsApi(),
+    })
+}
+
+export const useSearchProducts = (search: string, page = 1, limit = 10) => {
+    return useQuery({
+        queryKey: ["search", search, page, limit],
+        queryFn: () => searchProductsApi(search, page, limit),
+        enabled: !!search,
     })
 }

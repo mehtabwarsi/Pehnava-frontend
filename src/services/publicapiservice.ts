@@ -79,6 +79,21 @@ export const getCollectionsApi = async () => {
     }
 }
 
+export const searchProductsApi = async (search: string, page = 1, limit = 10) => {
+    try {
+        const response = await publicApi.get("product/search", {
+            params: {
+                query: search,
+                page,
+                limit
+            }
+        });
+        return response.data
+    } catch (error) {
+        throw error
+    }
+}
+
 
 
 
