@@ -1,4 +1,4 @@
-import { ChevronLeft, MapPin, User, Home, Briefcase, Info, Loader2 } from "lucide-react";
+import { ChevronLeft, MapPin, User, Home, Briefcase, Info, } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useState } from "react";
 import { useAddAddress } from "../../../services/useApiHook";
