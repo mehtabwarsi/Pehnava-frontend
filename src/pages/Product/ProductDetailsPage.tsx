@@ -217,6 +217,10 @@ const ProductDetailsPage = () => {
                                 <span className="px-3 py-1 bg-pehnava-accent/10 text-pehnava-accent text-sm font-bold rounded-full">
                                     Save {discount}%
                                 </span>
+
+
+
+
                             </div>
                         </div>
 
