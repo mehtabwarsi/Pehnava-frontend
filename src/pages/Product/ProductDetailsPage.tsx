@@ -5,13 +5,14 @@ import { Heart, ChevronRight, Check, Truck, Shield, RefreshCw, ShoppingBag, Maxi
 import ProductCard from '../../components/Home/ProductCard';
 import CustomerReviews from '../../components/ProductDetail/CustomerReviews';
 import RatingStars from '../../components/ProductDetail/RatingStars';
-import { useGetAllProducts, useGetProductById, useAddToWishList, useGetWishList, useAddToCart, useGetCart } from '../../services/useApiHook';
+import { useGetAllProducts, useGetProductBySlug, useAddToWishList, useGetWishList, useAddToCart, useGetCart } from '../../services/useApiHook';
 import ProductDetailsSkeleton from '../../components/ProductDetail/ProductDetailsSkeleton';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../redux/store';
+import { Helmet } from 'react-helmet-async';
 
 const ProductDetailsPage = () => {
-    const { id } = useParams();
+    const { slug } = useParams();
     const navigate = useNavigate();
 
     const [selectedSize, setSelectedSize] = useState('');
@@ -43,9 +44,9 @@ const ProductDetailsPage = () => {
     const { mutate: addToWishList } = useAddToWishList();
     const { mutate: addToCart } = useAddToCart();
 
-    const isFavorited = wishlistData?.data?.items?.some((item: any) => item._id === id);
+    const isFavorited = wishlistData?.data?.items?.some((item: any) => item._id === productApiData?._id);
 
-    const { data: productData, isLoading: isProductLoading } = useGetProductById(id || '');
+    const { data: productData, isLoading } = useGetProductBySlug(slug || '');
     const { data: suggestedProductsData, isLoading: isSuggestedLoading } = useGetAllProducts();
 
     const productApiData = productData?.data;
@@ -62,7 +63,7 @@ const ProductDetailsPage = () => {
 
 
     const product = {
-        id: id || '1',
+        id: productApiData?._id || '1',
         title: productApiData?.name,
         price: productApiData?.discountPrice,
         originalPrice: productApiData?.price,
@@ -88,8 +89,8 @@ const ProductDetailsPage = () => {
             return;
         }
 
-        if (id) {
-            addToWishList(id);
+        if (product.id) {
+            addToWishList(product.id);
         }
     };
 
@@ -141,7 +142,7 @@ const ProductDetailsPage = () => {
     };
 
 
-    if (isProductLoading || isSuggestedLoading) {
+    if (isLoading || isSuggestedLoading) {
         return <ProductDetailsSkeleton />;
     }
 
@@ -159,6 +160,15 @@ const ProductDetailsPage = () => {
 
     return (
         <div className="min-h-screen bg-pehnava-offWhite">
+            <Helmet>
+                <title>{product.title ? `${product.title} | Pehnava` : 'Product Details | Pehnava'}</title>
+                <meta name="description" content={product.description || "Discover high-quality traditional wear at Pehnava."} />
+                <meta property="og:title" content={`${product.title} | Pehnava`} />
+                <meta property="og:description" content={product.description} />
+                <meta property="og:image" content={product.images?.[0]} />
+                <meta property="og:url" content={window.location.href} />
+                <meta name="keywords" content={`${product.title}, product, tradition, traditional wear, ethnic fashion`} />
+            </Helmet>
             {/* Breadcrumb */}
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
                 <nav className="flex items-center gap-2 text-sm">
@@ -406,6 +416,7 @@ const ProductDetailsPage = () => {
                             <ProductCard
                                 key={item._id}
                                 id={item._id}
+                                slug={item.slug}
                                 title={item.name}
                                 price={item.discountPrice}
                                 image={item.images[0]}

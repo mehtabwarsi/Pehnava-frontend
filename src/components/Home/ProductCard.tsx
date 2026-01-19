@@ -6,6 +6,7 @@ import { useAddToWishList, useGetWishList } from '../../services/useApiHook';
 
 type ProductCardProps = {
     id: string | number;
+    slug: string;
     title: string;
     price: number;
     image?: string;
@@ -14,7 +15,7 @@ type ProductCardProps = {
     isNew?: boolean;
 };
 
-const ProductCard = ({ id, title, price, image, originalPrice, rating = 4.5, isNew = false }: ProductCardProps) => {
+const ProductCard = ({ id, slug, title, price, image, originalPrice, rating = 4.5, isNew = false }: ProductCardProps) => {
     const discount = originalPrice ? Math.round(((originalPrice - price) / originalPrice) * 100) : null;
     const navigate = useNavigate();
 
@@ -38,7 +39,7 @@ const ProductCard = ({ id, title, price, image, originalPrice, rating = 4.5, isN
     };
 
     return (
-        <Link to={`/product/${id}`} className="block group relative bg-white rounded-lg md:rounded-lg overflow-hidden shadow-soft hover:shadow-large transition-all duration-500 hover:-translate-y-1">
+        <Link to={`/product/${slug}`} className="block group relative bg-white rounded-lg md:rounded-lg overflow-hidden shadow-soft hover:shadow-large transition-all duration-500 hover:-translate-y-1">
             {/* Image Container */}
             <div className="relative aspect-4/5 overflow-hidden bg-pehnava-lightGray">
                 {image ? (

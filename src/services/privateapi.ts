@@ -3,6 +3,7 @@ import { getAuth, signOut } from "firebase/auth";
 
 const privateApi = axios.create({
     baseURL: import.meta.env.VITE_API_BASE_URL,
+    timeout: 10000,
 });
 
 /* ================= REQUEST INTERCEPTOR ================= */

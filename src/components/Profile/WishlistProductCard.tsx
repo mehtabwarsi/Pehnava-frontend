@@ -4,13 +4,14 @@ import { useAddToWishList } from "../../services/useApiHook";
 
 type WishlistProductCardProps = {
     id: string | number;
+    slug: string;
     title: string;
     price: number;
     image: string;
     originalPrice?: number;
 };
 
-const WishlistProductCard = ({ id, title, price, image, originalPrice }: WishlistProductCardProps) => {
+const WishlistProductCard = ({ id, slug, title, price, image, originalPrice }: WishlistProductCardProps) => {
     // const dispatch = useDispatch();
     const { mutate: toggleWishlist } = useAddToWishList();
     const discount = originalPrice ? Math.round(((originalPrice - price) / originalPrice) * 100) : null;
@@ -25,7 +26,7 @@ const WishlistProductCard = ({ id, title, price, image, originalPrice }: Wishlis
     return (
         <div className="group relative bg-white rounded-2xl overflow-hidden shadow-soft hover:shadow-large transition-all duration-500 border border-pehnava-border/30 hover:border-pehnava-primary/20 flex flex-col h-full">
             {/* Image Section */}
-            <Link to={`/product/${id}`} className="relative aspect-[3/4] overflow-hidden bg-pehnava-lightGray block">
+            <Link to={`/product/${slug}`} className="relative aspect-[3/4] overflow-hidden bg-pehnava-lightGray block">
                 <img
                     src={image}
                     alt={title}
@@ -45,7 +46,7 @@ const WishlistProductCard = ({ id, title, price, image, originalPrice }: Wishlis
 
             {/* Content Section */}
             <div className="p-4 flex flex-col flex-1">
-                <Link to={`/product/${id}`} className="block mb-2">
+                <Link to={`/product/${slug}`} className="block mb-2">
                     <h3 className="text-pehnava-charcoal font-semibold text-sm sm:text-base line-clamp-1 group-hover:text-pehnava-primary transition-colors">
                         {title}
                     </h3>

@@ -83,6 +83,7 @@ const WishListPage = () => {
                             <WishlistProductCard
                                 key={item._id}
                                 id={item._id}
+                                slug={item.slug}
                                 title={item.name}
                                 price={item.discountPrice}
                                 image={item.images?.[0] || ""}

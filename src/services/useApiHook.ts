@@ -5,6 +5,7 @@ import {
     getCategoriesApi,
     getGenderApi,
     getProductByIdApi,
+    getProductBySlugApi,
     getSubCategoryApi,
     getCollectionsApi,
     getCollectionBySlugApi,
@@ -58,6 +59,15 @@ export const useGetProductById = (id: string) => {
     return useQuery({
         queryKey: ["product", id],
         queryFn: () => getProductByIdApi(id),
+        enabled: !!id
+    })
+}
+
+export const useGetProductBySlug = (slug: string) => {
+    return useQuery({
+        queryKey: ["product", "slug", slug],
+        queryFn: () => getProductBySlugApi(slug),
+        enabled: !!slug
     })
 }
 

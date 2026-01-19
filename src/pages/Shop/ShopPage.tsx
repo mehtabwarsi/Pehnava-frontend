@@ -1,9 +1,9 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef, useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
 import ProductCard from "../../components/Home/ProductCard";
 import { SlidersHorizontal, ChevronDown, ShoppingBag, X, Sparkles } from "lucide-react";
 import { useInfiniteFilterProduct, useGetGender, useGetSubCategory } from "../../services/useApiHook";
-import { useRef, useCallback } from "react";
+import { Helmet } from "react-helmet-async";
 
 const ShopPage = () => {
     const [searchParams, setSearchParams] = useSearchParams();
@@ -18,24 +18,20 @@ const ShopPage = () => {
     const gender = searchParams.get("gender") || "all";
     const categoryParam = searchParams.get("category");
 
-    // Reset subCategory when gender changes or when URL category param changes
     useEffect(() => {
-        setSubCategory(categoryParam || "all");
-    }, [gender, categoryParam]);
+        if (categoryParam) {
+            setSearchParams({ gender: categoryParam });
+        }
+    }, [categoryParam, setSearchParams]);
 
     const { data: genderData } = useGetGender();
 
-    // Derive genderId from name (case-insensitive)
-    const genderId = useMemo(() => {
-        if (!genderData?.data) return undefined;
-        return genderData.data.find(
-            (item: any) => item.name.toLowerCase() === gender.toLowerCase()
-        )?._id;
+    const currentGenderId = useMemo(() => {
+        return genderData?.data?.find((g: any) => g.name.toLowerCase() === gender.toLowerCase())?._id;
     }, [genderData, gender]);
 
-    const { data: subCategoryData } = useGetSubCategory(genderId);
+    const { data: subCategoryData } = useGetSubCategory(currentGenderId);
 
-    // Stable filter object for the API hook
     const filter = useMemo(() => ({
         category: gender === "all" ? undefined : gender,
         subCategory: subCategory === "all" ? undefined : subCategory,
@@ -51,7 +47,6 @@ const ShopPage = () => {
     const {
         data,
         isLoading,
-        isError,
         fetchNextPage,
         hasNextPage,
         isFetchingNextPage
@@ -82,188 +77,176 @@ const ShopPage = () => {
     }, [gender, subCategory, sort, isFeatured]);
 
     const categories = useMemo(() => {
-        if (!subCategoryData?.data) return ["all"];
-
-        return [
-            "all",
-            ...subCategoryData.data.map((item: any) => item.name),
-        ];
+        return subCategoryData?.data || [];
     }, [subCategoryData]);
 
-
-
-
-    const handleGenderChange = (newGender: string) => {
-        searchParams.delete("category"); // Clear category param when switching gender
-        if (newGender === "all") {
-            searchParams.delete("gender");
-        } else {
-            searchParams.set("gender", newGender);
-        }
-        setSearchParams(searchParams);
-    };
-
-    // Scroll detection for Sticky Filter / Hiding Navbar
-    const [isScrolled, setIsScrolled] = useState(false);
+    const [isFilterOpen, setIsFilterOpen] = useState(false);
 
     useEffect(() => {
-        const handleScroll = () => {
-            const threshold = 100; // Adjust as needed
-            const scrolled = window.scrollY > threshold;
-            setIsScrolled(scrolled);
-
-            // Direct DOM manipulation for Navbar (since it's outside this component tree)
-            const navbar = document.getElementById("main-navbar");
-            if (navbar) {
-                if (scrolled) {
-                    navbar.style.transform = "translateY(-100%)";
-                } else {
-                    navbar.style.transform = "translateY(0)";
-                }
-            }
-        };
-
-        window.addEventListener("scroll", handleScroll);
-
-        // Initial check
-        handleScroll();
-
-        return () => {
-            window.removeEventListener("scroll", handleScroll);
-            // RESET Navbar on unmount
-            const navbar = document.getElementById("main-navbar");
-            if (navbar) {
-                navbar.style.transform = "translateY(0)";
-            }
-        };
-    }, []);
+        if (isFilterOpen) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = 'unset';
+        }
+    }, [isFilterOpen]);
 
     return (
-        <div className="min-h-screen bg-pehnava-offWhite pt-2 sm:pt-6 pb-20 px-3 sm:px-6 lg:px-8">
-            <div className="max-w-7xl mx-auto">
+        <div className="min-h-screen bg-pehnava-offWhite pt-24 pb-12">
+            <Helmet>
+                <title>{`Shop ${gender !== 'all' ? gender.charAt(0).toUpperCase() + gender.slice(1) : ''} | Pehnava`}</title>
+                <meta name="description" content={`Browse our ${gender !== 'all' ? gender : 'latest'} collection of contemporary traditional wear at Pehnava. Find the best kurtas, sherwanis, and more.`} />
+                <meta property="og:title" content={`Shop ${gender !== 'all' ? gender : 'Modern Ethnic Wear'} | Pehnava`} />
+                <meta name="keywords" content={`shop, traditional wear, ethnic fashion, ${gender}, ${subCategory}, Pehnava`} />
+            </Helmet>
+            <div className="max-w-7xl mx-auto px-4 md:px-8">
 
                 {/* HERO Header */}
                 <div className="text-center mb-6 sm:mb-10 space-y-2 pt-4">
-                    <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-pehnava-charcoal tracking-tight">
-                        Explore Our <span className="text-transparent bg-clip-text bg-linear-to-r from-pehnava-primary to-pehnava-accent">Collection</span>
+                    <div className="inline-flex items-center gap-2 px-3 py-1 bg-pehnava-primary/10 rounded-full text-pehnava-primary text-xs font-bold uppercase tracking-widest mb-2">
+                        <Sparkles className="w-3 h-3" />
+                        <span>Curated for you</span>
+                    </div>
+                    <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-pehnava-charcoal uppercase tracking-tighter">
+                        {gender === "all" ? "The Entire" : gender} <span className="text-pehnava-primary">Collection</span>
                     </h1>
-                    <p className="text-pehnava-slate text-sm sm:text-lg max-w-2xl mx-auto px-4 hidden sm:block">
-                        Discover premium traditional and modern wear crafted for your unique style.
+                    <p className="text-pehnava-slate max-w-xl mx-auto text-sm sm:text-base px-4">
+                        Discover the perfect blend of ancestral heritage and modern aesthetics.
                     </p>
                 </div>
 
-                {/* CONTROLS BAR (Sticky) */}
-                <div className={`sticky z-30 py-2 sm:py-4 -mx-3 px-3 sm:mx-0 sm:px-0 bg-pehnava-offWhite/95 backdrop-blur-sm transition-all duration-300 ${isScrolled ? 'top-0 shadow-md' : 'top-16 sm:top-20'}`}>
-                    <div className="bg-white p-3 sm:p-4 rounded-xl shadow-soft border border-pehnava-border/50">
-                        <div className="flex flex-col gap-4">
+                {/* Filter & Sort Bar */}
+                <div className="flex flex-col sm:flex-row gap-4 items-center justify-between bg-white p-3 sm:p-4 rounded-2xl shadow-soft border border-pehnava-border/50 sticky top-24 z-40 mb-8 sm:mb-12">
+                    <div className="flex items-center gap-2 w-full sm:w-auto">
+                        <button
+                            onClick={() => setIsFilterOpen(true)}
+                            className="flex items-center gap-2 px-4 py-2 bg-pehnava-offWhite hover:bg-pehnava-primary/10 text-pehnava-charcoal hover:text-pehnava-primary rounded-xl font-bold transition-all flex-1 sm:flex-none justify-center border border-pehnava-border/20"
+                        >
+                            <SlidersHorizontal className="w-4 h-4" />
+                            <span>Filters</span>
+                        </button>
 
-                            {/* Gender / Backend Category selection (to match navbar) */}
-                            <div className="flex items-center gap-3 overflow-x-auto no-scrollbar border-b border-pehnava-border/30 pb-3">
-                                <span className="text-xs font-bold text-pehnava-charcoal uppercase tracking-widest min-w-[60px]">Gender:</span>
-                                {["all", "men", "women"].map((g) => (
-                                    <button
-                                        key={g}
-                                        onClick={() => handleGenderChange(g)}
-                                        className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all capitalize border ${gender === g
-                                            ? "bg-pehnava-primary text-white border-pehnava-primary shadow-glow"
-                                            : "bg-pehnava-lightGray/50 text-pehnava-slate border-transparent hover:border-pehnava-primary/30"
-                                            }`}
-                                    >
-                                        {g}
-                                    </button>
-                                ))}
-                            </div>
+                        {/* Quick filter chips for subcategories */}
+                        <div className="hidden md:flex gap-2 ml-4">
+                            {categories.slice(0, 3).map((cat: any) => (
+                                <button
+                                    key={cat._id}
+                                    onClick={() => setSubCategory(cat.name)}
+                                    className={`px-4 py-2 rounded-xl text-sm font-bold transition-all border ${subCategory === cat.name
+                                        ? "bg-pehnava-primary text-white border-pehnava-primary shadow-glow"
+                                        : "bg-white text-pehnava-slate border-pehnava-border/50 hover:border-pehnava-primary"
+                                        }`}
+                                >
+                                    {cat.name}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
 
-                            <div className="flex flex-col md:flex-row gap-4 justify-between items-center">
-                                {/* SUB-CATEGORY FILTERS - Horizontal Scroll */}
-                                <div className="w-full md:w-auto overflow-x-auto no-scrollbar">
-                                    <div className="flex flex-row items-center gap-2 min-w-max">
-                                        <span className="text-xs font-bold text-pehnava-charcoal uppercase tracking-widest min-w-[60px]">Type:</span>
-                                        {(gender === "all") ? (
-                                            <span className="text-[10px] text-pehnava-slate italic">Select a gender to see types</span>
-                                        ) : (subCategoryData === undefined) ? (
-                                            <div className="flex gap-2 animate-pulse">
-                                                {[1, 2, 3].map(i => <div key={i} className="h-7 w-16 bg-pehnava-lightGray rounded-full" />)}
-                                            </div>
-                                        ) : (
-                                            categories.map((item: any) => (
-                                                <button
-                                                    key={`${gender}-${item}`}
-                                                    onClick={() => setSubCategory(item)}
-                                                    className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all duration-300 capitalize whitespace-nowrap border ${subCategory === item
-                                                        ? "bg-pehnava-primary text-white border-pehnava-primary shadow-lg"
-                                                        : "bg-white text-pehnava-slate border-pehnava-border hover:border-pehnava-charcoal"
-                                                        }`}
-                                                >
-                                                    {item}
-                                                </button>
-                                            ))
-                                        )}
-
-                                        <div className="h-6 w-px bg-pehnava-border/50 mx-2" />
-
-                                        <button
-                                            onClick={() => setIsFeatured(!isFeatured)}
-                                            className={`flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold transition-all border ${isFeatured
-                                                ? "bg-pehnava-accent text-white border-pehnava-accent shadow-glow"
-                                                : "bg-white text-pehnava-accent border-pehnava-accent/30 hover:bg-pehnava-accent/10"
-                                                }`}
-                                        >
-                                            <Sparkles className={`w-3 h-3 ${isFeatured ? "animate-pulse" : ""}`} />
-                                            Featured
-                                        </button>
-                                    </div>
-                                </div>
-
-                                {/* Desktop Sort */}
-                                <div className="hidden md:flex items-center gap-4">
-                                    <span className="text-xs font-bold text-pehnava-slate uppercase tracking-wider">
-                                        {isLoading ? "..." : apiProducts.length} Items
-                                    </span>
-                                    <div className="relative min-w-[180px]">
-                                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                            <SlidersHorizontal className="h-4 w-4 text-pehnava-slate" />
-                                        </div>
-                                        <select
-                                            value={sort}
-                                            onChange={(e) => setSort(e.target.value)}
-                                            className="block w-full pl-10 pr-10 py-2 text-sm border-pehnava-border bg-pehnava-lightGray/20 focus:outline-hidden focus:ring-1 focus:ring-pehnava-primary rounded-xl cursor-pointer shadow-xs appearance-none font-medium"
-                                        >
-                                            <option value="default">Featured</option>
-                                            <option value="low-high">Price: Low to High</option>
-                                            <option value="high-low">Price: High to Low</option>
-                                        </select>
-                                        <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                                            <ChevronDown className="h-4 w-4 text-pehnava-slate" />
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                    <div className="flex items-center gap-3 w-full sm:w-auto border-t sm:border-t-0 pt-3 sm:pt-0">
+                        <div className="relative group flex-1 sm:flex-none">
+                            <select
+                                value={sort}
+                                onChange={(e) => setSort(e.target.value)}
+                                className="w-full sm:w-48 appearance-none px-4 py-2.5 bg-pehnava-offWhite border-none rounded-xl text-pehnava-charcoal font-bold text-sm focus:ring-2 focus:ring-pehnava-primary/20 transition-all cursor-pointer"
+                            >
+                                <option value="default">Default Sorting</option>
+                                <option value="low-high">Price: Low to High</option>
+                                <option value="high-low">Price: High to Low</option>
+                            </select>
+                            <ChevronDown className="w-4 h-4 absolute right-4 top-1/2 -translate-y-1/2 text-pehnava-slate pointer-events-none group-hover:text-pehnava-primary transition-colors" />
                         </div>
                     </div>
                 </div>
 
-                {/* PRODUCT GRID */}
+                {/* Filter Side Panel (Mobile/Tablet) */}
+                <div className={`fixed inset-0 z-[100] transition-all duration-500 ${isFilterOpen ? 'visible' : 'invisible'}`}>
+                    <div
+                        className={`absolute inset-0 bg-pehnava-charcoal/40 backdrop-blur-sm transition-opacity duration-500 ${isFilterOpen ? 'opacity-100' : 'opacity-0'}`}
+                        onClick={() => setIsFilterOpen(false)}
+                    />
+                    <div className={`absolute right-0 top-0 h-full w-full max-w-sm bg-white shadow-large transition-transform duration-500 ease-out p-6 flex flex-col ${isFilterOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+                        <div className="flex items-center justify-between mb-8 pb-4 border-b border-pehnava-border">
+                            <div className="flex items-center gap-2">
+                                <SlidersHorizontal className="w-5 h-5 text-pehnava-primary" />
+                                <h3 className="text-xl font-black text-pehnava-charcoal uppercase">Refine</h3>
+                            </div>
+                            <button
+                                onClick={() => setIsFilterOpen(false)}
+                                className="p-2 hover:bg-pehnava-offWhite rounded-full transition-colors"
+                            >
+                                <X className="w-5 h-5 text-pehnava-slate" />
+                            </button>
+                        </div>
+
+                        <div className="flex-1 overflow-y-auto space-y-8 pr-2 custom-scrollbar">
+                            {/* Categories Section */}
+                            <div className="space-y-4">
+                                <h4 className="text-xs font-bold text-pehnava-slate uppercase tracking-widest bg-pehnava-offWhite px-3 py-1.5 rounded-md inline-block">Product Type</h4>
+                                <div className="grid grid-cols-2 gap-2">
+                                    <button
+                                        onClick={() => setSubCategory("all")}
+                                        className={`px-4 py-3 rounded-xl text-sm font-bold transition-all text-center border ${subCategory === "all"
+                                            ? "bg-pehnava-primary text-white border-pehnava-primary shadow-glow"
+                                            : "bg-white text-pehnava-slate border-pehnava-border hover:border-pehnava-primary"
+                                            }`}
+                                    >
+                                        All Items
+                                    </button>
+                                    {categories.map((cat: any) => (
+                                        <button
+                                            key={cat._id}
+                                            onClick={() => setSubCategory(cat.name)}
+                                            className={`px-4 py-3 rounded-xl text-sm font-bold transition-all text-center border ${subCategory === cat.name
+                                                ? "bg-pehnava-primary text-white border-pehnava-primary shadow-glow"
+                                                : "bg-white text-pehnava-slate border-pehnava-border hover:border-pehnava-primary"
+                                                }`}
+                                        >
+                                            {cat.name}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Features Section */}
+                            <div className="space-y-4">
+                                <h4 className="text-xs font-bold text-pehnava-slate uppercase tracking-widest bg-pehnava-offWhite px-3 py-1.5 rounded-md inline-block">Collections</h4>
+                                <label className="flex items-center gap-3 p-4 bg-pehnava-offWhite hover:bg-pehnava-primary/5 rounded-2xl cursor-pointer border border-transparent hover:border-pehnava-primary/20 transition-all">
+                                    <input
+                                        type="checkbox"
+                                        checked={isFeatured}
+                                        onChange={(e) => setIsFeatured(e.target.checked)}
+                                        className="w-5 h-5 accent-pehnava-primary rounded-lg"
+                                    />
+                                    <span className="font-bold text-pehnava-charcoal">Featured Arrivals</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div className="pt-6 mt-6 border-t border-pehnava-border">
+                            <button
+                                onClick={() => setIsFilterOpen(false)}
+                                className="w-full py-4 bg-pehnava-charcoal text-white rounded-xl font-bold hover:bg-pehnava-primary transition-all shadow-medium"
+                            >
+                                Apply Changes
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Product Section */}
                 {isLoading ? (
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-8 mt-6">
-                        {[...Array(8)].map((_, index) => (
-                            <div key={index} className="animate-pulse bg-white rounded-2xl h-[350px] shadow-soft border border-pehnava-border/30" />
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-8">
+                        {[...Array(8)].map((_, i) => (
+                            <div key={i} className="aspect-[3/4] bg-white rounded-3xl animate-pulse shadow-soft" />
                         ))}
                     </div>
-                ) : isError ? (
-                    <div className="text-center py-20 bg-white rounded-3xl border border-pehnava-border/50 mt-10">
-                        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-100 mb-4 px-4 text-red-600">
-                            <X className="h-8 w-8" />
-                        </div>
-                        <h3 className="text-xl font-bold text-pehnava-charcoal">Failed to load products</h3>
-                        <p className="text-pehnava-slate mt-2">There was an error connecting to the server.</p>
-                    </div>
                 ) : apiProducts.length > 0 ? (
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-8 mt-6 animate-fadeIn">
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-8 gap-y-10 sm:gap-y-16">
                         {apiProducts.map((product: any) => (
                             <ProductCard
-                                id={product._id}
                                 key={product._id}
+                                id={product._id}
+                                slug={product.slug}
                                 title={product.name}
                                 price={product.discountPrice}
                                 image={product.images && product.images.length > 0 ? product.images[0] : ""}
@@ -273,19 +256,22 @@ const ShopPage = () => {
                         ))}
                     </div>
                 ) : (
-                    <div className="text-center py-24 bg-white rounded-3xl border border-pehnava-border/50 shadow-soft mt-10">
-                        <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-pehnava-lightGray mb-6">
-                            <ShoppingBag className="h-10 w-10 text-pehnava-slate/40" />
+                    <div className="bg-white rounded-[40px] p-12 sm:p-20 text-center border-2 border-dashed border-pehnava-border shadow-soft flex flex-col items-center">
+                        <div className="w-24 h-24 bg-pehnava-offWhite rounded-full flex items-center justify-center mb-8">
+                            <ShoppingBag className="w-10 h-10 text-pehnava-slate" />
                         </div>
-                        <h3 className="text-2xl font-bold text-pehnava-charcoal">No products found</h3>
-                        <p className="text-pehnava-slate mt-2 max-w-sm mx-auto">
-                            Try adjusting your filters or search terms to find what you're looking for.
+                        <h3 className="text-3xl font-black text-pehnava-charcoal uppercase mb-4">Collection coming soon</h3>
+                        <p className="text-pehnava-slate max-w-sm mb-10 text-lg">
+                            We're currently updating this collection with our latest arrivals.
                         </p>
                         <button
-                            onClick={() => { setSubCategory("all"); handleGenderChange("all"); setIsFeatured(false); setSort("default"); }}
-                            className="mt-8 px-8 py-3 bg-pehnava-primary text-white rounded-xl font-bold shadow-glow hover:-translate-y-1 transition-all"
+                            onClick={() => {
+                                setSubCategory("all");
+                                setIsFeatured(false);
+                            }}
+                            className="bg-pehnava-charcoal text-white px-8 py-3 rounded-full font-bold hover:bg-pehnava-primary transition-all"
                         >
-                            Reset All Filters
+                            Reset Filters
                         </button>
                     </div>
                 )}

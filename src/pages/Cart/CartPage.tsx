@@ -140,7 +140,7 @@ const CartPage = () => {
                                 className="group bg-white rounded-2xl sm:rounded-3xl p-3 sm:p-5 flex flex-row gap-4 sm:gap-6 hover:shadow-lg transition-all duration-300 border border-transparent hover:border-pehnava-primary/10"
                             >
                                 {/* Image */}
-                                <Link to={`/product/${item.product._id}`} className="w-24 sm:w-32 aspect-[3/4] shrink-0 rounded-xl sm:rounded-2xl bg-pehnava-lightGray overflow-hidden relative block">
+                                <Link to={`/product/${item.product.slug}`} className="w-24 sm:w-32 aspect-[3/4] shrink-0 rounded-xl sm:rounded-2xl bg-pehnava-lightGray overflow-hidden relative block">
                                     <img
                                         src={item.product.images?.[0]}
                                         alt={item.product.name}
@@ -153,7 +153,7 @@ const CartPage = () => {
                                     <div>
                                         <div className="flex justify-between items-start">
                                             <div>
-                                                <Link to={`/product/${item.product._id}`}>
+                                                <Link to={`/product/${item.product.slug}`}>
                                                     <h3 className="text-base sm:text-lg font-bold text-pehnava-charcoal group-hover:text-pehnava-primary transition-colors cursor-pointer line-clamp-2">
                                                         {item.product.name}
                                                     </h3>

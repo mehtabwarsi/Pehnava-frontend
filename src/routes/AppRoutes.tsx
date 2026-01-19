@@ -34,7 +34,7 @@ const AppRoutes = () => {
                     <Route path="collections" element={<CollectionPage />} />
                     <Route path="collection/:slug" element={<CollectionProductsPage />} />
                     <Route path="about" element={<AboutPage />} />
-                    <Route path="product/:id" element={<ProductDetailsPage />} />
+                    <Route path="product/:slug" element={<ProductDetailsPage />} />
 
                     {/* 🔒 PROTECTED ROUTES */}
                     <Route

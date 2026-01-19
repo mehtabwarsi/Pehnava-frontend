@@ -23,10 +23,18 @@ export const getAllProductsApi = async (page = 1, limit = 10) => {
         throw error
     }
 }
-
 export const getProductByIdApi = async (id: string) => {
     try {
         const response = await publicApi.get(`product/${id}`);
+        return response.data
+    } catch (error) {
+        throw error
+    }
+}
+
+export const getProductBySlugApi = async (slug: string) => {
+    try {
+        const response = await publicApi.get(`product/s/${slug}`);
         return response.data
     } catch (error) {
         throw error

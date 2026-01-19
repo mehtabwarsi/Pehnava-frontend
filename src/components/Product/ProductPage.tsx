@@ -65,6 +65,7 @@ const ProductPage = () => {
                         <ProductCard
                             key={product._id}
                             id={product._id}
+                            slug={product.slug}
                             title={product.name}
                             price={product.discountPrice}
                             image={product.images[0]}

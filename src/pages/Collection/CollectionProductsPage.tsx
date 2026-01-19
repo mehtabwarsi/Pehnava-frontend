@@ -4,6 +4,7 @@ import { useGetCollectionBySlug, useInfiniteGetCollectionProducts } from '../../
 import ProductCard from '../../components/Home/ProductCard';
 import ProductSkeleton from '../../components/Product/ProductSkeleton';
 import { ChevronLeft } from 'lucide-react';
+import { Helmet } from 'react-helmet-async';
 
 const CollectionProductsPage: React.FC = () => {
     const { slug } = useParams<{ slug: string }>();
@@ -72,6 +73,13 @@ const CollectionProductsPage: React.FC = () => {
 
     return (
         <div className="min-h-screen bg-pehnava-offWhite pt-24 pb-12 px-4 md:px-8">
+            <Helmet>
+                <title>{collection?.title ? `${collection.title} Collection | Pehnava` : 'Collection | Pehnava'}</title>
+                <meta name="description" content={collection?.subtitle || "Explore our exclusive collections at Pehnava."} />
+                <meta property="og:title" content={collection?.title} />
+                <meta property="og:description" content={collection?.subtitle} />
+                <meta property="og:image" content={products?.[0]?.images?.[0]} />
+            </Helmet>
             <div className="max-w-7xl mx-auto">
                 {/* Header */}
                 <div className="mb-12">
@@ -104,6 +112,7 @@ const CollectionProductsPage: React.FC = () => {
                             <ProductCard
                                 key={product._id}
                                 id={product._id}
+                                slug={product.slug}
                                 title={product.name}
                                 price={product.discountPrice || product.price}
                                 originalPrice={product.price}

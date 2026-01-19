@@ -1,4 +1,4 @@
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { useCancelOrder, useMyOrderById } from "../../../services/useApiHook";
 import { Package, MapPin, CreditCard, Calendar, Loader2, ChevronLeft, CheckCircle, Clock, XCircle, Truck, ShoppingBag, ArrowLeft, AlertTriangle } from "lucide-react";
 import { useState } from "react";
@@ -252,17 +252,19 @@ const MyOrderDetailsPage = () => {
                             <div className="divide-y divide-pehnava-border/40">
                                 {order.items.map((item: any, index: number) => (
                                     <div key={index} className="p-4 sm:p-6 flex gap-4 hover:bg-pehnava-offWhite/20 transition-colors">
-                                        <div className="w-16 h-20 sm:w-24 sm:h-32 rounded-lg bg-white border border-pehnava-border p-1 flex-shrink-0 shadow-sm">
+                                        <Link to={`/product/${item.product?.slug}`} className="w-16 h-20 sm:w-24 sm:h-32 rounded-lg bg-white border border-pehnava-border p-1 flex-shrink-0 shadow-sm block hover:border-pehnava-primary/50 transition-colors">
                                             <img
                                                 src={item.image || "/placeholder-product.jpg"}
                                                 alt={item.name}
                                                 className="w-full h-full object-cover rounded"
                                             />
-                                        </div>
+                                        </Link>
                                         <div className="flex-1 min-w-0">
                                             <div className="flex flex-col sm:flex-row justify-between items-start gap-1">
                                                 <div className="min-w-0 flex-1">
-                                                    <h4 className="font-bold text-pehnava-charcoal text-sm sm:text-lg line-clamp-2">{item.name}</h4>
+                                                    <Link to={`/product/${item.product?.slug}`}>
+                                                        <h4 className="font-bold text-pehnava-charcoal text-sm sm:text-lg line-clamp-2 hover:text-pehnava-primary transition-colors">{item.name}</h4>
+                                                    </Link>
                                                     <div className="flex flex-wrap gap-1.5 mt-1.5">
                                                         {item.size && (
                                                             <span className="text-[10px] sm:text-xs font-bold text-pehnava-darkSlate bg-pehnava-offWhite px-1.5 py-0.5 rounded border border-pehnava-border/40">

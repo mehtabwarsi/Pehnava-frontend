@@ -6,6 +6,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import { loginApi } from "./services/publicapiservice";
 import { setUser, logout } from "./redux/slices/authSlice";
 import { useDispatch } from "react-redux";
+import { Helmet } from "react-helmet-async";
 
 const App = () => {
   const dispatch = useDispatch();
@@ -40,6 +41,14 @@ const App = () => {
 
   return (
     <>
+      <Helmet>
+        <title>Pehnava | Contemporary Traditional Wear</title>
+        <meta name="description" content="Discover Pehnava's exclusive collection of contemporary traditional wear. Elegant kurtas, sherwanis, and ethnic accessories for the modern wardrobe." />
+        <meta property="og:title" content="Pehnava | Contemporary Traditional Wear" />
+        <meta property="og:description" content="Discover Pehnava's exclusive collection of contemporary traditional wear. Elegant kurtas, sherwanis, and ethnic accessories for the modern wardrobe." />
+        <meta property="og:type" content="website" />
+        <meta name="keywords" content="traditional wear, contemporary ethnic, kurta, sherwani, Indian fashion, Pehnava" />
+      </Helmet>
       <Toaster position="top-center" reverseOrder={false} />
       <AppRoutes />
     </>
