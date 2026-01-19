@@ -13,9 +13,11 @@ export const loginApi = async (token: string) => {
     }
 }
 
-export const getAllProductsApi = async () => {
+export const getAllProductsApi = async (page = 1, limit = 10) => {
     try {
-        const response = await publicApi.get("product/get-all-products");
+        const response = await publicApi.get("product/get-all-products", {
+            params: { page, limit }
+        });
         return response.data
     } catch (error) {
         throw error
@@ -31,10 +33,10 @@ export const getProductByIdApi = async (id: string) => {
     }
 }
 
-export const filterProductApi = async (filter: any) => {
+export const filterProductApi = async (filter: any, page = 1, limit = 10) => {
     try {
         const response = await publicApi.get("product/filter", {
-            params: filter
+            params: { ...filter, page, limit }
         });
         return response.data
     } catch (error) {
@@ -88,9 +90,11 @@ export const getCollectionBySlugApi = async (slug: string) => {
     }
 }
 
-export const getCollectionProductsApi = async (slug: string) => {
+export const getCollectionProductsApi = async (slug: string, page = 1, limit = 10) => {
     try {
-        const response = await publicApi.get(`collection/s/${slug}/products`);
+        const response = await publicApi.get(`collection/s/${slug}/products`, {
+            params: { page, limit }
+        });
         return response.data
     } catch (error) {
         throw error

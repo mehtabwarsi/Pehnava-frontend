@@ -49,7 +49,7 @@ const ProductDetailsPage = () => {
     const { data: suggestedProductsData, isLoading: isSuggestedLoading } = useGetAllProducts();
 
     const productApiData = productData?.data;
-    const suggestedProducts = suggestedProductsData?.data;
+    const suggestedProducts = suggestedProductsData?.data?.products;
 
     const sizes = [
         ...new Set(productApiData?.variants?.map((v: any) => v.size))

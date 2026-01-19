@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import {
     filterProductApi,
     getAllProductsApi,
@@ -32,10 +32,25 @@ import {
     cartCountApi
 } from "./privateapiservices"
 
-export const useGetAllProducts = () => {
+export const useGetAllProducts = (page = 1, limit = 10) => {
     return useQuery({
-        queryKey: ["products"],
-        queryFn: () => getAllProductsApi(),
+        queryKey: ["products", page, limit],
+        queryFn: () => getAllProductsApi(page, limit),
+    })
+}
+
+export const useInfiniteGetAllProducts = (limit = 12) => {
+    return useInfiniteQuery({
+        queryKey: ["products", "infinite", limit],
+        queryFn: ({ pageParam = 1 }) => getAllProductsApi(pageParam, limit),
+        initialPageParam: 1,
+        getNextPageParam: (lastPage: any) => {
+            const pagination = lastPage?.data?.pagination;
+            if (pagination && pagination.currentPage < pagination.totalPages) {
+                return pagination.currentPage + 1;
+            }
+            return undefined;
+        }
     })
 }
 
@@ -46,10 +61,25 @@ export const useGetProductById = (id: string) => {
     })
 }
 
-export const useFilterProduct = (filter: any) => {
+export const useFilterProduct = (filter: any, page = 1, limit = 12) => {
     return useQuery({
-        queryKey: ["filter", filter],
-        queryFn: () => filterProductApi(filter),
+        queryKey: ["filter", filter, page, limit],
+        queryFn: () => filterProductApi(filter, page, limit),
+    })
+}
+
+export const useInfiniteFilterProduct = (filter: any, limit = 12) => {
+    return useInfiniteQuery({
+        queryKey: ["filter", "infinite", filter, limit],
+        queryFn: ({ pageParam = 1 }) => filterProductApi(filter, pageParam, limit),
+        initialPageParam: 1,
+        getNextPageParam: (lastPage: any) => {
+            const pagination = lastPage?.data?.pagination;
+            if (pagination && pagination.currentPage < pagination.totalPages) {
+                return pagination.currentPage + 1;
+            }
+            return undefined;
+        }
     })
 }
 
@@ -302,11 +332,27 @@ export const useGetCollectionBySlug = (slug: string) => {
     })
 }
 
-export const useGetCollectionProducts = (slug: string) => {
+export const useGetCollectionProducts = (slug: string, page = 1, limit = 12) => {
     return useQuery({
-        queryKey: ["collectionProducts", slug],
-        queryFn: () => getCollectionProductsApi(slug),
+        queryKey: ["collectionProducts", slug, page, limit],
+        queryFn: () => getCollectionProductsApi(slug, page, limit),
         enabled: !!slug,
+    })
+}
+
+export const useInfiniteGetCollectionProducts = (slug: string, limit = 12) => {
+    return useInfiniteQuery({
+        queryKey: ["collectionProducts", "infinite", slug, limit],
+        queryFn: ({ pageParam = 1 }) => getCollectionProductsApi(slug, pageParam, limit),
+        enabled: !!slug,
+        initialPageParam: 1,
+        getNextPageParam: (lastPage: any) => {
+            const pagination = lastPage?.data?.pagination;
+            if (pagination && pagination.currentPage < pagination.totalPages) {
+                return pagination.currentPage + 1;
+            }
+            return undefined;
+        }
     })
 }
 

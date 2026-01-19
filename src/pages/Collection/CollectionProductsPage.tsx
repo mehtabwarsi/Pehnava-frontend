@@ -1,6 +1,6 @@
-import React from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useGetCollectionBySlug, useGetCollectionProducts } from '../../services/useApiHook';
+import { useGetCollectionBySlug, useInfiniteGetCollectionProducts } from '../../services/useApiHook';
 import ProductCard from '../../components/Home/ProductCard';
 import ProductSkeleton from '../../components/Product/ProductSkeleton';
 import { ChevronLeft } from 'lucide-react';
@@ -8,12 +8,37 @@ import { ChevronLeft } from 'lucide-react';
 const CollectionProductsPage: React.FC = () => {
     const { slug } = useParams<{ slug: string }>();
     const navigate = useNavigate();
+    const limit = 12;
+
+    const observer = useRef<IntersectionObserver | null>(null);
 
     const { data: collectionRes, isLoading: isCollectionLoading } = useGetCollectionBySlug(slug || '');
-    const { data: productsRes, isLoading: isProductsLoading } = useGetCollectionProducts(slug || '');
+    const {
+        data: productsRes,
+        isLoading: isProductsLoading,
+        fetchNextPage,
+        hasNextPage,
+        isFetchingNextPage
+    } = useInfiniteGetCollectionProducts(slug || '', limit);
 
     const collection = collectionRes?.data;
-    const products = productsRes?.data || [];
+    const products = productsRes?.pages?.flatMap((page: any) => page?.data?.products || []) || [];
+
+    const lastProductRef = useCallback((node: any) => {
+        if (isProductsLoading || isFetchingNextPage) return;
+        if (observer.current) observer.current.disconnect();
+        observer.current = new IntersectionObserver(entries => {
+            if (entries[0].isIntersecting && hasNextPage) {
+                fetchNextPage();
+            }
+        });
+        if (node) observer.current.observe(node);
+    }, [isProductsLoading, isFetchingNextPage, hasNextPage, fetchNextPage]);
+
+    // Reset scroll when slug changes
+    useEffect(() => {
+        window.scrollTo({ top: 0, behavior: 'instant' });
+    }, [slug]);
 
     if (isCollectionLoading) {
         return (
@@ -102,6 +127,25 @@ const CollectionProductsPage: React.FC = () => {
                         >
                             Explore All Products
                         </button>
+                    </div>
+                )}
+
+                {/* Loading indicator for infinite scroll */}
+                {(isFetchingNextPage || hasNextPage) && (
+                    <div
+                        ref={lastProductRef}
+                        className="flex justify-center py-10"
+                    >
+                        {isFetchingNextPage ? (
+                            <div className="flex items-center gap-2 text-pehnava-slate animate-pulse">
+                                <div className="w-2 h-2 bg-pehnava-primary rounded-full animate-bounce" />
+                                <div className="w-2 h-2 bg-pehnava-primary rounded-full animate-bounce [animation-delay:0.2s]" />
+                                <div className="w-2 h-2 bg-pehnava-primary rounded-full animate-bounce [animation-delay:0.4s]" />
+                                <span className="text-sm font-medium ml-2">Loading more...</span>
+                            </div>
+                        ) : (
+                            <div className="h-4" /> // Anchor for intersection observer
+                        )}
                     </div>
                 )}
             </div>

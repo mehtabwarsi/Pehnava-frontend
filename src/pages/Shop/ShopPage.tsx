@@ -2,13 +2,17 @@ import { useState, useMemo, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import ProductCard from "../../components/Home/ProductCard";
 import { SlidersHorizontal, ChevronDown, ShoppingBag, X, Sparkles } from "lucide-react";
-import { useFilterProduct, useGetGender, useGetSubCategory } from "../../services/useApiHook";
+import { useInfiniteFilterProduct, useGetGender, useGetSubCategory } from "../../services/useApiHook";
+import { useRef, useCallback } from "react";
 
 const ShopPage = () => {
     const [searchParams, setSearchParams] = useSearchParams();
     const [sort, setSort] = useState("default");
     const [subCategory, setSubCategory] = useState("all");
     const [isFeatured, setIsFeatured] = useState(false);
+    const limit = 12;
+
+    const observer = useRef<IntersectionObserver | null>(null);
 
     // Use URL params directly for gender (which matches 'category' in backend)
     const gender = searchParams.get("gender") || "all";
@@ -44,12 +48,38 @@ const ShopPage = () => {
         isFeatured: isFeatured || undefined
     }), [gender, subCategory, sort, isFeatured]);
 
-    const { data, isLoading, isError } = useFilterProduct(filter);
+    const {
+        data,
+        isLoading,
+        isError,
+        fetchNextPage,
+        hasNextPage,
+        isFetchingNextPage
+    } = useInfiniteFilterProduct(filter, limit);
 
-    // Only show active products
+    // Flatten pages into products and show only active
     const apiProducts = useMemo(() => {
-        return (data?.data || []).filter((product: any) => product.status === "active");
+        if (!data?.pages) return [];
+        return data.pages.flatMap((page: any) => page?.data?.products || [])
+            .filter((product: any) => product.status === "active");
     }, [data]);
+
+    const lastProductRef = useCallback((node: any) => {
+        if (isLoading || isFetchingNextPage) return;
+        if (observer.current) observer.current.disconnect();
+        observer.current = new IntersectionObserver(entries => {
+            if (entries[0].isIntersecting && hasNextPage) {
+                fetchNextPage();
+            }
+        });
+        if (node) observer.current.observe(node);
+    }, [isLoading, isFetchingNextPage, hasNextPage, fetchNextPage]);
+
+    // Reset logic is handled by useInfiniteQuery when filters change (part of Query Key)
+    // but we can still keep it for scroll reset if needed
+    useEffect(() => {
+        window.scrollTo({ top: 0, behavior: 'instant' });
+    }, [gender, subCategory, sort, isFeatured]);
 
     const categories = useMemo(() => {
         if (!subCategoryData?.data) return ["all"];
@@ -156,7 +186,7 @@ const ShopPage = () => {
                                                 {[1, 2, 3].map(i => <div key={i} className="h-7 w-16 bg-pehnava-lightGray rounded-full" />)}
                                             </div>
                                         ) : (
-                                            categories.map((item) => (
+                                            categories.map((item: any) => (
                                                 <button
                                                     key={`${gender}-${item}`}
                                                     onClick={() => setSubCategory(item)}
@@ -257,6 +287,25 @@ const ShopPage = () => {
                         >
                             Reset All Filters
                         </button>
+                    </div>
+                )}
+
+                {/* Loading indicator for infinite scroll */}
+                {(isFetchingNextPage || hasNextPage) && (
+                    <div
+                        ref={lastProductRef}
+                        className="flex justify-center py-10"
+                    >
+                        {isFetchingNextPage ? (
+                            <div className="flex items-center gap-2 text-pehnava-slate animate-pulse">
+                                <div className="w-2 h-2 bg-pehnava-primary rounded-full animate-bounce" />
+                                <div className="w-2 h-2 bg-pehnava-primary rounded-full animate-bounce [animation-delay:0.2s]" />
+                                <div className="w-2 h-2 bg-pehnava-primary rounded-full animate-bounce [animation-delay:0.4s]" />
+                                <span className="text-sm font-medium ml-2">Discovering more...</span>
+                            </div>
+                        ) : (
+                            <div className="h-4" /> // Anchor for intersection observer
+                        )}
                     </div>
                 )}
             </div>
