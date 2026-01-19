@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useEffect, useRef, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useGetCollectionBySlug, useInfiniteGetCollectionProducts } from '../../services/useApiHook';
 import ProductCard from '../../components/Home/ProductCard';
