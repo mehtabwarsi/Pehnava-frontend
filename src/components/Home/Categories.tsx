@@ -43,7 +43,7 @@ const CategorySection = ({ title, description, categories, gender }: any) => {
                                 {category.title}
                             </h3>
                             <button
-                                onClick={() => navigate(category.redirectUrl)}
+                                onClick={() => navigate(`/collection/${category.slug}`)}
                                 className="flex items-center gap-2 text-white font-semibold bg-white/10 backdrop-blur-md px-5 py-2.5 rounded-xl border border-white/20 hover:bg-white hover:text-pehnava-primary transition-all duration-300"
                             >
                                 Explorer Collection

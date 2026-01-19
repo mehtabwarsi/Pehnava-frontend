@@ -7,6 +7,8 @@ import {
     getProductByIdApi,
     getSubCategoryApi,
     getCollectionsApi,
+    getCollectionBySlugApi,
+    getCollectionProductsApi,
     searchProductsApi
 } from "./publicapiservice"
 import {
@@ -289,6 +291,22 @@ export const useGetCollections = () => {
     return useQuery({
         queryKey: ["collections"],
         queryFn: () => getCollectionsApi(),
+    })
+}
+
+export const useGetCollectionBySlug = (slug: string) => {
+    return useQuery({
+        queryKey: ["collection", slug],
+        queryFn: () => getCollectionBySlugApi(slug),
+        enabled: !!slug,
+    })
+}
+
+export const useGetCollectionProducts = (slug: string) => {
+    return useQuery({
+        queryKey: ["collectionProducts", slug],
+        queryFn: () => getCollectionProductsApi(slug),
+        enabled: !!slug,
     })
 }
 

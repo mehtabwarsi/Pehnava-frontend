@@ -1,5 +1,5 @@
 import CollectionCard from "../../components/Collection/CollectionCard";
-import { ArrowRight, Loader } from "lucide-react";
+import { Loader } from "lucide-react";
 import { useGetCollections } from "../../services/useApiHook";
 import { useNavigate } from "react-router-dom";
 
@@ -36,7 +36,7 @@ const CollectionPage = () => {
                                 title={item.title}
                                 subtitle={item.subtitle}
                                 image={item.image}
-                                onClick={() => navigate(item.redirectUrl || '#')}
+                                onClick={() => navigate(`/collection/${item.slug}`)}
                             />
                         ))}
                     </div>
@@ -47,17 +47,6 @@ const CollectionPage = () => {
                         No collections found.
                     </div>
                 )}
-
-
-                {/* View All / Bottom CTA */}
-                <div className="mt-12 text-center">
-                    <button
-                        onClick={() => navigate('/shop?gender=all')}
-                        className="group inline-flex items-center gap-2 text-pehnava-charcoal font-semibold hover:text-pehnava-primary transition-colors cursor-pointer"
-                    >
-                        View All Categories <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-                    </button>
-                </div>
             </div>
         </div>
     );

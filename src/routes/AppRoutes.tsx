@@ -19,6 +19,7 @@ import AddressSelectionPage from "../pages/Cart/AddressSelectionPage";
 import PaymentPage from "../pages/Cart/PaymentPage";
 import MyOrdersPage from "../pages/Profile/MyOrders/MyOrdersPage";
 import MyOrderDetailsPage from "../pages/Profile/MyOrders/MyOrdersDetailPage";
+import CollectionProductsPage from "../pages/Collection/CollectionProductsPage";
 import SearchPage from "../pages/Search/SearchPage";
 
 const AppRoutes = () => {
@@ -31,6 +32,7 @@ const AppRoutes = () => {
                     <Route index element={<HomePage />} />
                     <Route path="shop" element={<ShopPage />} />
                     <Route path="collections" element={<CollectionPage />} />
+                    <Route path="collection/:slug" element={<CollectionProductsPage />} />
                     <Route path="about" element={<AboutPage />} />
                     <Route path="product/:id" element={<ProductDetailsPage />} />
 

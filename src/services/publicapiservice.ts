@@ -79,6 +79,24 @@ export const getCollectionsApi = async () => {
     }
 }
 
+export const getCollectionBySlugApi = async (slug: string) => {
+    try {
+        const response = await publicApi.get(`collection/s/${slug}`);
+        return response.data
+    } catch (error) {
+        throw error
+    }
+}
+
+export const getCollectionProductsApi = async (slug: string) => {
+    try {
+        const response = await publicApi.get(`collection/s/${slug}/products`);
+        return response.data
+    } catch (error) {
+        throw error
+    }
+}
+
 export const searchProductsApi = async (search: string, page = 1, limit = 10) => {
     try {
         const response = await publicApi.get("product/search", {
