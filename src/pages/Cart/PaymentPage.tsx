@@ -84,7 +84,7 @@ const PaymentPage = () => {
             onSuccess: (data: any) => {
                 clearCart()
                 alert(`Order placed successfully! Order ID: ${data?.data?._id}`);
-                navigate("/profile/my-orders");
+                navigate("/profile/my-orders", { replace: true });
             },
             onError: (error: any) => {
                 console.error("Failed to place order:", error);
@@ -107,7 +107,7 @@ const PaymentPage = () => {
                 {/* Header */}
                 <div className="flex items-center gap-4 mb-8">
                     <button
-                        onClick={() => navigate("/checkout/address")}
+                        onClick={() => navigate(-1)}
                         className="p-2 hover:bg-white rounded-full transition-colors shadow-soft cursor-pointer"
                     >
                         <ChevronLeft className="w-6 h-6 text-pehnava-charcoal" />

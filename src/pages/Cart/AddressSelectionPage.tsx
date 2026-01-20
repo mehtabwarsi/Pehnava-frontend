@@ -43,7 +43,7 @@ const AddressSelectionPage = () => {
                 {/* Header */}
                 <div className="flex items-center gap-4 mb-8">
                     <button
-                        onClick={() => navigate("/cart")}
+                        onClick={() => navigate(-1)}
                         className="p-2 hover:bg-white rounded-full transition-colors shadow-soft cursor-pointer"
                     >
                         <ChevronLeft className="w-6 h-6 text-pehnava-charcoal" />
