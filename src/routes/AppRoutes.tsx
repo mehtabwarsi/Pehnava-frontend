@@ -21,6 +21,7 @@ import MyOrdersPage from "../pages/Profile/MyOrders/MyOrdersPage";
 import MyOrderDetailsPage from "../pages/Profile/MyOrders/MyOrdersDetailPage";
 import CollectionProductsPage from "../pages/Collection/CollectionProductsPage";
 import SearchPage from "../pages/Search/SearchPage";
+import HelpCenterPage from "../pages/HelpCenter/HelpCenterPage";
 
 const AppRoutes = () => {
     return (
@@ -34,6 +35,7 @@ const AppRoutes = () => {
                     <Route path="collections" element={<CollectionPage />} />
                     <Route path="collection/:slug" element={<CollectionProductsPage />} />
                     <Route path="about" element={<AboutPage />} />
+                    <Route path="help-center" element={<HelpCenterPage />} />
                     <Route path="product/:slug" element={<ProductDetailsPage />} />
 
                     {/* 🔒 PROTECTED ROUTES */}

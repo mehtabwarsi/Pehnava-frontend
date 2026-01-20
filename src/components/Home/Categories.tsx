@@ -43,10 +43,17 @@ const CategorySection = ({ title, description, categories, gender }: any) => {
                                 {category.title}
                             </h3>
                             <button
-                                onClick={() => navigate(`/collection/${category.slug}`)}
+                                onClick={() => {
+                                    if (category.redirectUrl) {
+                                        navigate(category.redirectUrl);
+                                    } else {
+                                        // Fallback to shop filter
+                                        navigate(`/shop?gender=${category.gender}&subCategory=${category.title}`);
+                                    }
+                                }}
                                 className="flex items-center gap-2 text-white font-semibold bg-white/10 backdrop-blur-md px-5 py-2.5 rounded-xl border border-white/20 hover:bg-white hover:text-pehnava-primary transition-all duration-300"
                             >
-                                Explorer Collection
+                                Explore Collection
                                 <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
                             </button>
                         </div>

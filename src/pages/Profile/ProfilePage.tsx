@@ -3,12 +3,11 @@ import {
     Package,
     Heart,
     MapPin,
-    Settings,
+    HelpCircle,
     LogOut,
     Camera,
     ChevronRight,
     CreditCard,
-    Bell,
     Shield
 } from "lucide-react";
 import { useSelector } from "react-redux";
@@ -84,9 +83,8 @@ const ProfilePage = () => {
                     <MenuItem icon={Heart} title="Wishlist" desc="Your curated collection" onClick={() => navigate("/wishlist")} />
                     <MenuItem icon={MapPin} title="Addresses" desc="Manage delivery locations" onClick={() => navigate("/profile/address")} />
                     <MenuItem icon={CreditCard} title="Payment Methods" desc="Manage cards and UPI" />
-                    <MenuItem icon={Bell} title="Notifications" desc="Order updates and promotions" />
                     <MenuItem icon={Shield} title="Privacy & Security" desc="Password and account access" />
-                    <MenuItem icon={Settings} title="Settings" desc="App preferences" />
+                    <MenuItem icon={HelpCircle} title="Help Center" desc="FAQs and customer support" onClick={() => navigate("/help-center")} />
                 </div>
 
                 {/* 4. Logout Button */}

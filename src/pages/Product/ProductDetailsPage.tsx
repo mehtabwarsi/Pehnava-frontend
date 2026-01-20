@@ -44,12 +44,19 @@ const ProductDetailsPage = () => {
     const { mutate: addToWishList } = useAddToWishList();
     const { mutate: addToCart } = useAddToCart();
 
-    const isFavorited = wishlistData?.data?.items?.some((item: any) => item._id === productApiData?._id);
+    const { data: productData, isLoading, error } = useGetProductBySlug(slug || '');
 
-    const { data: productData, isLoading } = useGetProductBySlug(slug || '');
-    const { data: suggestedProductsData, isLoading: isSuggestedLoading } = useGetAllProducts();
+    useEffect(() => {
+        console.log("ProductDetailsPage mounted. Slug:", slug);
+        if (error) console.error("Error fetching product:", error);
+        if (productData) console.log("Product Data:", productData);
+    }, [slug, error, productData]);
 
     const productApiData = productData?.data;
+    const { data: suggestedProductsData, isLoading: isSuggestedLoading } = useGetAllProducts();
+
+    const isFavorited = wishlistData?.data?.items?.some((item: any) => item._id === productApiData?._id);
+
     const suggestedProducts = suggestedProductsData?.data?.products;
 
     const sizes = [
@@ -146,10 +153,21 @@ const ProductDetailsPage = () => {
         return <ProductDetailsSkeleton />;
     }
 
+    if (error) {
+        return (
+            <div className="min-h-screen bg-pehnava-offWhite flex flex-col items-center justify-center gap-4">
+                <h1 className="text-2xl font-bold text-pehnava-charcoal">Error loading product</h1>
+                <p className="text-red-500">{error instanceof Error ? error.message : "Unknown error"}</p>
+                <Link to="/shop" className="text-pehnava-primary hover:underline">Back to Shop</Link>
+            </div>
+        );
+    }
+
     if (!productApiData) {
         return (
             <div className="min-h-screen bg-pehnava-offWhite flex flex-col items-center justify-center gap-4">
                 <h1 className="text-2xl font-bold text-pehnava-charcoal">Product not found</h1>
+                <p className="text-pehnava-slate">Slug: {slug}</p>
                 <Link to="/shop" className="text-pehnava-primary hover:underline">Back to Shop</Link>
             </div>
         );

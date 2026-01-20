@@ -5,35 +5,55 @@ import { ShoppingBag, Sparkles } from "lucide-react";
 import { useInfiniteFilterProduct, useGetGender, useGetSubCategory } from "../../services/useApiHook";
 import { Helmet } from "react-helmet-async";
 
-const ShopPage = () => {
-    const [searchParams, setSearchParams] = useSearchParams();
-    const [subCategory, setSubCategory] = useState("all");
+const ShopContent = ({ gender }: { gender: string }) => {
+    const [searchParams] = useSearchParams();
+    const urlSubCategory = searchParams.get("subCategory") || searchParams.get("type");
+
+    const [subCategory, setSubCategory] = useState(urlSubCategory || "all");
     const limit = 12;
 
     const observer = useRef<IntersectionObserver | null>(null);
 
-    // Use URL params directly for gender (which matches 'category' in backend)
-    const gender = searchParams.get("gender") || "all";
-    const categoryParam = searchParams.get("category");
-
+    // Sync with URL params
     useEffect(() => {
-        if (categoryParam) {
-            setSearchParams({ gender: categoryParam });
+        if (urlSubCategory) {
+            setSubCategory(urlSubCategory);
         }
-    }, [categoryParam, setSearchParams]);
+    }, [urlSubCategory]);
 
     const { data: genderData } = useGetGender();
 
+    // Valid genders check
+    const validGenders = useMemo(() => {
+        return genderData?.data?.map((g: any) => g.name.toLowerCase()) || ["men", "women"];
+    }, [genderData]);
+
+    const isGenderValid = gender === "all" || validGenders.includes(gender.toLowerCase());
+
     const currentGenderId = useMemo(() => {
+        if (!isGenderValid) return undefined;
         return genderData?.data?.find((g: any) => g.name.toLowerCase() === gender.toLowerCase())?._id;
-    }, [genderData, gender]);
+    }, [genderData, gender, isGenderValid]);
 
     const { data: subCategoryData } = useGetSubCategory(currentGenderId);
 
-    const filter = useMemo(() => ({
-        category: gender === "all" ? undefined : gender,
-        subCategory: subCategory === "all" ? undefined : subCategory,
-    }), [gender, subCategory]);
+    const filter = useMemo(() => {
+        // If gender matches a known gender, use it as category
+        if (isGenderValid) {
+            return {
+                category: gender === "all" ? undefined : gender,
+                subCategory: subCategory === "all" ? undefined : subCategory,
+            };
+        }
+        // Otherwise, assume the "gender" param was actually a subCategory (e.g. /shop?gender=saree)
+        // and we want to search that subCategory across ALL genders
+        else {
+            return {
+                category: undefined, // Search all
+                subCategory: gender, // Use the "gender" param as subCategory
+            };
+        }
+    }, [gender, subCategory, isGenderValid]);
 
     const {
         data,
@@ -61,8 +81,7 @@ const ShopPage = () => {
         if (node) observer.current.observe(node);
     }, [isLoading, isFetchingNextPage, hasNextPage, fetchNextPage]);
 
-    // Reset logic is handled by useInfiniteQuery when filters change (part of Query Key)
-    // but we can still keep it for scroll reset if needed
+    // Reset scroll when filters change
     useEffect(() => {
         window.scrollTo({ top: 0, behavior: 'instant' });
     }, [gender, subCategory]);
@@ -70,8 +89,6 @@ const ShopPage = () => {
     const categories = useMemo(() => {
         return subCategoryData?.data || [];
     }, [subCategoryData]);
-
-
 
     return (
         <div className="min-h-screen bg-pehnava-offWhite pt-24 pb-12">
@@ -90,42 +107,45 @@ const ShopPage = () => {
                         <span>Curated for you</span>
                     </div>
                     <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-pehnava-charcoal uppercase tracking-tighter">
-                        {gender === "all" ? "The Entire" : gender} <span className="text-pehnava-primary">Collection</span>
+                        {isGenderValid
+                            ? (gender === "all" ? "The Entire" : gender)
+                            : gender // Display the subcategory name if it was passed as gender
+                        } <span className="text-pehnava-primary">Collection</span>
                     </h1>
                     <p className="text-pehnava-slate max-w-xl mx-auto text-sm sm:text-base px-4">
                         Discover the perfect blend of ancestral heritage and modern aesthetics.
                     </p>
                 </div>
 
-                {/* Filter & Sort Bar */}
-                <div className="bg-white p-3 sm:p-4 rounded-2xl shadow-soft border border-pehnava-border/50 sticky top-24 z-40 mb-8 sm:mb-12">
-                    {/* Horizontal Category List */}
-                    <div className="flex gap-3 overflow-x-auto pb-1 no-scrollbar -mx-1 px-1">
-                        <button
-                            onClick={() => setSubCategory("all")}
-                            className={`flex-shrink-0 px-5 py-2 rounded-lg text-sm font-bold transition-all border whitespace-nowrap ${subCategory === "all"
-                                ? "bg-pehnava-charcoal text-white border-pehnava-charcoal shadow-md"
-                                : "bg-white text-pehnava-slate border-pehnava-border hover:border-pehnava-charcoal hover:text-pehnava-charcoal"
-                                }`}
-                        >
-                            All
-                        </button>
-                        {categories.map((cat: any) => (
+                {/* Filter Bar */}
+                {categories.length > 0 && (
+                    <div className="bg-white p-3 sm:p-4 rounded-2xl shadow-soft border border-pehnava-border/50 sticky top-24 z-40 mb-8 sm:mb-12">
+                        {/* Horizontal Category List */}
+                        <div className="flex gap-3 overflow-x-auto pb-1 no-scrollbar -mx-1 px-1">
                             <button
-                                key={cat._id}
-                                onClick={() => setSubCategory(cat.name)}
-                                className={`flex-shrink-0 px-5 py-2 rounded-lg text-sm font-bold transition-all border whitespace-nowrap ${subCategory === cat.name
+                                onClick={() => setSubCategory("all")}
+                                className={`flex-shrink-0 px-5 py-2 rounded-lg text-sm font-bold transition-all border whitespace-nowrap ${subCategory === "all"
                                     ? "bg-pehnava-charcoal text-white border-pehnava-charcoal shadow-md"
                                     : "bg-white text-pehnava-slate border-pehnava-border hover:border-pehnava-charcoal hover:text-pehnava-charcoal"
                                     }`}
                             >
-                                {cat.name}
+                                All
                             </button>
-                        ))}
+                            {categories.map((cat: any) => (
+                                <button
+                                    key={cat._id}
+                                    onClick={() => setSubCategory(cat.name)}
+                                    className={`flex-shrink-0 px-5 py-2 rounded-lg text-sm font-bold transition-all border whitespace-nowrap ${subCategory === cat.name
+                                        ? "bg-pehnava-charcoal text-white border-pehnava-charcoal shadow-md"
+                                        : "bg-white text-pehnava-slate border-pehnava-border hover:border-pehnava-charcoal hover:text-pehnava-charcoal"
+                                        }`}
+                                >
+                                    {cat.name}
+                                </button>
+                            ))}
+                        </div>
                     </div>
-                </div>
-
-
+                )}
 
                 {/* Product Section */}
                 {isLoading ? (
@@ -189,6 +209,24 @@ const ShopPage = () => {
                 )}
             </div>
         </div>
+    );
+};
+
+const ShopPage = () => {
+    const [searchParams, setSearchParams] = useSearchParams();
+
+    // Use URL params directly for gender (which matches 'category' in backend)
+    const gender = searchParams.get("gender") || "all";
+    const categoryParam = searchParams.get("category");
+
+    useEffect(() => {
+        if (categoryParam) {
+            setSearchParams({ gender: categoryParam }, { replace: true });
+        }
+    }, [categoryParam, setSearchParams]);
+
+    return (
+        <ShopContent key={gender} gender={gender} />
     );
 };
 
